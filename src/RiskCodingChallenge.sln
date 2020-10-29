@@ -1,17 +1,22 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26124.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30621.155
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Risk.Api", "Risk.Api\Risk.Api.csproj", "{9D3F43DF-6BB9-4125-B3B3-C52441A24262}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Risk.Api", "Risk.Api\Risk.Api.csproj", "{9D3F43DF-6BB9-4125-B3B3-C52441A24262}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Risk.Game", "Risk.Game\Risk.Game.csproj", "{67079EDB-D314-44FD-A4D0-6DD961A41D8B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Risk.Game", "Risk.Game\Risk.Game.csproj", "{67079EDB-D314-44FD-A4D0-6DD961A41D8B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Risk.SampleClient", "Risk.SampleClient\Risk.SampleClient.csproj", "{0A5F4EEF-D01F-43F8-B44C-F3157E156413}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Risk.SampleClient", "Risk.SampleClient\Risk.SampleClient.csproj", "{0A5F4EEF-D01F-43F8-B44C-F3157E156413}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Risk.Shared", "Risk.Shared\Risk.Shared.csproj", "{2A367AB4-1F99-4C54-A7BD-31E6E38F41E1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Risk.Shared", "Risk.Shared\Risk.Shared.csproj", "{2A367AB4-1F99-4C54-A7BD-31E6E38F41E1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Risk.Tests", "Risk.Tests\Risk.Tests.csproj", "{74EDEB2E-0689-4A35-BFA9-F0822FF1F421}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Risk.Tests", "Risk.Tests\Risk.Tests.csproj", "{74EDEB2E-0689-4A35-BFA9-F0822FF1F421}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{CEE439EB-4561-4365-A6F9-36F88014AA0A}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,9 +26,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{9D3F43DF-6BB9-4125-B3B3-C52441A24262}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -86,5 +88,11 @@ Global
 		{74EDEB2E-0689-4A35-BFA9-F0822FF1F421}.Release|x64.Build.0 = Release|Any CPU
 		{74EDEB2E-0689-4A35-BFA9-F0822FF1F421}.Release|x86.ActiveCfg = Release|Any CPU
 		{74EDEB2E-0689-4A35-BFA9-F0822FF1F421}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {ECCD9A15-E800-433D-AC4B-3F8944659ADC}
 	EndGlobalSection
 EndGlobal
