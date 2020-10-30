@@ -9,7 +9,7 @@ namespace Risk.Tests
         [SetUp]
         public void Setup()
         {
-            game = new Game.Game(5,5);
+            game = new Game.Game(new Game.GameStartOptions { Height = 5, Width = 5, StartingArmiesPerPlayer = 5 });
         }
 
         private Game.Game game;
@@ -17,13 +17,13 @@ namespace Risk.Tests
         [Test]
         public void OneByThreeGameHasThreeTerritories()
         {
-            new Game.Game(1, 3).Board.Territiories.Count().Should().Be(3);
+            new Game.Game(new Game.GameStartOptions { Height = 1, Width = 3 }).Board.Territiories.Count().Should().Be(3);
         }
 
         [Test]
         public void TwoByThreeGameHasSixTerritories()
         {
-            new Game.Game(2, 3).Board.Territiories.Count().Should().Be(6);
+            new Game.Game(new Game.GameStartOptions { Height = 2, Width = 3 }).Board.Territiories.Count().Should().Be(6);
         }
 
         [Test]

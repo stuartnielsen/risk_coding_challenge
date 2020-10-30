@@ -19,6 +19,11 @@ namespace Risk.Game
             return Territiories.Single(t => t.Location.Row == row && t.Location.Column == col);
         }
 
+        public Territory GetTerritory(Location location)
+        {
+            return Territiories.Single(t => t.Location == location);
+        }
+
         public IEnumerable<Territory> GetNeighbors(Territory territory)
         {
             var l = territory.Location;

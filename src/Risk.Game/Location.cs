@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 
 namespace Risk.Game
 {
@@ -27,6 +28,26 @@ namespace Risk.Game
                 Location l => l.Row == Row && l.Column == Column,
                 _ => base.Equals(obj)
             };
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Row, Column);
+        }
+
+        public static bool operator== (Location l1, Location l2)
+        {
+            return l1.Equals(l2);
+        }
+
+        public static bool operator!= (Location l1, Location l2)
+        {
+            return l1.Equals(l2) is false;
+        }
+
+        public override string ToString()
+        {
+            return $"({Row}, {Column})";
         }
     }
 }

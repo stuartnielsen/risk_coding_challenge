@@ -10,5 +10,10 @@
 
         public string Name { get; }
         public string Token { get; }
+
+        public override string ToString()
+        {
+            return $"{Name} ({Token})";
+        }
     }
 }
