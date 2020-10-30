@@ -52,7 +52,31 @@ namespace Risk.Tests
             var location = new Location(0, 0);
             game.TryPlaceArmy(player1, location);
             game.TryPlaceArmy(player1, location);
-            throw new NotImplementedException();
+
+            var remainingArmies = game.GetPlayerRemainingArmies(player1);
+            remainingArmies.Should().Be(3);
+        }
+
+        [Test]
+        public void CannotPlaceArmyIf0ArmiesRemaining()
+        {
+            //AAA: arrange, act, assert
+            //Arrange
+            var location = new Location(0, 0);
+            game.TryPlaceArmy(player1, location);
+            game.TryPlaceArmy(player1, location);
+            game.TryPlaceArmy(player1, location);
+            game.TryPlaceArmy(player1, location);
+            var placeResult = game.TryPlaceArmy(player1, location);
+            var remainingArmies = game.GetPlayerRemainingArmies(player1);
+            placeResult.Should().BeTrue();
+            remainingArmies.Should().Be(0);
+
+            //Act
+            placeResult = game.TryPlaceArmy(player1, location);
+
+            //Assert
+            placeResult.Should().BeFalse();
         }
     }
 }

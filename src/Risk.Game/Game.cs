@@ -54,9 +54,22 @@ namespace Risk.Game
             }
             else //owner token == playerToken
             {
-                territory.Armies++;
-                return true;
+                if (GetPlayerRemainingArmies(playerToken) > 0)
+                {
+                    territory.Armies++;
+                    return true;
+                }
+                return false;
             }
+        }
+
+        public int GetPlayerRemainingArmies(string playerToken)
+        {
+            var player = getPlayer(playerToken);
+            var armiesOnBoard = Board.Territiories
+                .Where(t => t.Owner == player)
+                .Sum(t => t.Armies);
+            return StartingArmies - armiesOnBoard;
         }
 
         private Player getPlayer(string token)
