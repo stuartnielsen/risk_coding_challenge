@@ -61,5 +61,7 @@ namespace Risk.Tests
             var center = game.Board.GetTerritory(2, 2);
             game.Board.GetNeighbors(center).Count().Should().Be(8);
         }
+
+
     }
 }
