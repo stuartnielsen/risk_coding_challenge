@@ -10,7 +10,7 @@ namespace Risk.Game
         public Game(GameStartOptions startOptions)
         {
             players = new List<Player>();
-            Board = new Board(CreateTerritories(startOptions.Height, startOptions.Width));
+            Board = new Board(createTerritories(startOptions.Height, startOptions.Width));
             StartingArmies = startOptions.StartingArmiesPerPlayer;
             gameState = GameState.Joining;
         }
@@ -25,7 +25,7 @@ namespace Risk.Game
 
         public IEnumerable<Player> Players => players.AsReadOnly();
 
-        private IEnumerable<Territory> CreateTerritories(int height, int width)
+        private IEnumerable<Territory> createTerritories(int height, int width)
         {
             var territories = new List<Territory>();
             for (int r = 0; r < height; r++)
