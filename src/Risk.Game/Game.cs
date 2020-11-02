@@ -18,6 +18,9 @@ namespace Risk.Game
         public Board Board { get; private set; }
         public int StartingArmies { get; }
         public IEnumerable<Player> Players => players.AsReadOnly();
+        public bool ArmyDeploymentState { get; set; }
+        public bool ArmyAttackingState { get; set; }
+
 
         private IEnumerable<Territory> createTerritories(int height, int width)
         {
@@ -41,26 +44,44 @@ namespace Risk.Game
 
         public bool TryPlaceArmy(string playerToken, Location desiredLocation)
         {
-            var territory = Board.GetTerritory(desiredLocation);
-            if (territory.Owner == null)
+            var RemainingArmies = GetPlayerRemainingArmies(playerToken);
+
+            if (RemainingArmies > 0)
             {
-                territory.Owner = getPlayer(playerToken);
-                territory.Armies = 1;
-                return true;
-            }
-            if (territory.Owner.Token != playerToken)
-            {
-                return false;
-            }
-            else //owner token == playerToken
-            {
-                if (GetPlayerRemainingArmies(playerToken) > 0)
+
+                if (RemainingArmies == 1)
                 {
-                    territory.Armies++;
+                    ArmyDeploymentState = false;
+                    ArmyAttackingState = true;
+                }
+
+                var territory = Board.GetTerritory(desiredLocation);
+
+                if (territory.Owner == null)
+                {
+                    territory.Owner = getPlayer(playerToken);
+                    territory.Armies = 1;
                     return true;
                 }
+                if (territory.Owner.Token != playerToken)
+                {
+                    return false;
+                }
+                else //owner token == playerToken
+                {
+                    if (GetPlayerRemainingArmies(playerToken) > 0)
+                    {
+                        territory.Armies++;
+                        return true;
+                    }
+                    return false;
+                }
+            }
+            else
+            {
                 return false;
             }
+
         }
 
         public int GetPlayerRemainingArmies(string playerToken)
