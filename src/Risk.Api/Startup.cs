@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Risk.Game;
 
 namespace Risk.Api
 {
@@ -26,6 +27,11 @@ namespace Risk.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddSingleton<Game.Game>(new Game.Game(new GameStartOptions {
+                Height = 5,
+                Width = 5,
+                StartingArmiesPerPlayer = 10
+            }));
             services.AddMemoryCache();
         }
 
