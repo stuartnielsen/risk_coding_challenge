@@ -34,7 +34,7 @@ namespace Risk.Game
             return territories;
         }
 
-        public void StartGame() { gameState = "starting"; }
+        public void StartGame() { gameState = "Deployment"; }
         public string AddPlayer(string playerName)
         {
             if (gameState == "joining")
