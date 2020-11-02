@@ -91,5 +91,17 @@ namespace Risk.Game
         {
             return players.Single(p => p.Token == token);
         }
+
+        public bool enoughArmiesToAttack(Territory attacker)
+        {
+            if (attacker.Armies <= 1)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
     }
 }
