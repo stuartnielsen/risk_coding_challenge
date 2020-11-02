@@ -10,38 +10,36 @@ namespace Risk.Tests
     class EnoughArmiesToAttackTest
     {
         private Game.Game game;
-
+        private Territory territory;
         [SetUp]
         public void Setup()
         {
-            int width = 1;
-            int height = 1;
+            int width = 2;
+            int height = 2;
 
             game = new Game.Game(new GameStartOptions { Height = height, Width = width });
+            Player player = new Player("Rusty", "kc7wzl");
+            Location attacker = new Location(1,1);
+            territory = new Territory(attacker);
+            territory.Owner = player;
+           
+
         }
 
-        [TestCase(1,1,1)]
-        [TestCase(1,1,5)]
+        [TestCase(1, ExpectedResult =false)]
+        [TestCase(5, ExpectedResult = true)]
+        [TestCase(-2, ExpectedResult = false)]
+        [TestCase(0, ExpectedResult = false)]
         
-        public void canAttackEnoughArmies(int attackerRow, int attackerColumn, int armies)
+        public bool canAttackEnoughArmies(int armies)
         {
-            Location attacker = new Location(attackerRow,attackerColumn);
-            Territory territory = new Territory(attacker);
             territory.Armies = armies;
-            bool can = game.enoughArmiesToAttack(attacker);
-            can.Should().BeTrue();
+            bool can = game.enoughArmiesToAttack(territory);
+      
+            return can;
         }
 
-        [TestCase(1, 1, -2)]
-        [TestCase(1, 1, 0)]
-        public void cannotAttackNotEnoughArmies(int attackerRow, int attackerColumn, int armies)
-        {
-            Location attacker = new Location(attackerRow, attackerColumn);
-            Territory territory = new Territory(attacker);
-            territory.Armies = armies;
-            bool can = game.enoughArmiesToAttack(attacker);
-            can.Should().BeFalse();
-        }
+     
 
 
     }
