@@ -20,9 +20,21 @@ namespace Risk.Tests
             testgame = new Game.Game(new GameStartOptions { Height = 2, Width = 2, StartingArmiesPerPlayer = 5 });
             player1 = testgame.AddPlayer("player1");
             player2 = testgame.AddPlayer("player2");
-            testgame.TryPlaceArmy(player1, new Location(0, 0));
-            testgame.TryPlaceArmy(player2, new Location(0, 1));
+            testgame.StartGame();
 
+            //place 5 armies
+            testgame.TryPlaceArmy(player1, new Location(0, 0));
+            testgame.TryPlaceArmy(player1, new Location(0, 0));
+            testgame.TryPlaceArmy(player1, new Location(0, 0));
+            testgame.TryPlaceArmy(player1, new Location(0, 0));
+            testgame.TryPlaceArmy(player1, new Location(0, 0));
+
+            //player2 places 5 armies
+            testgame.TryPlaceArmy(player2, new Location(0, 1));
+            testgame.TryPlaceArmy(player2, new Location(0, 1));
+            testgame.TryPlaceArmy(player2, new Location(0, 1));
+            testgame.TryPlaceArmy(player2, new Location(0, 1));
+            testgame.TryPlaceArmy(player2, new Location(0, 1));
         }
 
         //Player owns first territory, attacks second territory he doesnt own | should be true
