@@ -4,6 +4,7 @@ using System.Text;
 using FluentAssertions;
 using NUnit.Framework;
 using Risk.Game;
+using Risk.Shared;
 
 namespace Risk.Tests
 {
@@ -22,25 +23,18 @@ namespace Risk.Tests
             Location attacker = new Location(1,1);
             territory = new Territory(attacker);
             territory.Owner = player;
-           
-
         }
 
         [TestCase(1, ExpectedResult =false)]
         [TestCase(5, ExpectedResult = true)]
         [TestCase(-2, ExpectedResult = false)]
         [TestCase(0, ExpectedResult = false)]
-        
         public bool canAttackEnoughArmies(int armies)
         {
             territory.Armies = armies;
             bool can = game.enoughArmiesToAttack(territory);
-      
+
             return can;
         }
-
-     
-
-
     }
 }
