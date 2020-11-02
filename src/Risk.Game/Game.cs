@@ -56,6 +56,8 @@ namespace Risk.Game
 
         public bool TryPlaceArmy(string playerToken, Location desiredLocation)
         {
+            var placeResult = false;
+
             if (GetPlayerRemainingArmies(playerToken) < 1)
                 return false;
 
@@ -65,21 +67,29 @@ namespace Risk.Game
             {
                 territory.Owner = getPlayer(playerToken);
                 territory.Armies = 1;
-                return true;
+                placeResult = true;
             }
-            if (territory.Owner.Token != playerToken)
+            else if (territory.Owner.Token != playerToken)
             {
-                return false;
+                placeResult = false;
             }
             else //owner token == playerToken
             {
                 if (GetPlayerRemainingArmies(playerToken) > 0)
                 {
                     territory.Armies++;
-                    return true;
+                    placeResult = true;
                 }
-                return false;
+                else
+                {
+                    placeResult = false;
+                }
             }
+
+            if (placeResult && CanChangeToAttackState())
+                gameState = GameState.Attacking;
+
+            return placeResult;
         }
 
         public int GetPlayerRemainingArmies(string playerToken)
@@ -94,6 +104,17 @@ namespace Risk.Game
         private Player getPlayer(string token)
         {
             return players.Single(p => p.Token == token);
+        }
+
+        public bool CanChangeToAttackState()
+        {
+            int totalRemainingArmies = 0;
+            foreach(var p in players)
+            {
+                totalRemainingArmies += GetPlayerRemainingArmies(p.Token);
+            }
+
+            return (totalRemainingArmies == 0);
         }
 
         public bool EnoughArmiesToAttack(Territory attacker)
