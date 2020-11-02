@@ -11,6 +11,7 @@ namespace Risk.Game
             players = new List<Player>();
             Board = new Board(createTerritories(startOptions.Height, startOptions.Width));
             StartingArmies = startOptions.StartingArmiesPerPlayer;
+            GameState = startOptions.GameState;
         }
 
         private readonly List<Player> players;
@@ -18,6 +19,8 @@ namespace Risk.Game
         public Board Board { get; private set; }
         public int StartingArmies { get; }
         public IEnumerable<Player> Players => players.AsReadOnly();
+        public string GameState { get; set; }
+        
 
         private IEnumerable<Territory> createTerritories(int height, int width)
         {
@@ -42,7 +45,7 @@ namespace Risk.Game
         public bool TryPlaceArmy(string playerToken, Location desiredLocation)
         {
             var territory = Board.GetTerritory(desiredLocation);
-            if (territory.Owner == null)
+            if (territory.Owner == null && GameState == "Deployment")
             {
                 territory.Owner = getPlayer(playerToken);
                 territory.Armies = 1;
@@ -54,7 +57,7 @@ namespace Risk.Game
             }
             else //owner token == playerToken
             {
-                if (GetPlayerRemainingArmies(playerToken) > 0)
+                if (GetPlayerRemainingArmies(playerToken) > 0 && GameState == "Deployment")
                 {
                     territory.Armies++;
                     return true;

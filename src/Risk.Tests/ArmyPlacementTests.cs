@@ -12,13 +12,15 @@ namespace Risk.Tests
         Game.Game game;
         string player1;
         string player2;
+       
 
         [SetUp]
         public void SetUp()
         {
-            game = new Game.Game(new Game.GameStartOptions { Height = 2, Width = 2, StartingArmiesPerPlayer = 5 });
+            game = new Game.Game(new Game.GameStartOptions { Height = 2, Width = 2, StartingArmiesPerPlayer = 5, GameState = "Deployment" });
             player1 = game.AddPlayer("player1");
             player2 = game.AddPlayer("player2");
+
         }
 
         [Test]
@@ -77,6 +79,20 @@ namespace Risk.Tests
 
             //Assert
             placeResult.Should().BeFalse();
+        }
+
+        [Test]
+        public void CannotPlaceArmyWhenNotInArmyDeploymentState()
+        {
+            var location = new Location(0, 0);
+            game.TryPlaceArmy(player1, location);
+            game.GameState = "Attack";
+            var placeResults = game.TryPlaceArmy(player1, location);
+
+            placeResults.Should().BeFalse();
+
+
+
         }
     }
 }
