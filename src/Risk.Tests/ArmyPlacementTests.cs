@@ -113,5 +113,38 @@ namespace Risk.Tests
             //Assert
             gState.Should().Be("Attack");
         }
+        [Test]
+        public void GameStateWillNotChangeIfPeopleHaveArmies()
+        {
+            //AAA: arrange, act, assert
+            //Arrange
+            var location = new Location(0, 0);
+            var location2 = new Location(0, 1);
+            game.TryPlaceArmy(player1, location);
+            game.TryPlaceArmy(player1, location);
+
+            game.TryPlaceArmy(player2, location2);
+            game.TryPlaceArmy(player2, location2);
+            game.TryPlaceArmy(player2, location2);
+            game.TryPlaceArmy(player2, location2);
+
+            var placeResult1 = game.TryPlaceArmy(player1, location);
+            var placeResult2 = game.TryPlaceArmy(player2, location2);
+
+            var remainingArmies1 = game.GetPlayerRemainingArmies(player1);
+            var remainingArmies2 = game.GetPlayerRemainingArmies(player2);
+
+            placeResult1.Should().BeTrue();
+            placeResult2.Should().BeTrue();
+            remainingArmies1.Should().Be(2);
+            remainingArmies2.Should().Be(0);
+
+            //Act
+            game.ChangeState();
+            string gState = game.GetState();
+
+            //Assert
+            gState.Should().Be("Deployment");
+        }
     }
 }
