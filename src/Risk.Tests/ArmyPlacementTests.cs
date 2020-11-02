@@ -13,6 +13,7 @@ namespace Risk.Tests
         Game.Game game;
         string player1;
         string player2;
+       
 
         [SetUp]
         public void SetUp()
@@ -20,6 +21,7 @@ namespace Risk.Tests
             game = new Game.Game(new GameStartOptions { Height = 2, Width = 2, StartingArmiesPerPlayer = 5 });
             player1 = game.AddPlayer("player1");
             player2 = game.AddPlayer("player2");
+            game.StartGame();
         }
 
         [Test]
@@ -99,6 +101,20 @@ namespace Risk.Tests
 
             var placeResult = game.TryPlaceArmy(player1, location);      //Trying to place army after armyDeploymentState is False
             placeResult.Should().BeFalse();           //Result returns false
+        }
+
+        [Test]
+        public void CannotPlaceArmyWhenNotInArmyDeploymentState()
+        {
+            game = new Game.Game(new GameStartOptions { Height = 2, Width = 2, StartingArmiesPerPlayer = 5 });
+            player1 = game.AddPlayer("player1");
+            player2 = game.AddPlayer("player2");
+            //game.StartGame(); don't start the game, gamestate stays 'joining'
+
+            var location = new Location(0, 0);
+            var placeResults = game.TryPlaceArmy(player1, location);
+
+            placeResults.Should().BeFalse();
         }
     }
 }

@@ -58,6 +58,9 @@ namespace Risk.Game
         {
             var placeResult = false;
 
+            if (gameState != Shared.GameState.Deploying)
+                return false;
+
             if (GetPlayerRemainingArmies(playerToken) < 1)
                 return false;
 
