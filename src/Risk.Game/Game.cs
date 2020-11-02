@@ -11,13 +11,19 @@ namespace Risk.Game
             players = new List<Player>();
             Board = new Board(CreateTerritories(startOptions.Height, startOptions.Width));
             StartingArmies = startOptions.StartingArmiesPerPlayer;
-            gameState = "joining";
+            gameState = GameStates.joining;
+        }
+
+        public enum GameStates
+        {
+            joining,
+            deployment
         }
 
         private readonly List<Player> players;
 
         public Board Board { get; private set; }
-        private string gameState { get; set; }
+        private GameStates gameState { get; set; }
         public int StartingArmies { get; }
         public IEnumerable<Player> Players => players.AsReadOnly();
 
@@ -34,10 +40,10 @@ namespace Risk.Game
             return territories;
         }
 
-        public void StartGame() { gameState = "Deployment"; }
+        public void StartGame() { gameState = GameStates.deployment; }
         public string AddPlayer(string playerName)
         {
-            if (gameState == "joining")
+            if (gameState == GameStates.joining)
             {
                 var p = new Player(name: playerName, token: Guid.NewGuid().ToString());
                 players.Add(p);
