@@ -79,5 +79,26 @@ namespace Risk.Tests
             //Assert
             placeResult.Should().BeFalse();
         }
+
+
+        [Test]
+        public void EndingArmyDeploymentState_StartingArmyAttackingState()
+        {
+            //AAA: arrange, act, assert
+            //Arrange
+            var location = new Location(0, 0);
+            game.TryPlaceArmy(player1, location);
+            game.TryPlaceArmy(player1, location);
+            game.TryPlaceArmy(player1, location);
+            game.TryPlaceArmy(player1, location);
+            game.TryPlaceArmy(player1, location);               //Placing 5th army
+
+            var remainingArmies = game.GetPlayerRemainingArmies(player1);
+
+            remainingArmies.Should().Be(0);       //remainingArmies should be 0
+
+            var placeResult = game.TryPlaceArmy(player1, location);      //Trying to place army after armyDeploymentState is False
+            placeResult.Should().BeFalse();           //Result returns false
+        }
     }
 }
