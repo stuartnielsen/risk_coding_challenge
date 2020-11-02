@@ -39,20 +39,6 @@ namespace Risk.Game
             return p.Token;
         }
 
-        public string Join(string playerName)
-        {
-            string gameState = "joining";
-            if(gameState == "joining")
-            {
-                string playerToken = AddPlayer(playerName);
-                return playerToken;
-            }
-            else
-            {
-                return "Can no longer join the game";
-            }          
-        }
-
         public bool TryPlaceArmy(string playerToken, Location desiredLocation)
         {
             var territory = Board.GetTerritory(desiredLocation);
