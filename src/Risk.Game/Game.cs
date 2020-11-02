@@ -11,11 +11,13 @@ namespace Risk.Game
             players = new List<Player>();
             Board = new Board(CreateTerritories(startOptions.Height, startOptions.Width));
             StartingArmies = startOptions.StartingArmiesPerPlayer;
+            gameState = "joining";
         }
 
         private readonly List<Player> players;
 
         public Board Board { get; private set; }
+        private string gameState { get; set; }
         public int StartingArmies { get; }
         public IEnumerable<Player> Players => players.AsReadOnly();
 
@@ -32,11 +34,16 @@ namespace Risk.Game
             return territories;
         }
 
+        public void StartGame() { gameState = "starting"; }
         public string AddPlayer(string playerName)
         {
-            var p = new Player(name: playerName, token: Guid.NewGuid().ToString());
-            players.Add(p);
-            return p.Token;
+            if (gameState == "joining")
+            {
+                var p = new Player(name: playerName, token: Guid.NewGuid().ToString());
+                players.Add(p);
+                return p.Token;
+            }
+            return "game already started";
         }
 
         public bool TryPlaceArmy(string playerToken, Location desiredLocation)
