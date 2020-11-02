@@ -32,7 +32,7 @@ namespace Risk.Tests
         public bool canAttackEnoughArmies(int armies)
         {
             territory.Armies = armies;
-            bool can = game.enoughArmiesToAttack(territory);
+            bool can = game.EnoughArmiesToAttack(territory);
 
             return can;
         }

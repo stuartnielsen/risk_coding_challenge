@@ -4,6 +4,7 @@ using System.Text;
 using FluentAssertions;
 using NUnit.Framework;
 using Risk.Game;
+using Risk.Shared;
 
 namespace Risk.Tests
 {
@@ -16,7 +17,7 @@ namespace Risk.Tests
         [SetUp]
         public void SetUp()
         {
-            testgame = new Game.Game(new Game.GameStartOptions { Height = 2, Width = 2, StartingArmiesPerPlayer = 5 });
+            testgame = new Game.Game(new GameStartOptions { Height = 2, Width = 2, StartingArmiesPerPlayer = 5 });
             player1 = testgame.AddPlayer("player1");
             player2 = testgame.AddPlayer("player2");
             testgame.TryPlaceArmy(player1, new Location(0, 0));
@@ -29,7 +30,7 @@ namespace Risk.Tests
         public void OwnershipValidityOwnerToForeign()
         {
 
-            var placeResult = testgame.attackOwnershipValid(player1, testgame.Board.GetTerritory(0, 0), testgame.Board.GetTerritory(0, 1));
+            var placeResult = testgame.AttackOwnershipValid(player1, testgame.Board.GetTerritory(0, 0), testgame.Board.GetTerritory(0, 1));
             placeResult.Should().BeTrue();
         }
 
@@ -37,7 +38,7 @@ namespace Risk.Tests
         [Test]
         public void OwnershipValidityForeignToForeign()
         {
-            var placeResult = testgame.attackOwnershipValid(player1, testgame.Board.GetTerritory(0, 1), testgame.Board.GetTerritory(0, 1));
+            var placeResult = testgame.AttackOwnershipValid(player1, testgame.Board.GetTerritory(0, 1), testgame.Board.GetTerritory(0, 1));
             placeResult.Should().BeFalse();
         }
 
@@ -45,19 +46,15 @@ namespace Risk.Tests
         [Test]
         public void OwnershipValidityOwnerToOwner()
         {
-            var placeResult = testgame.attackOwnershipValid(player1, testgame.Board.GetTerritory(0, 0), testgame.Board.GetTerritory(0, 0));
+            var placeResult = testgame.AttackOwnershipValid(player1, testgame.Board.GetTerritory(0, 0), testgame.Board.GetTerritory(0, 0));
             placeResult.Should().BeFalse();
         }
         //Player doesnt own first territory, attacks second territory he owns | should be false
         [Test]
         public void OwnershipValidityForeignToOwner()
         {
-            var placeResult = testgame.attackOwnershipValid(player1, testgame.Board.GetTerritory(0, 1), testgame.Board.GetTerritory(0, 0));
+            var placeResult = testgame.AttackOwnershipValid(player1, testgame.Board.GetTerritory(0, 1), testgame.Board.GetTerritory(0, 0));
             placeResult.Should().BeFalse();
         }
-
-
-
-
     }
 }

@@ -59,7 +59,7 @@ namespace Risk.Game
             var territory = Board.GetTerritory(desiredLocation);
             if (territory.Owner == null)
             {
-                territory.Owner = getPlayer(playerToken);
+                territory.Owner = GetPlayer(playerToken);
                 territory.Armies = 1;
                 return true;
             }
@@ -80,37 +80,27 @@ namespace Risk.Game
 
         public int GetPlayerRemainingArmies(string playerToken)
         {
-            var player = getPlayer(playerToken);
+            var player = GetPlayer(playerToken);
             var armiesOnBoard = Board.Territiories
                 .Where(t => t.Owner == player)
                 .Sum(t => t.Armies);
             return StartingArmies - armiesOnBoard;
         }
 
-        private Player getPlayer(string token)
+        private Player GetPlayer(string token)
         {
             return players.Single(p => p.Token == token);
         }
 
-        public bool enoughArmiesToAttack(Territory attacker)
+        public bool EnoughArmiesToAttack(Territory attacker)
         {
-            if (attacker.Armies <= 1)
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
+            return attacker.Armies > 1;
         }
 
-        public bool attackOwnershipValid(string playerToken, Territory from, Territory to)
+        public bool AttackOwnershipValid(string playerToken, Territory from, Territory to)
         {
-            if (from.Owner == getPlayer(playerToken) && to.Owner != getPlayer(playerToken))
-            {
-                return true;
-            }
-            return false;
+            var player = GetPlayer(playerToken);
+            return (from.Owner == player && to.Owner != player);
         }
     }
 }
