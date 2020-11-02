@@ -16,7 +16,7 @@ namespace Risk.Tests
         [SetUp]
         public void SetUp()
         {
-            game = new Game.Game(new Game.GameStartOptions { Height = 2, Width = 2, StartingArmiesPerPlayer = 5 });
+            game = new Game.Game(new Game.GameStartOptions { Height = 2, Width = 2, StartingArmiesPerPlayer = 5, GameState = "Deployment" });
             player1 = game.AddPlayer("player1");
             player2 = game.AddPlayer("player2");
         }
@@ -77,6 +77,41 @@ namespace Risk.Tests
 
             //Assert
             placeResult.Should().BeFalse();
+        }
+        [Test]
+        public void GameStateChangesIfNobodyHasArmies()
+        {
+            //AAA: arrange, act, assert
+            //Arrange
+            var location = new Location(0, 0);
+            var location2 = new Location(0, 1);
+            game.TryPlaceArmy(player1, location);
+            game.TryPlaceArmy(player1, location);
+            game.TryPlaceArmy(player1, location);
+            game.TryPlaceArmy(player1, location);
+
+            game.TryPlaceArmy(player2, location2);
+            game.TryPlaceArmy(player2, location2);
+            game.TryPlaceArmy(player2, location2);
+            game.TryPlaceArmy(player2, location2);
+
+            var placeResult1 = game.TryPlaceArmy(player1, location);
+            var placeResult2 = game.TryPlaceArmy(player2, location2);
+
+            var remainingArmies1 = game.GetPlayerRemainingArmies(player1);
+            var remainingArmies2 = game.GetPlayerRemainingArmies(player2);
+
+            placeResult1.Should().BeTrue();
+            placeResult2.Should().BeTrue();
+            remainingArmies1.Should().Be(0);
+            remainingArmies2.Should().Be(0);
+
+            //Act
+            game.ChangeState();
+            string gState = game.GetState();
+
+            //Assert
+            gState.Should().Be("Attack");
         }
     }
 }

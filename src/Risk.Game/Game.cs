@@ -11,12 +11,14 @@ namespace Risk.Game
             players = new List<Player>();
             Board = new Board(createTerritories(startOptions.Height, startOptions.Width));
             StartingArmies = startOptions.StartingArmiesPerPlayer;
+            GameState = startOptions.GameState;
         }
 
         private readonly List<Player> players;
 
         public Board Board { get; private set; }
         public int StartingArmies { get; }
+        private string GameState { get; set; }
         public IEnumerable<Player> Players => players.AsReadOnly();
 
         private IEnumerable<Territory> createTerritories(int height, int width)
@@ -75,6 +77,28 @@ namespace Risk.Game
         private Player getPlayer(string token)
         {
             return players.Single(p => p.Token == token);
+        }
+
+        public string GetState()
+        {
+            return GameState;
+        }
+
+        public string ChangeState()
+        {
+            int totalRemainingArmies = new int();
+            foreach(var p in players)
+            {
+                totalRemainingArmies += GetPlayerRemainingArmies(p.Token);
+            }
+            if(totalRemainingArmies == 0)
+            {
+                return GameState = "Attack";
+            }
+            else
+            {
+                return GameState;
+            }
         }
     }
 }
