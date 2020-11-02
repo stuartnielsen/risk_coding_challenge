@@ -108,7 +108,7 @@ namespace Risk.Tests
 
             //Act
             game.ChangeState();
-            string gState = game.GetState();
+            string gState = game.GameState;
 
             //Assert
             gState.Should().Be("Attack");
@@ -141,7 +141,7 @@ namespace Risk.Tests
 
             //Act
             game.ChangeState();
-            string gState = game.GetState();
+            string gState = game.GameState;
 
             //Assert
             gState.Should().Be("Deployment");

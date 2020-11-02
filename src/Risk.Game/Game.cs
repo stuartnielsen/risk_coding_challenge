@@ -18,7 +18,7 @@ namespace Risk.Game
 
         public Board Board { get; private set; }
         public int StartingArmies { get; }
-        private string GameState { get; set; }
+        public string GameState { get; set; }
         public IEnumerable<Player> Players => players.AsReadOnly();
 
         private IEnumerable<Territory> createTerritories(int height, int width)
@@ -77,11 +77,6 @@ namespace Risk.Game
         private Player getPlayer(string token)
         {
             return players.Single(p => p.Token == token);
-        }
-
-        public string GetState()
-        {
-            return GameState;
         }
 
         public string ChangeState()
