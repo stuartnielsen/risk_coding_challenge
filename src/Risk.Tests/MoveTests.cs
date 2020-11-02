@@ -38,7 +38,7 @@ namespace Risk.Tests
             Location attackSource = new Location(attackSourceRow, attackSourceCol);
             Location attackTarget = new Location(attackTargetRow, attackTargetCol);
 
-            game.Board.AttackIsValid(attackSource, attackTarget).Should().BeTrue();
+            game.Board.AttackTargetLocationIsValid(attackSource, attackTarget).Should().BeTrue();
         }
 
 
@@ -55,7 +55,7 @@ namespace Risk.Tests
             Location attackSource = new Location(attackSourceRow, attackSourceCol);
             Location attackTarget = new Location(attackTargetRow, attackTargetCol);
 
-            game.Board.AttackIsValid(attackSource, attackTarget).Should().BeFalse();
+            game.Board.AttackTargetLocationIsValid(attackSource, attackTarget).Should().BeFalse();
         }
 
         [Test]
@@ -64,7 +64,7 @@ namespace Risk.Tests
             Location attackSource = new Location(2, 2);
             Location attackTarget = new Location(2, 2);
 
-            game.Board.AttackIsValid(attackSource, attackTarget).Should().BeFalse();
+            game.Board.AttackTargetLocationIsValid(attackSource, attackTarget).Should().BeFalse();
         }
     }
 }

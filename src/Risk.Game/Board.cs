@@ -40,7 +40,7 @@ namespace Risk.Game
             return Territiories.Where(t => neighborLocations.Contains(t.Location));
         }
 
-        public bool AttackIsValid(Location attackSource, Location attackTarget)
+        public bool AttackTargetLocationIsValid(Location attackSource, Location attackTarget)
         {
             int rowDistance = Math.Abs(attackSource.Row - attackTarget.Row);
             int colDistance = Math.Abs(attackSource.Column - attackTarget.Column);
