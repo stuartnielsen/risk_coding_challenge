@@ -90,5 +90,11 @@ namespace Risk.Game
         {
             return players.Single(p => p.Token == token);
         }
+
+        public GameStates ChangeStateFromJoiningToDeployments()
+        {
+            gameState = GameStates.deployment;
+            return gameState;
+        }
     }
 }

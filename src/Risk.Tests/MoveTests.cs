@@ -4,7 +4,7 @@ using System.Text;
 using FluentAssertions;
 using NUnit.Framework;
 using Risk.Game;
-
+using Risk.Shared;
 
 namespace Risk.Tests
 {

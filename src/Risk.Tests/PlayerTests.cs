@@ -22,7 +22,7 @@ namespace Risk.Tests
         [Test]
         public void AddPlayerAfterGameStarts()
         {            
-            var game = new Game.Game(new Game.GameStartOptions { Height = 2, Width = 2 });
+            var game = new Game.Game(new GameStartOptions { Height = 2, Width = 2 });//THis was Game.GameStartOptions. Was it intended to be??
             var playerToken = game.AddPlayer("Player 1");
             Guid.TryParse(playerToken, out var _).Should().BeTrue();
             game.StartGame();
