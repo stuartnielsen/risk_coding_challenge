@@ -1,6 +1,7 @@
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
+using Risk.Shared;
 
 namespace Risk.Tests
 {
@@ -9,7 +10,7 @@ namespace Risk.Tests
         [SetUp]
         public void Setup()
         {
-            game = new Game.Game(new Game.GameStartOptions { Height = 5, Width = 5, StartingArmiesPerPlayer = 5 });
+            game = new Game.Game(new GameStartOptions { Height = 5, Width = 5, StartingArmiesPerPlayer = 5 });
         }
 
         private Game.Game game;
@@ -17,13 +18,13 @@ namespace Risk.Tests
         [Test]
         public void OneByThreeGameHasThreeTerritories()
         {
-            new Game.Game(new Game.GameStartOptions { Height = 1, Width = 3 }).Board.Territiories.Count().Should().Be(3);
+            new Game.Game(new GameStartOptions { Height = 1, Width = 3 }).Board.Territiories.Count().Should().Be(3);
         }
 
         [Test]
         public void TwoByThreeGameHasSixTerritories()
         {
-            new Game.Game(new Game.GameStartOptions { Height = 2, Width = 3 }).Board.Territiories.Count().Should().Be(6);
+            new Game.Game(new GameStartOptions { Height = 2, Width = 3 }).Board.Territiories.Count().Should().Be(6);
         }
 
         [Test]
@@ -61,5 +62,7 @@ namespace Risk.Tests
             var center = game.Board.GetTerritory(2, 2);
             game.Board.GetNeighbors(center).Count().Should().Be(8);
         }
+
+
     }
 }

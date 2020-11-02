@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections;
 
-namespace Risk.Game
+namespace Risk.Shared
 {
     public class Location
     {

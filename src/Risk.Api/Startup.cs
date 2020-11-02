@@ -32,6 +32,7 @@ namespace Risk.Api
                 Width = 5,
                 StartingArmiesPerPlayer = 10
             }));
+            services.AddMemoryCache();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

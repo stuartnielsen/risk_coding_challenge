@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Risk.Shared;
 
 namespace Risk.Game
 {
@@ -38,6 +39,14 @@ namespace Risk.Game
                 new Location(l.Row-1, l.Column+1),
             };
             return Territiories.Where(t => neighborLocations.Contains(t.Location));
+        }
+
+        public bool AttackIsValid(Location attackSource, Location attackTarget)
+        {
+            int rowDistance = Math.Abs(attackSource.Row - attackTarget.Row);
+            int colDistance = Math.Abs(attackSource.Column - attackTarget.Column);
+
+            return (colDistance <= 1 && rowDistance <= 1) && (colDistance == 1 || rowDistance == 1);
         }
     }
 }
