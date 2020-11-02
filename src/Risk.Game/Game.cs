@@ -76,5 +76,17 @@ namespace Risk.Game
         {
             return players.Single(p => p.Token == token);
         }
+
+        public bool enoughArmiesToAttack(Location attacker)
+        {
+            if (Board.GetTerritory(attacker.Row,attacker.Column).Armies < 1)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
     }
 }
