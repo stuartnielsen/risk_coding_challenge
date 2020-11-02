@@ -12,20 +12,17 @@ namespace Risk.Game
             players = new List<Player>();
             Board = new Board(CreateTerritories(startOptions.Height, startOptions.Width));
             StartingArmies = startOptions.StartingArmiesPerPlayer;
-            gameState = GameStates.joining;
-        }
-
-        public enum GameStates
-        {
-            joining,
-            deployment
+            gameState = GameState.Joining;
         }
 
         private readonly List<Player> players;
 
         public Board Board { get; private set; }
-        private GameStates gameState { get; set; }
+        private GameState gameState { get; set; }
         public int StartingArmies { get; }
+
+        public GameState GameState => gameState;
+
         public IEnumerable<Player> Players => players.AsReadOnly();
 
         private IEnumerable<Territory> CreateTerritories(int height, int width)
@@ -41,10 +38,14 @@ namespace Risk.Game
             return territories;
         }
 
-        public void StartGame() { gameState = GameStates.deployment; }
+        public void StartGame()
+        {
+            gameState = GameState.Deploying;
+        }
+
         public string AddPlayer(string playerName)
         {
-            if (gameState == GameStates.joining)
+            if (gameState == GameState.Joining)
             {
                 var p = new Player(name: playerName, token: Guid.NewGuid().ToString());
                 players.Add(p);
@@ -89,12 +90,6 @@ namespace Risk.Game
         private Player getPlayer(string token)
         {
             return players.Single(p => p.Token == token);
-        }
-
-        public GameStates ChangeStateFromJoiningToDeployments()
-        {
-            gameState = GameStates.deployment;
-            return gameState;
         }
     }
 }

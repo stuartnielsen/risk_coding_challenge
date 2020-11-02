@@ -1,6 +1,6 @@
 ﻿namespace Risk.Shared
 {
-    public enum GameStatus
+    public enum GameState
     {
         Initializing,
         Joining,

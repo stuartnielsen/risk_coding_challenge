@@ -27,18 +27,13 @@ namespace Risk.Tests
         [Test]
         public void CanChangeStateFromJoiningToArmyDeployment()
         {
-            var actual = game.ChangeStateFromJoiningToDeployments();
-            var expected = Game.Game.GameStates.deployment;
+            Assert.AreEqual(GameState.Joining, game.GameState);
 
-            Assert.AreEqual(expected, actual);
-                
+            game.StartGame();
+
+            var actual = game.GameState;
+            Assert.AreEqual(GameState.Deploying, actual);
         }
 
-        [Test]
-        public void CanOnlyChangeStateToDeployingIfStateIsJoining()
-        {
-            var gamestateStart = game.GetGameState();
-
-        }
     }
 }
