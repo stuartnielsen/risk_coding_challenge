@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Risk.Game
+namespace Risk.Shared
 {
     public class Territory
     {
@@ -17,7 +17,10 @@ namespace Risk.Game
         public override string ToString()
         {
             if (Owner == null)
+            {
                 return $"{Location}: (Unoccupied)";
+            }
+
             return $"{Location}: {Armies:n0} of {Owner}";
         }
     }

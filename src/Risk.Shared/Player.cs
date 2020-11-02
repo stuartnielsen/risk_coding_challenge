@@ -1,4 +1,4 @@
-﻿namespace Risk.Game
+﻿namespace Risk.Shared
 {
     public class Player
     {
