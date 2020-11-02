@@ -51,7 +51,7 @@ namespace Risk.Game
                 players.Add(p);
                 return p.Token;
             }
-            return "game already started";
+            throw new InvalidGameStateException("Unable to join game.", gameState);
         }
 
         public bool TryPlaceArmy(string playerToken, Location desiredLocation)

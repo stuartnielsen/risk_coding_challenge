@@ -10,10 +10,9 @@ namespace Risk.Tests
 {
     public class ArmyPlacementTests
     {
-        Game.Game game;
-        string player1;
-        string player2;
-       
+        private Game.Game game;
+        private string player1;
+        private string player2;
 
         [SetUp]
         public void SetUp()

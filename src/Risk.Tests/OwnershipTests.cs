@@ -8,11 +8,11 @@ using Risk.Shared;
 
 namespace Risk.Tests
 {
-    class OwnershipTests
+    public class OwnershipTests
     {
-        Game.Game testgame;
-        string player1;
-        string player2;
+        private Game.Game testgame;
+        private string player1;
+        private string player2;
 
         [SetUp]
         public void SetUp()
@@ -37,7 +37,7 @@ namespace Risk.Tests
             testgame.TryPlaceArmy(player2, new Location(0, 1));
         }
 
-        //Player owns first territory, attacks second territory he doesnt own | should be true
+        //Player owns first territory, attacks second territory he doesn't own | should be true
         [Test]
         public void OwnershipValidityOwnerToForeign()
         {
@@ -46,7 +46,7 @@ namespace Risk.Tests
             placeResult.Should().BeTrue();
         }
 
-        //Player doesnt own first territory, attacks second territory he doesnt own | should be false
+        //Player doesn't own first territory, attacks second territory he doesn't own | should be false
         [Test]
         public void OwnershipValidityForeignToForeign()
         {
@@ -61,7 +61,7 @@ namespace Risk.Tests
             var placeResult = testgame.AttackOwnershipValid(player1, testgame.Board.GetTerritory(0, 0), testgame.Board.GetTerritory(0, 0));
             placeResult.Should().BeFalse();
         }
-        //Player doesnt own first territory, attacks second territory he owns | should be false
+        //Player doesn't own first territory, attacks second territory he owns | should be false
         [Test]
         public void OwnershipValidityForeignToOwner()
         {
