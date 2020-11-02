@@ -103,5 +103,14 @@ namespace Risk.Game
                 return true;
             }
         }
+
+        public bool attackOwnershipValid(string playerToken, Territory from, Territory to)
+        {
+            if (from.Owner == getPlayer(playerToken) && to.Owner != getPlayer(playerToken))
+            {
+                return true;
+            }
+            return false;
+        }
     }
 }
