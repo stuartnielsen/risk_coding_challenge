@@ -4,6 +4,7 @@ using System.Text;
 using FluentAssertions;
 using NUnit.Framework;
 using Risk.Game;
+using Risk.Shared;
 
 namespace Risk.Tests
 {
@@ -16,7 +17,7 @@ namespace Risk.Tests
         [SetUp]
         public void SetUp()
         {
-            game = new Game.Game(new Game.GameStartOptions { Height = 2, Width = 2, StartingArmiesPerPlayer = 5 });
+            game = new Game.Game(new GameStartOptions { Height = 2, Width = 2, StartingArmiesPerPlayer = 5 });
             player1 = game.AddPlayer("player1");
             player2 = game.AddPlayer("player2");
         }
