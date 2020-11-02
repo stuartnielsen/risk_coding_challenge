@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Risk.Shared;
 
 namespace Risk.Api.Controllers
 {
@@ -22,9 +24,7 @@ namespace Risk.Api.Controllers
 
         public string Join(string playerName, Uri callback)
         {
-
-            string gameState = "joining";
-            if (gameState == "joining")
+            if (game.GameState == GameState.Joining)
             {
                 string playerToken = game.AddPlayer(playerName);
                 return playerToken;
