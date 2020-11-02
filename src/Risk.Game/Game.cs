@@ -76,5 +76,13 @@ namespace Risk.Game
         {
             return players.Single(p => p.Token == token);
         }
+        public bool attackOwnershipValid(string playerToken, Territory from, Territory to)
+        {
+            if (from.Owner == getPlayer(playerToken) && to.Owner != getPlayer(playerToken))
+            {
+                return true;
+            }
+            return false;
+        }
     }
 }
