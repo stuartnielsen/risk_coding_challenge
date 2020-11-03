@@ -37,7 +37,10 @@ namespace Risk.Game
             }
             return territories;
         }
-
+        public void StartJoining()
+        {
+            gameState = GameState.Joining;
+        }
         public void StartGame()
         {
             gameState = GameState.Deploying;

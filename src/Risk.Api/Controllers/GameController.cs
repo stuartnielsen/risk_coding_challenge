@@ -34,5 +34,20 @@ namespace Risk.Api.Controllers
                 return "Can no longer join the game";
             }
         }
+        public Game.Game InitializeGame (int height, int width, int numOfArmies, string secretCode)
+        {
+            GameStartOptions startOptions = new GameStartOptions();
+            startOptions.GameState = GameState.Initializing;
+
+            startOptions.Height = height;
+            startOptions.Width = width;
+            startOptions.StartingArmiesPerPlayer = numOfArmies;
+            Game.Game newGame = new Game.Game(startOptions);
+
+            game.StartJoining();
+            startOptions.GameState = GameState.Joining;
+           
+            return newGame;
+        }
     }
 }
