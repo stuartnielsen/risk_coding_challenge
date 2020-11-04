@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Runtime.InteropServices.ComTypes;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -14,32 +15,40 @@ namespace Risk.Api.Controllers
     {
         private readonly Game.Game game;
         private IMemoryCache memoryCache;
+        private readonly IHttpClientFactory client;
 
-        public GameController(Game.Game game, IMemoryCache memoryCache)
+        public GameController(Game.Game game, IMemoryCache memoryCache, IHttpClientFactory client)
         {
             this.game = game;
+            this.client = client;
             this.memoryCache = memoryCache;
         }
 
-        public IActionResult Index()
+        [HttpPost("[action]")]
+        public async Task<IActionResult> Join(JoinRequest joinRequest)
         {
-            return View();
-        }
-
-        public string Join(string playerName, Uri callback)
-        {
-            if (game.GameState == GameState.Joining)
+            var response = await CheckClientConnection(joinRequest.CallbackBaseAddress);
+            if (game.GameState == GameState.Joining && response == "yes")
             {
-                string playerToken = game.AddPlayer(playerName);
-                return playerToken;
+                string playerToken = game.AddPlayer(joinRequest.Name);
+                return Ok(new JoinResponse {
+                    Token = playerToken
+                });
             }
             else
             {
-                return "Can no longer join the game";
+                return BadRequest("Unable to join game");
             }
         }
 
-        [HttpGet]
+        private async Task<string> CheckClientConnection(string baseAddress)
+        {
+            //client.CreateClient().BaseAddress = new Uri(baseAddress);
+            var response = await client.CreateClient().GetStringAsync($"{baseAddress}/areYouThere");
+            return response;
+        }
+
+        [HttpGet("status")]
         public IActionResult GameStatus()
         {
             GameStatus gameStatus;
