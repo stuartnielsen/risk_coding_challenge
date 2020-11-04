@@ -14,7 +14,7 @@ namespace Risk.Api.Controllers
 
         public GameController(Game.Game game)
         {
-            this.game = game;
+            this.game = game;       
         }
 
         public IActionResult Index()

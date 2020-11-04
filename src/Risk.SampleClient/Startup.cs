@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Risk.Api.Controllers;
 
 namespace Risk.SampleClient
 {
@@ -26,6 +27,10 @@ namespace Risk.SampleClient
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddHttpClient("RiskApi", c =>
+            {
+                c.BaseAddress = new Uri("http://localhost:5000");
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
