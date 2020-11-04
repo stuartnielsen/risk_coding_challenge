@@ -4,17 +4,21 @@ using System.Linq;
 using System.Runtime.InteropServices.ComTypes;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using Risk.Shared;
 
 namespace Risk.Api.Controllers
 {
+    [ApiController]
     public class GameController : Controller
     {
         private readonly Game.Game game;
+        private IMemoryCache memoryCache;
 
-        public GameController(Game.Game game)
+        public GameController(Game.Game game, IMemoryCache memoryCache)
         {
             this.game = game;
+            this.memoryCache = memoryCache;
         }
 
         public IActionResult Index()
@@ -33,6 +37,26 @@ namespace Risk.Api.Controllers
             {
                 return "Can no longer join the game";
             }
+        }
+
+        [HttpGet]
+        public IActionResult GameStatus()
+        {
+            GameStatus gameStatus;
+
+            if (!memoryCache.TryGetValue("Status", out gameStatus))
+            {
+                gameStatus = game.GetGameStatus();
+
+                MemoryCacheEntryOptions cacheEntryOptions = new MemoryCacheEntryOptions();
+
+                cacheEntryOptions.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(1);
+
+                memoryCache.Set("Status", gameStatus, cacheEntryOptions);
+            }
+
+            return Ok(gameStatus);
+            
         }
     }
 }
