@@ -34,6 +34,7 @@ namespace Risk.Api
                 StartingArmiesPerPlayer = 10
             }));
             services.AddMemoryCache();
+            services.AddHttpClient();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

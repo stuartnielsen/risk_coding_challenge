@@ -14,9 +14,9 @@ namespace Risk.Api.Controllers
     public class GameController : Controller
     {
         private readonly Game.Game game;
-        private readonly HttpClient client;
+        private readonly IHttpClientFactory client;
 
-        public GameController(Game.Game game, HttpClient client)
+        public GameController(Game.Game game, IHttpClientFactory client)
         {
             this.game = game;
             this.client = client;
@@ -44,9 +44,9 @@ namespace Risk.Api.Controllers
 
         public async Task<string> CheckClientConnection(string baseAddress)
         {
-            client.BaseAddress = new Uri(baseAddress);
-            var response = await client.GetAsync("/areYouThere");
-            return response.Content.ToString();
+            //client.CreateClient().BaseAddress = new Uri(baseAddress);
+            var response = await client.CreateClient().GetStringAsync("https://localhost:5005/areYouThere");
+            return response;
         }
     }
 }

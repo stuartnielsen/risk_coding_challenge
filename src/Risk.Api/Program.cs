@@ -19,8 +19,6 @@ namespace Risk.Api
         {
             CreateHostBuilder(args).Build().Run();
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
-            //builder.Services.AddHttpClient<GameController>(sp => sp.BaseAddress = new Uri("https://localhost:5001"));
-            builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:5001") });
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
