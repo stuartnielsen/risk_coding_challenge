@@ -17,7 +17,7 @@ namespace Risk.Tests
             int width = 2;
             int height = 2;
 
-            game = new Game.Game(new GameStartOptions { Height = height, Width = width });
+            game = new Game.Game(new GameStartOptions { Height = height, Width = width, StartingArmiesPerPlayer = 5 });
         }
      
         [Test]
