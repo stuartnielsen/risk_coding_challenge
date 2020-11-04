@@ -16,9 +16,10 @@ namespace Risk.Api.Controllers
         private readonly Game.Game game;
         private readonly HttpClient client;
 
-        public GameController(Game.Game game)
+        public GameController(Game.Game game, HttpClient client)
         {
             this.game = game;
+            this.client = client;
         }
 
         public IActionResult Index()
@@ -27,11 +28,12 @@ namespace Risk.Api.Controllers
         }
 
         [HttpPost("[action]")]
-        public string Join(string playerName, Uri callback)
+        public async Task<string> Join(JoinRequest joinRequest)
         {
-            if (game.GameState == GameState.Joining )
+            var response = await CheckClientConnection(joinRequest.CallbackBaseAddress);
+            if (game.GameState == GameState.Joining && response == "yes")
             {
-                string playerToken = game.AddPlayer(playerName);
+                string playerToken = game.AddPlayer(joinRequest.Name);
                 return playerToken;
             }
             else
@@ -40,9 +42,10 @@ namespace Risk.Api.Controllers
             }
         }
 
-        public async Task<string> CheckClientConnection(Uri uri)
+        public async Task<string> CheckClientConnection(string baseAddress)
         {
-            var response = await client.GetAsync(uri.AbsoluteUri);
+            client.BaseAddress = new Uri(baseAddress);
+            var response = await client.GetAsync("/areYouThere");
             return response.Content.ToString();
         }
     }
