@@ -45,7 +45,7 @@ namespace Risk.Api.Controllers
         public async Task<string> CheckClientConnection(string baseAddress)
         {
             //client.CreateClient().BaseAddress = new Uri(baseAddress);
-            var response = await client.CreateClient().GetStringAsync("https://localhost:5005/areYouThere");
+            var response = await client.CreateClient().GetStringAsync($"{baseAddress}/areYouThere");
             return response;
         }
     }
