@@ -11,7 +11,6 @@ namespace Risk.Api.Controllers
     public class GameController : Controller
     {
         private readonly Game.Game game;
-
         public GameController(Game.Game game)
         {
             this.game = game;
@@ -34,18 +33,17 @@ namespace Risk.Api.Controllers
                 return "Can no longer join the game";
             }
         }
-        public Game.Game InitializeGame (int height, int width, int numOfArmies, string secretCode)
+        public static Game.Game InitializeGame (int height, int width, int numOfArmies, string secretCode)
         {
             GameStartOptions startOptions = new GameStartOptions();
-            startOptions.GameState = GameState.Initializing;
-
+            //still need to do stuff with secret game code that is just a password to get into the game. 
             startOptions.Height = height;
             startOptions.Width = width;
             startOptions.StartingArmiesPerPlayer = numOfArmies;
             Game.Game newGame = new Game.Game(startOptions);
 
-            game.StartJoining();
-            startOptions.GameState = GameState.Joining;
+            newGame.StartJoining();
+           
            
             return newGame;
         }
