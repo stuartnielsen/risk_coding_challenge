@@ -12,7 +12,7 @@ namespace Risk.Game
             players = new List<Player>();
             Board = new Board(createTerritories(startOptions.Height, startOptions.Width));
             StartingArmies = startOptions.StartingArmiesPerPlayer;
-            gameState = GameState.Joining;
+            gameState = GameState.Initializing;
         }
 
         private readonly List<Player> players;
@@ -36,6 +36,11 @@ namespace Risk.Game
                 }
             }
             return territories;
+        }
+
+        public void StartJoining()
+        {
+            gameState = GameState.Joining;
         }
 
         public void StartGame()

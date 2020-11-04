@@ -56,7 +56,18 @@ namespace Risk.Api.Controllers
             }
 
             return Ok(gameStatus);
-            
+        }
+
+        public static Game.Game InitializeGame (int height, int width, int numOfArmies)
+        {
+            GameStartOptions startOptions = new GameStartOptions();
+            startOptions.Height = height;
+            startOptions.Width = width;
+            startOptions.StartingArmiesPerPlayer = numOfArmies;
+            Game.Game newGame = new Game.Game(startOptions);
+
+            newGame.StartJoining();
+            return newGame;
         }
     }
 }

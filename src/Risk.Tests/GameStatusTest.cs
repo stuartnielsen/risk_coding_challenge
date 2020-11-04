@@ -18,8 +18,9 @@ namespace Risk.Tests
             int height = 2;
 
             game = new Game.Game(new GameStartOptions { Height = height, Width = width, StartingArmiesPerPlayer = 5 });
+            game.StartJoining();
         }
-     
+
         [Test]
         public void GetGameStatusReturnsAllPlayersWhoveJoined()
         {
@@ -32,7 +33,7 @@ namespace Risk.Tests
 
             Assert.IsTrue(gameStatus.Players.Count<Player>()  == 1);
         }
-     
+
         [Test]
         public void GetGameStatusHasGameState()
         {
@@ -57,7 +58,7 @@ namespace Risk.Tests
 
 
             Assert.That(gameStatus.PlayerInfo[player1.Name].NumTerritories == 1 && gameStatus.PlayerInfo[player1.Name].NumArmies == 1);
-            
+
         }
 
     }
