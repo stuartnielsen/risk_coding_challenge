@@ -98,9 +98,7 @@ namespace Risk.Game
         public int GetPlayerRemainingArmies(string playerToken)
         {
             var player = getPlayer(playerToken);
-            var armiesOnBoard = Board.Territiories
-                .Where(t => t.Owner == player)
-                .Sum(t => t.Armies);
+            var armiesOnBoard = GetNumPlacedArmies(player);
             return StartingArmies - armiesOnBoard;
         }
 
@@ -129,6 +127,32 @@ namespace Risk.Game
         {
             var player = getPlayer(playerToken);
             return (from.Owner == player && to.Owner != player);
+        }
+
+
+        public GameStatus GetGameStatus()
+        {
+            IDictionary<string, PlayerArmiesAndTerritories> playerInfo = new Dictionary<string, PlayerArmiesAndTerritories>();
+
+            foreach(var player in Players)
+            {
+                int numPlacedArmies = GetNumPlacedArmies(player);
+                int numOwnedTerritories = Board.Territiories.Where(t => t.Owner == player)
+                                                            .Count();
+
+                var armiesAndTerritories = new PlayerArmiesAndTerritories { NumArmies = numPlacedArmies, NumTerritories = numPlacedArmies };
+
+                playerInfo.Add(player.Name, armiesAndTerritories);
+            }
+
+            return new GameStatus(Players, GameState, playerInfo);
+        }
+
+        public int GetNumPlacedArmies(Player player)
+        {
+            return Board.Territiories
+                        .Where(t => t.Owner == player)
+                        .Sum(t => t.Armies);
         }
     }
 }
