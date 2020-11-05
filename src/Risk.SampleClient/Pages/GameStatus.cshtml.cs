@@ -25,9 +25,8 @@ namespace Risk.SampleClient.Pages
 
         public async Task OnGetAsync()
         {
-            var server = ServerName;// RouteData.Values["server"];
             var client = httpClientFactory.CreateClient();
-            Status = await client.GetFromJsonAsync<GameStatus>($"{server}/status");
+            Status = await client.GetFromJsonAsync<GameStatus>($"{ServerName}/status");
         }
 
         public GameStatus Status { get; set; }

@@ -31,7 +31,7 @@ namespace Risk.Tests
             var gameStatus = game.GetGameStatus();
 
 
-            Assert.IsTrue(gameStatus.Players.Count<Player>()  == 1);
+            Assert.IsTrue(gameStatus.PlayerInfo.Count()  == 1);
         }
 
         [Test]

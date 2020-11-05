@@ -49,7 +49,7 @@ namespace Risk.SampleClient.Controllers
         public async Task<IActionResult> JoinAsync_Post(string server)
         {
             await JoinAsync(server);
-            return RedirectToPage($"/GameStatus/{server}");
+            return RedirectToPage("/GameStatus", new { servername = server });
         }
 
         [HttpGet("[action]")]

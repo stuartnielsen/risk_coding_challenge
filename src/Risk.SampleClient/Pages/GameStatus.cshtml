@@ -1,22 +1,27 @@
-﻿@page "{*server}"
+﻿@page "/GameStatus"
 @model Risk.SampleClient.Pages.GameStatusModel
 @{
     int playerCount=1;
 }
 
-This is the game status page
+<h3>Game State: @Model.Status.GameState</h3>
 
-<table>
+<table cellpadding="5px">
     <tr>
-        <td>Game State</td>
-        <td>@Model.Status.GameState</td>
+        <th>Player #</th>
+        <th>Player Name</th>
+        <th>Armies</th>
+        <th>Territories</th>
     </tr>
-    @foreach(var player in Model.Status.Players)
+    @foreach(var player in Model.Status.PlayerInfo)
     {
         <tr>
             <td>Player @(@playerCount++)</td>
-            <td>@player.Name</td>
+            <td>@player.Key</td>
+            <td align="right">@player.Value.NumArmies.ToString("n0")</td>
+            <td align="right">@player.Value.NumTerritories.ToString("n0")</td>
         </tr>
     }
 </table>
+
 

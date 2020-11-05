@@ -150,7 +150,7 @@ namespace Risk.Game
                 playerInfo.Add(player.Name, armiesAndTerritories);
             }
 
-            return new GameStatus(Players, GameState, playerInfo);
+            return new GameStatus(GameState, playerInfo);
         }
 
         public int GetNumPlacedArmies(Player player)
