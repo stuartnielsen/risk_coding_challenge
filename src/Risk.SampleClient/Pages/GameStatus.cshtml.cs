@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -19,10 +20,13 @@ namespace Risk.SampleClient.Pages
             this.httpClientFactory = httpClientFactory;
         }
 
+        [BindProperty(SupportsGet = true)]
+        public string ServerName { get; set; }
+
         public async Task OnGetAsync()
         {
+            var server = ServerName;// RouteData.Values["server"];
             var client = httpClientFactory.CreateClient();
-            var server = "http://localhost:5000";
             Status = await client.GetFromJsonAsync<GameStatus>($"{server}/status");
         }
 
