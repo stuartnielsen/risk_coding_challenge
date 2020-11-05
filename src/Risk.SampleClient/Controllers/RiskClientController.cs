@@ -18,14 +18,14 @@ namespace Risk.SampleClient.Controllers
             this.httpClientFactory = httpClientFactory;
         }
 
-        [HttpGet("/")]
-        public string Info()
-        {
-            return "Submit a get request to /joinServer/{serverAddress} to join a game.";
-        }
+        //[HttpGet("/")]
+        //public string Info()
+        //{
+        //    return "Submit a get request to /joinServer/{serverAddress} to join a game.";
+        //}
 
         [HttpGet("joinServer/{*server}")]
-        public async Task<IActionResult> Join(string server)
+        public async Task<IActionResult> JoinAsync(string server)
         {
             var client = httpClientFactory.CreateClient();
             string baseUrl = string.Format("{0}://{1}{2}", Request.Scheme, Request.Host, Request.PathBase);
@@ -43,6 +43,13 @@ namespace Risk.SampleClient.Controllers
             {
                 return BadRequest(ex);
             }
+        }
+
+        [HttpPost("joinServer")]
+        public async Task JoinAsync_Post(string server)
+        {
+            await JoinAsync(server);
+            RedirectToPage("/GameStatus");
         }
 
         [HttpGet("[action]")]

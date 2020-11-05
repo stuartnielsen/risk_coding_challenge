@@ -11,6 +11,8 @@ namespace Risk.Shared
 
         public IDictionary<string, PlayerArmiesAndTerritories> PlayerInfo { get; }
 
+        public GameStatus() { }
+
         public GameStatus(IEnumerable<Player> players, GameState gameState, IDictionary<string, PlayerArmiesAndTerritories> playerInfo )
         {
             Players = players;

@@ -1,0 +1,17 @@
+﻿@page
+@model Risk.SampleClient.Pages.IndexModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+}
+
+Hello, this is the index page.
+Is it a live reload?
+why isn't it?
+<br/>Now it is.
+<br/>Or is it...
+<hr/>It just took a while.
+<form action="/joinServer" method="post">
+    <input type=text name="server" value="http://localhost:5000" />
+    <button type="submit">Join Server</button>
+</form>
