@@ -20,11 +20,6 @@ namespace Risk.SampleClient.Controllers
 
         private static string serverAdress;
 
-        //[HttpGet("/")]
-        //public string Info()
-        //{
-        //    return "Submit a get request to /joinServer/{serverAddress} to join a game.";
-        //}
 
         [HttpGet("joinServer/{*server}")]
         public async Task<IActionResult> JoinAsync(string server)
@@ -62,11 +57,37 @@ namespace Risk.SampleClient.Controllers
         }
 
         [HttpGet ("[action])")]
-        public async Task<IActionResult> DeployArmy_Get(DeployArmyRequest deployArmyRequest)
+        public DeployArmyResponse DeployArmy_Get(DeployArmyRequest deployArmyRequest)
         {
             DeployArmyResponse response = new DeployArmyResponse();
             response.DesiredLocation = new Location(1,1);
-            return Ok(response);
+            return response;
+        }
+
+        [HttpGet("[action])")]
+        public BeginAttackResponse BeginAttack_Get(BeginAttackRequest beginAttackRequest)
+        {
+            BeginAttackResponse response = new BeginAttackResponse();
+            response.From = new Location(1, 1);
+            response.To = new Location(1, 2);
+            return response;
+        }
+
+
+        [HttpGet("[action])")]
+        public ContinueAttackResponse ContinueAttack_Get(ContinueAttackRequest continueAttackRequest)
+        {
+            ContinueAttackResponse response = new ContinueAttackResponse();
+            response.ContinueAttacking = true;
+            
+            return response;
+        }
+
+
+        [HttpGet("[action])")]
+        public IActionResult GameOver_Get(GameOverRequest gameOverRequest)
+        { 
+            return Ok(gameOverRequest);
         }
 
     }
