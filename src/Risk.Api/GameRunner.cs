@@ -68,6 +68,7 @@ namespace Risk.Api
 
         private async Task doBattle()
         {
+            //logic to determine whether or not we keep doing battle
             foreach (var currentPlayer in game.Players)
             {
                 var beginAttackResponse = await askForAttackLocationAsync(currentPlayer, BeginAttackStatus.YourTurn);
@@ -85,6 +86,12 @@ namespace Risk.Api
                     }
                     beginAttackResponse = await askForAttackLocationAsync(currentPlayer, BeginAttackStatus.PreviousAttackRequestFailed);
                 }
+
+                //roll the dice and see how many armies from each side die
+                //(this logic should be in the game object)
+
+                //if they still have more armies, ask if they want to continue attacking...
+                //(this logic goes here in the game runner)
             }
         }
 

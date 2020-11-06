@@ -12,14 +12,12 @@ namespace Risk.SampleClient.Controllers
     public class RiskClientController : Controller
     {
         private readonly IHttpClientFactory httpClientFactory;
+        private static string serverAdress;
 
         public RiskClientController(IHttpClientFactory httpClientFactory)
         {
             this.httpClientFactory = httpClientFactory;
         }
-
-        private static string serverAdress;
-
 
         [HttpGet("joinServer/{*server}")]
         public async Task<IActionResult> JoinAsync(string server)
@@ -56,16 +54,16 @@ namespace Risk.SampleClient.Controllers
             return "yes";
         }
 
-        [HttpGet ("[action])")]
-        public DeployArmyResponse DeployArmy_Get(DeployArmyRequest deployArmyRequest)
+        [HttpPost("deployArmy")]
+        public DeployArmyResponse DeployArmy(DeployArmyRequest deployArmyRequest)
         {
             DeployArmyResponse response = new DeployArmyResponse();
             response.DesiredLocation = new Location(1,1);
             return response;
         }
 
-        [HttpGet("[action])")]
-        public BeginAttackResponse BeginAttack_Get(BeginAttackRequest beginAttackRequest)
+        [HttpPost("beginAttack")]
+        public BeginAttackResponse BeginAttack(BeginAttackRequest beginAttackRequest)
         {
             BeginAttackResponse response = new BeginAttackResponse();
             response.From = new Location(1, 1);
@@ -73,20 +71,19 @@ namespace Risk.SampleClient.Controllers
             return response;
         }
 
-
-        [HttpGet("[action])")]
+        [HttpPost("continueAttack")]
         public ContinueAttackResponse ContinueAttack_Get(ContinueAttackRequest continueAttackRequest)
         {
             ContinueAttackResponse response = new ContinueAttackResponse();
             response.ContinueAttacking = true;
-            
+
             return response;
         }
 
 
         [HttpGet("[action])")]
         public IActionResult GameOver_Get(GameOverRequest gameOverRequest)
-        { 
+        {
             return Ok(gameOverRequest);
         }
 
