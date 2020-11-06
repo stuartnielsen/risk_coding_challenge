@@ -38,7 +38,7 @@ namespace Risk.Api
                     var deployArmyResponse = await askForDeployLocationAsync(currentPlayer, DeploymentStatus.YourTurn);
 
                     var failedTries = 0;
-                    //check that this lcoation exisits and is available to be used (e.g. not occupied by another army)
+                    //check that this location exists and is available to be used (e.g. not occupied by another army)
                     while (game.TryPlaceArmy(currentPlayer.Token, deployArmyResponse.DesiredLocation) is false)
                     {
                         failedTries++;
@@ -74,7 +74,7 @@ namespace Risk.Api
                 var beginAttackResponse = await askForAttackLocationAsync(currentPlayer, BeginAttackStatus.YourTurn);
 
                 var failedTries = 0;
-                //check that this lcoation exisits and is available to be used (e.g. not occupied by another army)
+                //check that this location exists and is available to be used (e.g. not occupied by another army)
 
                 while (game.AttackOwnershipValid(currentPlayer.Token, beginAttackResponse.From, beginAttackResponse.To) is false)
                 {

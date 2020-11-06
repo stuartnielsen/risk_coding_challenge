@@ -29,9 +29,6 @@ namespace Risk.Api.Controllers
             this.memoryCache = memoryCache;
         }
 
-        //player tokens (needed to send request to every player)
-
-
         [HttpPost("[action]")]
         public async Task<IActionResult> Join(JoinRequest joinRequest)
         {

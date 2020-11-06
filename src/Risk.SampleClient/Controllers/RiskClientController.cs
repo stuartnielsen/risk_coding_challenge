@@ -55,7 +55,7 @@ namespace Risk.SampleClient.Controllers
         }
 
         [HttpPost("deployArmy")]
-        public DeployArmyResponse DeployArmy(DeployArmyRequest deployArmyRequest)
+        public DeployArmyResponse DeployArmy([FromBody]DeployArmyRequest deployArmyRequest)
         {
             DeployArmyResponse response = new DeployArmyResponse();
             response.DesiredLocation = new Location(1,1);
@@ -63,7 +63,7 @@ namespace Risk.SampleClient.Controllers
         }
 
         [HttpPost("beginAttack")]
-        public BeginAttackResponse BeginAttack(BeginAttackRequest beginAttackRequest)
+        public BeginAttackResponse BeginAttack([FromBody]BeginAttackRequest beginAttackRequest)
         {
             BeginAttackResponse response = new BeginAttackResponse();
             response.From = new Location(1, 1);
@@ -72,7 +72,7 @@ namespace Risk.SampleClient.Controllers
         }
 
         [HttpPost("continueAttack")]
-        public ContinueAttackResponse ContinueAttack_Get(ContinueAttackRequest continueAttackRequest)
+        public ContinueAttackResponse ContinueAttack([FromBody]ContinueAttackRequest continueAttackRequest)
         {
             ContinueAttackResponse response = new ContinueAttackResponse();
             response.ContinueAttacking = true;
@@ -81,8 +81,8 @@ namespace Risk.SampleClient.Controllers
         }
 
 
-        [HttpGet("[action])")]
-        public IActionResult GameOver_Get(GameOverRequest gameOverRequest)
+        [HttpPost("gameOver")]
+        public IActionResult GameOver([FromBody]GameOverRequest gameOverRequest)
         {
             return Ok(gameOverRequest);
         }
