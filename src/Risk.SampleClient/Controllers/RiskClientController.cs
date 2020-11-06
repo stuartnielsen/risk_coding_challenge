@@ -18,6 +18,8 @@ namespace Risk.SampleClient.Controllers
             this.httpClientFactory = httpClientFactory;
         }
 
+        private static string serverAdress;
+
         //[HttpGet("/")]
         //public string Info()
         //{
@@ -27,6 +29,7 @@ namespace Risk.SampleClient.Controllers
         [HttpGet("joinServer/{*server}")]
         public async Task<IActionResult> JoinAsync(string server)
         {
+            serverAdress = server;
             var client = httpClientFactory.CreateClient();
             string baseUrl = string.Format("{0}://{1}{2}", Request.Scheme, Request.Host, Request.PathBase);
             var joinRequest = new JoinRequest {
@@ -35,7 +38,7 @@ namespace Risk.SampleClient.Controllers
             };
             try
             {
-                var joinResponse = await client.PostAsJsonAsync($"{server}/join", joinRequest);
+                var joinResponse = await client.PostAsJsonAsync($"{serverAdress}/join", joinRequest);
                 var content = await joinResponse.Content.ReadAsStringAsync();
                 return Ok();
             }
@@ -57,5 +60,14 @@ namespace Risk.SampleClient.Controllers
         {
             return "yes";
         }
+
+        [HttpGet ("[action])")]
+        public async Task<IActionResult> DeployArmy_Get(DeployArmyRequest deployArmyRequest)
+        {
+            DeployArmyResponse response = new DeployArmyResponse();
+            response.DesiredLocation = new Location(1,1);
+            return Ok(response);
+        }
+
     }
 }

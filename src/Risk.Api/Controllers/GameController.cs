@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Runtime.InteropServices.ComTypes;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -24,13 +25,16 @@ namespace Risk.Api.Controllers
             this.memoryCache = memoryCache;
         }
 
+        //player tokens (needed to send request to every player)
+ 
+
         [HttpPost("[action]")]
         public async Task<IActionResult> Join(JoinRequest joinRequest)
         {
             var response = await CheckClientConnection(joinRequest.CallbackBaseAddress);
             if (game.GameState == GameState.Joining && response == "yes")
             {
-                string playerToken = game.AddPlayer(joinRequest.Name);
+                string playerToken = game.AddPlayer(joinRequest.Name, joinRequest.CallbackBaseAddress);
                 return Ok(new JoinResponse {
                     Token = playerToken
                 });
@@ -67,6 +71,48 @@ namespace Risk.Api.Controllers
             return Ok(gameStatus);
         }
 
+        // send request to player and wait for response 
+        [HttpGet ("placeArmy/{*deployArmyRequest}")]
+        public async Task<IActionResult> PlaceArmyRequest ()
+        {
+            Player player = game.Players.First();
+            DeployArmyRequest deployRequest = new DeployArmyRequest();
+            deployRequest.Board = game.Board.Territiories;
+            deployRequest.ArmiesRemaining = game.GetPlayerRemainingArmies(player.Token);
+            deployRequest.Status = player.deploymentStatus;
+
+            var localclient = client.CreateClient();
+           
+
+            try
+            {
+                var deployArmyResponse = await localclient.PostAsJsonAsync($"{player.CallbackBaseAddress}/deployArmy", deployRequest);
+                var content = await deployArmyResponse.Content.ReadAsStringAsync();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
+
+        }
+        //react to second response
+        [HttpGet ("[action]")]
+        public async Task<IActionResult> PlaceArmy_Get (DeployArmyResponse response)
+        {
+            game.TryPlaceArmy(game.Players.First().Token, response.DesiredLocation);
+            return RedirectToRoute("/status");
+        }
+
+        [HttpPost ("placeArmy")]
+        public async Task<IActionResult> PlaceArmy_Post ()
+        {
+            
+            await PlaceArmyRequest( );
+            //temporary doesnt make sense.
+            return RedirectToRoute("/status");
+        }
+
         public static Game.Game InitializeGame (int height, int width, int numOfArmies)
         {
             GameStartOptions startOptions = new GameStartOptions();
@@ -78,5 +124,6 @@ namespace Risk.Api.Controllers
             newGame.StartJoining();
             return newGame;
         }
+    
     }
 }

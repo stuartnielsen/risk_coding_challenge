@@ -58,6 +58,16 @@ namespace Risk.Game
             }
             throw new InvalidGameStateException("Unable to join game.", gameState);
         }
+        public string AddPlayer(string playerName, string callback)
+        {
+            if (gameState == GameState.Joining)
+            {
+                var p = new Player(name: playerName, token: Guid.NewGuid().ToString(), callback: callback);
+                players.Add(p);
+                return p.Token;
+            }
+            throw new InvalidGameStateException("Unable to join game.", gameState);
+        }
 
         public bool TryPlaceArmy(string playerToken, Location desiredLocation)
         {
