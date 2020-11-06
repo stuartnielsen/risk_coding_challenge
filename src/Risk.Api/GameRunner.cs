@@ -36,5 +36,17 @@ namespace Risk.Api
 
             
         }
+
+        public void RemovePlayerFromBoard(String token)
+        {
+            foreach (Territory territory in game.Board.Territories)
+            {
+                if (territory.Owner == game.getPlayer(token))
+                {
+                    territory.Owner = null;
+                    territory.Armies = 0;
+                }
+            }
+        }
     }
 }

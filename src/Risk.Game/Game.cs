@@ -23,7 +23,7 @@ namespace Risk.Game
 
         public GameState GameState => gameState;
 
-        public IEnumerable<Player> Players => players.AsReadOnly();
+        public IEnumerable<Player> Players => players;// { get; private set; }
 
         private IEnumerable<Territory> createTerritories(int height, int width)
         {
@@ -48,7 +48,7 @@ namespace Risk.Game
             gameState = GameState.Deploying;
         }
 
-        public string AddPlayer(string playerName)
+        public  string AddPlayer(string playerName)
         {
             if (gameState == GameState.Joining)
             {
@@ -107,7 +107,7 @@ namespace Risk.Game
             return StartingArmies - armiesOnBoard;
         }
 
-        private Player getPlayer(string token)
+        public Player getPlayer(string token)
         {
             return players.Single(p => p.Token == token);
         }
@@ -142,7 +142,7 @@ namespace Risk.Game
             foreach(var player in Players)
             {
                 int numPlacedArmies = getNumPlacedArmies(player);
-                int numOwnedTerritories = Board.Territiories.Where(t => t.Owner == player)
+                int numOwnedTerritories = Board.Territories.Where(t => t.Owner == player)
                                                             .Count();
 
                 var armiesAndTerritories = new PlayerArmiesAndTerritories { NumArmies = numPlacedArmies, NumTerritories = numPlacedArmies };
@@ -155,7 +155,7 @@ namespace Risk.Game
 
         public int getNumPlacedArmies(Player player)
         {
-            return Board.Territiories
+            return Board.Territories
                         .Where(t => t.Owner == player)
                         .Sum(t => t.Armies);
         }

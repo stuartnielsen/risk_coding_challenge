@@ -10,19 +10,19 @@ namespace Risk.Game
     {
         public Board(IEnumerable<Territory> territiories)
         {
-            Territiories = territiories;
+            Territories = territiories;
         }
 
-        public IEnumerable<Territory> Territiories { get; }
+        public IEnumerable<Territory> Territories { get; }
 
         public Territory GetTerritory(int row, int col)
         {
-            return Territiories.Single(t => t.Location.Row == row && t.Location.Column == col);
+            return Territories.Single(t => t.Location.Row == row && t.Location.Column == col);
         }
 
         public Territory GetTerritory(Location location)
         {
-            return Territiories.Single(t => t.Location == location);
+            return Territories.Single(t => t.Location == location);
         }
 
         public IEnumerable<Territory> GetNeighbors(Territory territory)
@@ -38,7 +38,7 @@ namespace Risk.Game
                 new Location(l.Row-1, l.Column),
                 new Location(l.Row-1, l.Column+1),
             };
-            return Territiories.Where(t => neighborLocations.Contains(t.Location));
+            return Territories.Where(t => neighborLocations.Contains(t.Location));
         }
 
         public bool AttackTargetLocationIsValid(Location attackSource, Location attackTarget)

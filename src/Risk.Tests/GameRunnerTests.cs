@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using NUnit.Framework;
 using Risk.Api;
@@ -46,6 +47,31 @@ namespace Risk.Tests
         public void IsAllArmiesPlacedReturnsFalseIfPlayersHaveRemainingArmies()
         {
             Assert.IsFalse(gameRunner.IsAllArmiesPlaced());
+        }
+
+        [Test]
+        public void After1DeploymentRequestFailuresKickPlayer()
+        {
+            Assert.AreEqual(1, game.Players.Count());
+        }
+
+        [Test]
+        public void After1DeploymentRequestFailuresRemovesPlayerFromBoard()
+        {
+            bool isPlayerOnBoard = true;
+            game.TryPlaceArmy(player1, new Location(0, 0));
+            game.TryPlaceArmy(player2, new Location(1, 0));
+            gameRunner.RemovePlayerFromBoard(player1);
+
+            foreach (Territory territory in game.Board.Territories)
+            {
+                if (territory.Owner != null && territory.Owner.Token != player1)
+                {
+                    isPlayerOnBoard = false;
+                }
+            }
+            Assert.IsFalse(isPlayerOnBoard);
+
         }
 
     }
