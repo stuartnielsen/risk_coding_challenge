@@ -65,9 +65,35 @@ namespace Risk.Api
             return deployArmyResponse;
         }
 
-        private Task doBattle()
+        private async Task doBattle()
         {
-            throw new NotImplementedException();
+            foreach (var currentPlayer in game.Players)
+            {
+                var beginAttackResponse = await askForAttackLocationAsync(currentPlayer, BeginAttackStatus.YourTurn);
+
+                var failedTries = 0;
+                //check that this lcoation exisits and is available to be used (e.g. not occupied by another army)
+                while (game.AttackOwnershipValid(currentPlayer.Token, beginAttackResponse.From, beginAttackResponse.To) is false)
+                {
+                    failedTries++;
+                    if (failedTries == MaxFailedTries)
+                    {
+                        //remove army from game
+                        //clear all used territories
+                    }
+                    deployArmyResponse = await askForDeployLocationAsync(currentPlayer, DeploymentStatus.PreviousAttemptFailed);
+                }
+            }
+        }
+        private async Task<BeginAttackResponse> askForAttackLocationAsync(Player player, BeginAttackStatus beginAttackStatus )
+        {
+            var beginAttackRequest = new BeginAttackRequest {
+                Board = game.Board.Territiories,
+                Status = beginAttackStatus
+            };
+            return await (await client.PostAsJsonAsync($"{player.CallbackAddress}/beginAttack", beginAttackRequest))
+                .EnsureSuccessStatusCode()
+                .Content.ReadFromJsonAsync<BeginAttackResponse>();
         }
 
         private Task reportWinner()
