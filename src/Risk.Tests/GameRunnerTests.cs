@@ -21,6 +21,7 @@ namespace Risk.Tests
             game.StartJoining();
             player1 = game.AddPlayer("player1");
             player2 = game.AddPlayer("player2");
+            game.StartGame();
             gameRunner = new GameRunner(game, null);
         }
 
@@ -31,7 +32,20 @@ namespace Risk.Tests
             game.TryPlaceArmy(player2, new Location(1, 0));
 
             Assert.IsTrue(gameRunner.IsAllArmiesPlaced());
+        }
 
+        [Test]
+        public void IsAllArmiesPlacedReturnsFalseIfOnePlayerHasRemainingArmies()
+        {
+            game.TryPlaceArmy(player1, new Location(0, 0));
+            Assert.IsFalse(gameRunner.IsAllArmiesPlaced());
+        }
+        
+
+        [Test]
+        public void IsAllArmiesPlacedReturnsFalseIfPlayersHaveRemainingArmies()
+        {
+            Assert.IsFalse(gameRunner.IsAllArmiesPlaced());
         }
 
     }
