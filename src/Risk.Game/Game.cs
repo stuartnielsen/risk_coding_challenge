@@ -48,11 +48,14 @@ namespace Risk.Game
             gameState = GameState.Deploying;
         }
 
-        public string AddPlayer(string playerName)
+        public string AddPlayer(string playerName, string callbackAddress)
         {
             if (gameState == GameState.Joining)
             {
-                var p = new Player(name: playerName, token: Guid.NewGuid().ToString());
+                var p = new Player(
+                    name: playerName, 
+                    token: Guid.NewGuid().ToString(),
+                    callbackAddress: callbackAddress);
                 players.Add(p);
                 return p.Token;
             }

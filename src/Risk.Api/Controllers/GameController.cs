@@ -30,7 +30,7 @@ namespace Risk.Api.Controllers
             var response = await CheckClientConnection(joinRequest.CallbackBaseAddress);
             if (game.GameState == GameState.Joining && response == "yes")
             {
-                string playerToken = game.AddPlayer(joinRequest.Name);
+                string playerToken = game.AddPlayer(joinRequest.Name, joinRequest.CallbackBaseAddress);
                 return Ok(new JoinResponse {
                     Token = playerToken
                 });
@@ -77,6 +77,19 @@ namespace Risk.Api.Controllers
 
             newGame.StartJoining();
             return newGame;
+        }
+
+        [HttpPost("[action]")]
+        public async Task<IActionResult> StartGame(StartGameRequest startGameRequest)
+        {
+            if(game.GameState != GameState.Joining)
+            {
+                return BadRequest("Game not in Joining state");
+            }
+            game.StartGame();
+            var gameRunner = new GameRunner(client, game);
+            await gameRunner.StartGameAsync();
+            return Ok();
         }
     }
 }
