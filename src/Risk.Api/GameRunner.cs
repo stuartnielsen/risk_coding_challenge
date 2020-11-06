@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using Risk.Shared;
 
 namespace Risk.Api
@@ -15,9 +16,9 @@ namespace Risk.Api
         private readonly Game.Game game;
         public const int MaxFailedTries = 5;
 
-        public GameRunner(IHttpClientFactory clientFactory, Game.Game game)
+        public GameRunner(HttpClient client, Game.Game game)
         {
-            this.client = clientFactory.CreateClient();
+            this.client = client;
             this.game = game;
         }
 
@@ -30,7 +31,7 @@ namespace Risk.Api
 
         private async Task deployArmiesAsync()
         {
-            while(game.Board.Territiories.Sum(t=>t.Armies) < game.StartingArmies * game.Players.Count())
+            while(game.Board.Territories.Sum(t=>t.Armies) < game.StartingArmies * game.Players.Count())
             {
                 foreach (var currentPlayer in game.Players)
                 {
@@ -55,7 +56,7 @@ namespace Risk.Api
         private async Task<DeployArmyResponse> askForDeployLocationAsync(Player currentPlayer, DeploymentStatus deploymentStatus)
         {
             var deployArmyRequest = new DeployArmyRequest {
-                Board = game.Board.Territiories,
+                Board = game.Board.Territories,
                 Status = deploymentStatus,
                 ArmiesRemaining = game.GetPlayerRemainingArmies(currentPlayer.Token)
             };
@@ -90,7 +91,7 @@ namespace Risk.Api
         private async Task<BeginAttackResponse> askForAttackLocationAsync(Player player, BeginAttackStatus beginAttackStatus )
         {
             var beginAttackRequest = new BeginAttackRequest {
-                Board = game.Board.Territiories,
+                Board = game.Board.Territories,
                 Status = beginAttackStatus
             };
             return await (await client.PostAsJsonAsync($"{player.CallbackAddress}/beginAttack", beginAttackRequest))
@@ -101,6 +102,35 @@ namespace Risk.Api
         private Task reportWinner()
         {
             throw new NotImplementedException();
+        }
+
+        public bool IsAllArmiesPlaced()
+        {
+
+            int playersWithNoRemaining = game.Players.Where(p => game.GetPlayerRemainingArmies(p.Token) == 0).Count();
+
+            if (playersWithNoRemaining == game.Players.Count())
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
+
+        }
+
+        public void RemovePlayerFromBoard(String token)
+        {
+            foreach (Territory territory in game.Board.Territories)
+            {
+                if (territory.Owner == game.getPlayer(token))
+                {
+                    territory.Owner = null;
+                    territory.Armies = 0;
+                }
+            }
         }
     }
 }

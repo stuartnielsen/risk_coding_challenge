@@ -18,13 +18,13 @@ namespace Risk.Tests
         [Test]
         public void OneByThreeGameHasThreeTerritories()
         {
-            new Game.Game(new GameStartOptions { Height = 1, Width = 3 }).Board.Territiories.Count().Should().Be(3);
+            new Game.Game(new GameStartOptions { Height = 1, Width = 3 }).Board.Territories.Count().Should().Be(3);
         }
 
         [Test]
         public void TwoByThreeGameHasSixTerritories()
         {
-            new Game.Game(new GameStartOptions { Height = 2, Width = 3 }).Board.Territiories.Count().Should().Be(6);
+            new Game.Game(new GameStartOptions { Height = 2, Width = 3 }).Board.Territories.Count().Should().Be(6);
         }
 
         [Test]

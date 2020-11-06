@@ -23,7 +23,7 @@ namespace Risk.Game
 
         public GameState GameState => gameState;
 
-        public IEnumerable<Player> Players => players.AsReadOnly();
+        public IEnumerable<Player> Players => players;// { get; private set; }
 
         private IEnumerable<Territory> createTerritories(int height, int width)
         {
@@ -106,11 +106,11 @@ namespace Risk.Game
         public int GetPlayerRemainingArmies(string playerToken)
         {
             var player = getPlayer(playerToken);
-            var armiesOnBoard = GetNumPlacedArmies(player);
+            var armiesOnBoard = getNumPlacedArmies(player);
             return StartingArmies - armiesOnBoard;
         }
 
-        private Player getPlayer(string token)
+        public Player getPlayer(string token)
         {
             return players.Single(p => p.Token == token);
         }
@@ -133,8 +133,8 @@ namespace Risk.Game
 
         public bool AttackOwnershipValid(string playerToken, Location from, Location to)
         {
-            var territoryFrom = Board.Territiories.Single(t => t.Location == from);
-            var territoryTo = Board.Territiories.Single(t => t.Location == to);
+            var territoryFrom = Board.Territories.Single(t => t.Location == from);
+            var territoryTo = Board.Territories.Single(t => t.Location == to);
             var player = getPlayer(playerToken);
             return (territoryFrom.Owner == player && territoryTo.Owner != player);
         }
@@ -146,8 +146,8 @@ namespace Risk.Game
 
             foreach(var player in Players)
             {
-                int numPlacedArmies = GetNumPlacedArmies(player);
-                int numOwnedTerritories = Board.Territiories.Where(t => t.Owner == player)
+                int numPlacedArmies = getNumPlacedArmies(player);
+                int numOwnedTerritories = Board.Territories.Where(t => t.Owner == player)
                                                             .Count();
 
                 var armiesAndTerritories = new PlayerArmiesAndTerritories { NumArmies = numPlacedArmies, NumTerritories = numPlacedArmies };
@@ -155,12 +155,12 @@ namespace Risk.Game
                 playerInfo.Add(player.Name, armiesAndTerritories);
             }
 
-            return new GameStatus(GameState, playerInfo);
+            return new GameStatus(players, GameState, playerInfo);
         }
 
-        public int GetNumPlacedArmies(Player player)
+        public int getNumPlacedArmies(Player player)
         {
-            return Board.Territiories
+            return Board.Territories
                         .Where(t => t.Owner == player)
                         .Sum(t => t.Armies);
         }

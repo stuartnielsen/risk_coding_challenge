@@ -4,8 +4,10 @@ using System.Linq;
 using System.Net.Http;
 using System.Runtime.InteropServices.ComTypes;
 using System.Threading.Tasks;
+using FluentAssertions.Common;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Configuration;
 using Risk.Shared;
 
 namespace Risk.Api.Controllers
@@ -15,12 +17,14 @@ namespace Risk.Api.Controllers
     {
         private readonly Game.Game game;
         private IMemoryCache memoryCache;
-        private readonly IHttpClientFactory client;
+        private readonly IHttpClientFactory clientFactory;
+        private readonly IConfiguration config;
 
-        public GameController(Game.Game game, IMemoryCache memoryCache, IHttpClientFactory client)
+        public GameController(Game.Game game, IMemoryCache memoryCache, IHttpClientFactory client, IConfiguration config)
         {
             this.game = game;
-            this.client = client;
+            this.clientFactory = client;
+            this.config = config;
             this.memoryCache = memoryCache;
         }
 
@@ -44,7 +48,7 @@ namespace Risk.Api.Controllers
         private async Task<string> CheckClientConnection(string baseAddress)
         {
             //client.CreateClient().BaseAddress = new Uri(baseAddress);
-            var response = await client.CreateClient().GetStringAsync($"{baseAddress}/areYouThere");
+            var response = await clientFactory.CreateClient().GetStringAsync($"{baseAddress}/areYouThere");
             return response;
         }
 
@@ -67,6 +71,25 @@ namespace Risk.Api.Controllers
             return Ok(gameStatus);
         }
 
+        [HttpPost]
+        public IActionResult StartGame(string startCode)
+        {
+            if (config["secretCode"] == startCode)
+            {
+                if (game.GameState == GameState.Joining)
+                {
+                    game.StartGame();
+                    return Ok();
+                }
+                else
+                {
+                    return BadRequest("Game can only be started from joining state");
+                }
+            }
+
+            return Forbid();
+        }
+
         public static Game.Game InitializeGame (int height, int width, int numOfArmies)
         {
             GameStartOptions startOptions = new GameStartOptions();
@@ -87,7 +110,7 @@ namespace Risk.Api.Controllers
                 return BadRequest("Game not in Joining state");
             }
             game.StartGame();
-            var gameRunner = new GameRunner(client, game);
+            var gameRunner = new GameRunner(clientFactory.CreateClient(), game);
             await gameRunner.StartGameAsync();
             return Ok();
         }
