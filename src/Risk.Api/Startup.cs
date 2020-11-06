@@ -33,9 +33,9 @@ namespace Risk.Api
                 .AddJsonOptions(options =>
                     options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase);
             services.AddSingleton<Game.Game>(GameController.InitializeGame(
-                int.Parse(Configuration["height"]),
-                int.Parse(Configuration["width"]),
-                int.Parse(Configuration["startingArmies"])));
+                int.Parse(Configuration["height"] ?? "5"),
+                int.Parse(Configuration["width"] ?? "5"),
+                int.Parse(Configuration["startingArmies"] ?? "5")));
 
             services.AddMemoryCache();
             services.AddHttpClient();
