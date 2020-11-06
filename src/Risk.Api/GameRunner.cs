@@ -73,6 +73,7 @@ namespace Risk.Api
 
                 var failedTries = 0;
                 //check that this lcoation exisits and is available to be used (e.g. not occupied by another army)
+
                 while (game.AttackOwnershipValid(currentPlayer.Token, beginAttackResponse.From, beginAttackResponse.To) is false)
                 {
                     failedTries++;
@@ -81,10 +82,11 @@ namespace Risk.Api
                         //remove army from game
                         //clear all used territories
                     }
-                    deployArmyResponse = await askForDeployLocationAsync(currentPlayer, DeploymentStatus.PreviousAttemptFailed);
+                    beginAttackResponse = await askForAttackLocationAsync(currentPlayer, BeginAttackStatus.PreviousAttackRequestFailed);
                 }
             }
         }
+
         private async Task<BeginAttackResponse> askForAttackLocationAsync(Player player, BeginAttackStatus beginAttackStatus )
         {
             var beginAttackRequest = new BeginAttackRequest {

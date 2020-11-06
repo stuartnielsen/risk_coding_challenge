@@ -9,7 +9,7 @@ namespace Risk.Shared
     /// </summary>
     public class BeginAttackResponse
     {
-        public Territory From { get; set; }
-        public Territory To { get; set; }
+        public Location From { get; set; }
+        public Location To { get; set; }
     }
 }

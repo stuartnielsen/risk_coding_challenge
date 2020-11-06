@@ -53,7 +53,7 @@ namespace Risk.Game
             if (gameState == GameState.Joining)
             {
                 var p = new Player(
-                    name: playerName, 
+                    name: playerName,
                     token: Guid.NewGuid().ToString(),
                     callbackAddress: callbackAddress);
                 players.Add(p);
@@ -131,10 +131,12 @@ namespace Risk.Game
             return attacker.Armies > 1;
         }
 
-        public bool AttackOwnershipValid(string playerToken, Territory from, Territory to)
+        public bool AttackOwnershipValid(string playerToken, Location from, Location to)
         {
+            var territoryFrom = Board.Territiories.Single(t => t.Location == from);
+            var territoryTo = Board.Territiories.Single(t => t.Location == to);
             var player = getPlayer(playerToken);
-            return (from.Owner == player && to.Owner != player);
+            return (territoryFrom.Owner == player && territoryTo.Owner != player);
         }
 
 
