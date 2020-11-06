@@ -71,47 +71,7 @@ namespace Risk.Api.Controllers
             return Ok(gameStatus);
         }
 
-        // send request to player and wait for response 
-        [HttpGet ("placeArmy/{*deployArmyRequest}")]
-        public async Task<IActionResult> PlaceArmyRequest ()
-        {
-            Player player = game.Players.First();
-            DeployArmyRequest deployRequest = new DeployArmyRequest();
-            deployRequest.Board = game.Board.Territiories;
-            deployRequest.ArmiesRemaining = game.GetPlayerRemainingArmies(player.Token);
-            deployRequest.Status = player.deploymentStatus;
-
-            var localclient = client.CreateClient();
-           
-
-            try
-            {
-                var deployArmyResponse = await localclient.PostAsJsonAsync($"{player.CallbackBaseAddress}/deployArmy", deployRequest);
-                var content = await deployArmyResponse.Content.ReadAsStringAsync();
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex);
-            }
-
-        }
-        //react to second response
-        [HttpGet ("[action]")]
-        public async Task<IActionResult> PlaceArmy_Get (DeployArmyResponse response)
-        {
-            game.TryPlaceArmy(game.Players.First().Token, response.DesiredLocation);
-            return RedirectToRoute("/status");
-        }
-
-        [HttpPost ("placeArmy")]
-        public async Task<IActionResult> PlaceArmy_Post ()
-        {
-            
-            await PlaceArmyRequest( );
-            //temporary doesnt make sense.
-            return RedirectToRoute("/status");
-        }
+       
 
         public static Game.Game InitializeGame (int height, int width, int numOfArmies)
         {
