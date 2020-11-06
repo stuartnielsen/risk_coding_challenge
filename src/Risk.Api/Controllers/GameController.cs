@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Runtime.InteropServices.ComTypes;
 using System.Threading.Tasks;
 using FluentAssertions.Common;
@@ -27,6 +28,9 @@ namespace Risk.Api.Controllers
             this.config = config;
             this.memoryCache = memoryCache;
         }
+
+        //player tokens (needed to send request to every player)
+
 
         [HttpPost("[action]")]
         public async Task<IActionResult> Join(JoinRequest joinRequest)
@@ -71,25 +75,6 @@ namespace Risk.Api.Controllers
             return Ok(gameStatus);
         }
 
-        [HttpPost]
-        public IActionResult StartGame(string startCode)
-        {
-            if (config["secretCode"] == startCode)
-            {
-                if (game.GameState == GameState.Joining)
-                {
-                    game.StartGame();
-                    return Ok();
-                }
-                else
-                {
-                    return BadRequest("Game can only be started from joining state");
-                }
-            }
-
-            return Forbid();
-        }
-
         public static Game.Game InitializeGame (int height, int width, int numOfArmies)
         {
             GameStartOptions startOptions = new GameStartOptions();
@@ -108,6 +93,10 @@ namespace Risk.Api.Controllers
             if(game.GameState != GameState.Joining)
             {
                 return BadRequest("Game not in Joining state");
+            }
+            if(config["secretCode"] != startGameRequest.SecretCode)
+            {
+                return BadRequest("Secret code doesn't match, unable to start game.");
             }
             game.StartGame();
             var gameRunner = new GameRunner(clientFactory.CreateClient(), game);
