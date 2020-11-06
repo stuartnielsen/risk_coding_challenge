@@ -48,7 +48,7 @@ namespace Risk.Api.Controllers
             return response;
         }
 
-        [HttpGet("status")]
+        [HttpGet("[action]")]
         public IActionResult GameStatus()
         {
             GameStatus gameStatus;
