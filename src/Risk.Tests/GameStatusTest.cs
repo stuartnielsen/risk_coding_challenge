@@ -24,9 +24,9 @@ namespace Risk.Tests
         [Test]
         public void GetGameStatusReturnsAllPlayersWhoveJoined()
         {
-            var player1 = new Player("player1", "token");
+            var player1 = new Player("player1", "token", "callBackAddress");
 
-            game.AddPlayer(player1.Name);
+            game.AddPlayer(player1.Name, player1.CallbackAddress);
 
             var gameStatus = game.GetGameStatus();
 
@@ -46,7 +46,8 @@ namespace Risk.Tests
         public void GetGameStatusHasPlayersWithArmyAndTerritoryCount()
         {
             string playerName = "Player1";
-            game.AddPlayer(playerName);
+            string playerCallBackAddress = "";
+            game.AddPlayer(playerName, playerCallBackAddress);
 
             var player1 = game.Players.First();
 

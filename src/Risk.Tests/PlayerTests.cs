@@ -15,7 +15,7 @@ namespace Risk.Tests
         {
             var game = new Game.Game(new GameStartOptions { Height = 2, Width = 2 });
             game.StartJoining();
-            var playerToken = game.AddPlayer("Player 1");
+            var playerToken = game.AddPlayer("Player 1", "");
             Guid.TryParse(playerToken, out var _).Should().BeTrue();
             game.Players.Count().Should().Be(1);
         }
@@ -25,10 +25,10 @@ namespace Risk.Tests
         {
             var game = new Game.Game(new GameStartOptions { Height = 2, Width = 2 });//THis was Game.GameStartOptions. Was it intended to be??
             game.StartJoining();
-            var playerToken = game.AddPlayer("Player 1");
+            var playerToken = game.AddPlayer("Player 1", "");
             Guid.TryParse(playerToken, out var _).Should().BeTrue();
             game.StartGame();
-            Assert.Throws<InvalidGameStateException>(() => game.AddPlayer("Player 2"));
+            Assert.Throws<InvalidGameStateException>(() => game.AddPlayer("Player 2", ""));
         }
     }
 }

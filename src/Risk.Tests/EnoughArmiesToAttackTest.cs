@@ -19,7 +19,7 @@ namespace Risk.Tests
             int height = 2;
 
             game = new Game.Game(new GameStartOptions { Height = height, Width = width });
-            Player player = new Player("Rusty", "kc7wzl");
+            Player player = new Player("Rusty", "kc7wzl", "");
             Location attacker = new Location(1,1);
             territory = new Territory(attacker);
             territory.Owner = player;

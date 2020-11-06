@@ -19,8 +19,8 @@ namespace Risk.Tests
         {
             testgame = new Game.Game(new GameStartOptions { Height = 2, Width = 2, StartingArmiesPerPlayer = 5 });
             testgame.StartJoining();
-            player1 = testgame.AddPlayer("player1");
-            player2 = testgame.AddPlayer("player2");
+            player1 = testgame.AddPlayer("player1", "");
+            player2 = testgame.AddPlayer("player2", "");
             testgame.StartGame();
 
             //place 5 armies
