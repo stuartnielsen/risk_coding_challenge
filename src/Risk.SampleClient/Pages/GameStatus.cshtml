@@ -1,0 +1,27 @@
+﻿@page "/GameStatus"
+@model Risk.SampleClient.Pages.GameStatusModel
+@{
+    int playerCount=1;
+}
+
+<h3>Game State: @Model.Status.GameState</h3>
+
+<table cellpadding="5px">
+    <tr>
+        <th>Player #</th>
+        <th>Player Name</th>
+        <th>Armies</th>
+        <th>Territories</th>
+    </tr>
+    @foreach(var player in Model.Status.PlayerInfo)
+    {
+        <tr>
+            <td>Player @(@playerCount++)</td>
+            <td>@player.Key</td>
+            <td align="right">@player.Value.NumArmies.ToString("n0")</td>
+            <td align="right">@player.Value.NumTerritories.ToString("n0")</td>
+        </tr>
+    }
+</table>
+
+

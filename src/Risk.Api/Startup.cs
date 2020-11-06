@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -10,6 +11,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Risk.Api.Controllers;
+using Risk.Game;
 using Risk.Shared;
 
 namespace Risk.Api
@@ -26,13 +29,16 @@ namespace Risk.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
-            services.AddSingleton<Game.Game>(new Game.Game(new GameStartOptions {
-                Height = 5,
-                Width = 5,
-                StartingArmiesPerPlayer = 10
-            }));
+            services.AddControllers()
+                .AddJsonOptions(options =>
+                    options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase);
+            services.AddSingleton<Game.Game>(GameController.InitializeGame(
+                int.Parse(Configuration["height"]),
+                int.Parse(Configuration["width"]),
+                int.Parse(Configuration["startingArmies"])));
+
             services.AddMemoryCache();
+            services.AddHttpClient();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
