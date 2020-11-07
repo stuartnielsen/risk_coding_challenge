@@ -40,6 +40,7 @@ namespace Risk.SampleClient.Pages
         {
             var client = httpClientFactory.CreateClient();
             await client.PostAsJsonAsync($"{server}/startgame", new StartGameRequest { SecretCode = secretCode });
+            ServerName = server;
             await refreshStatus(client);
         }
     }
