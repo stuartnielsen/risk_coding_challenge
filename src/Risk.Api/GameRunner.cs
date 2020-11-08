@@ -16,7 +16,7 @@ namespace Risk.Api
         private readonly HttpClient client;
         private readonly Game.Game game;
         public const int MaxFailedTries = 5;
-        public Dictionary<String, int> PlayerFailedConsecutiveAttempts;
+
 
         public GameRunner(HttpClient client, Game.Game game)
         {
@@ -26,14 +26,9 @@ namespace Risk.Api
 
         public async Task StartGameAsync()
         {
-            foreach(Player player in game.Players)
-            {
-                PlayerFailedConsecutiveAttempts.Add(player.Token, 0);
-            }
             await deployArmiesAsync();
             await doBattle();
             await reportWinner();
-            
         }
 
         private async Task deployArmiesAsync()
@@ -51,8 +46,7 @@ namespace Risk.Api
                         failedTries++;
                         if (failedTries == MaxFailedTries)
                         {
-                            //remove army from game
-                            //clear all used territories
+                            BootPlayerFromGame(currentPlayer.Token);
                         }
                         deployArmyResponse = await askForDeployLocationAsync(currentPlayer, DeploymentStatus.PreviousAttemptFailed);
                     }
@@ -153,12 +147,6 @@ namespace Risk.Api
             game.RemovePlayer(Token);
         }
 
-        public void AfterXFailedContactAttemptsBootPlayer(String Token) 
-        {
-            if (PlayerFailedConsecutiveAttempts[Token] == MaxFailedTries)
-            {
-                BootPlayerFromGame(Token);
-            }
-        }
+      
     }
 }
