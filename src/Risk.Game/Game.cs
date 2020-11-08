@@ -15,7 +15,6 @@ namespace Risk.Game
             gameState = GameState.Initializing;
         }
 
-        private readonly List<Player> players;
 
         public Board Board { get; private set; }
         private GameState gameState { get; set; }
@@ -23,6 +22,8 @@ namespace Risk.Game
 
         public GameState GameState => gameState;
 
+
+        private  List<Player> players;
         public IEnumerable<Player> Players => players;// { get; private set; }
 
         private IEnumerable<Territory> createTerritories(int height, int width)
@@ -103,6 +104,7 @@ namespace Risk.Game
             return placeResult;
         }
 
+
         public int GetPlayerRemainingArmies(string playerToken)
         {
             var player = getPlayer(playerToken);
@@ -163,6 +165,11 @@ namespace Risk.Game
             return Board.Territories
                         .Where(t => t.Owner == player)
                         .Sum(t => t.Armies);
+        }
+
+        public void RemovePlayer(string playerToken)
+        {
+            players.Remove(getPlayer(playerToken));
         }
     }
 }

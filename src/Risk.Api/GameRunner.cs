@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Numerics;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,6 +16,7 @@ namespace Risk.Api
         private readonly HttpClient client;
         private readonly Game.Game game;
         public const int MaxFailedTries = 5;
+        public Dictionary<String, int> PlayerFailedConsecutiveAttempts;
 
         public GameRunner(HttpClient client, Game.Game game)
         {
@@ -24,9 +26,14 @@ namespace Risk.Api
 
         public async Task StartGameAsync()
         {
+            foreach(Player player in game.Players)
+            {
+                PlayerFailedConsecutiveAttempts.Add(player.Token, 0);
+            }
             await deployArmiesAsync();
             await doBattle();
             await reportWinner();
+            
         }
 
         private async Task deployArmiesAsync()
@@ -137,6 +144,20 @@ namespace Risk.Api
                     territory.Owner = null;
                     territory.Armies = 0;
                 }
+            }
+        }
+
+        public void BootPlayerFromGame(string Token)
+        {
+            RemovePlayerFromBoard(Token);
+            game.RemovePlayer(Token);
+        }
+
+        public void AfterXFailedContactAttemptsBootPlayer(String Token) 
+        {
+            if (PlayerFailedConsecutiveAttempts[Token] == MaxFailedTries)
+            {
+                BootPlayerFromGame(Token);
             }
         }
     }
