@@ -94,15 +94,24 @@ namespace Risk.Api
                         beginAttackResponse = await askForAttackLocationAsync(currentPlayer, BeginAttackStatus.PreviousAttackRequestFailed);
                     }
                     var continueResponse = new ContinueAttackResponse();
+                    //do
+                    //{
+                    //    game.RollDice(beginAttackResponse);
+                    //    continueResponse = await askContinueAttackingAsync(currentPlayer); 
+                    //} 
+                    //while(attackingTerritory.Armies > 1 && continueResponse.ContinueAttacking == true);
+
                     do
                     {
                         game.RollDice(beginAttackResponse);
-                        continueResponse = await askContinueAttackingAsync(currentPlayer); 
-                    } 
-                    while(attackingTerritory.Armies > 1 && continueResponse.ContinueAttacking == true);
-                    
+                        if (attackingTerritory.Armies > 1)
+                            continueResponse = await askContinueAttackingAsync(currentPlayer);
+                        else
+                            continueResponse.ContinueAttacking = false;
+                    } while (continueResponse.ContinueAttacking);
+                   
 
-                    
+
 
                     //if they still have more armies, ask if they want to continue attacking...
                     //(this logic goes here in the game runner)
@@ -110,21 +119,7 @@ namespace Risk.Api
             }
         }
 
-        private async Task toIsNeighborOfFrom()
-        {
-            foreach (var currentPlayer in game.Players)
-            {
-                var beginAttackResponse = await askForAttackLocationAsync(currentPlayer, BeginAttackStatus.YourTurn);
-                var attackingTerritory = new Territory(beginAttackResponse.From);
-                var defendingTerritory = new Territory(beginAttackResponse.To);
-                var failedTries = 0;
-                while (!board.GetNeighbors(attackingTerritory).ToList().Contains(defendingTerritory))
-                {
-                    failedTries++;
-                }
-                
-            }
-        }
+       
 
         private async Task<BeginAttackResponse> askForAttackLocationAsync(Player player, BeginAttackStatus beginAttackStatus )
         {
