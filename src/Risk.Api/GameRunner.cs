@@ -15,14 +15,12 @@ namespace Risk.Api
     {
         private readonly HttpClient client;
         private readonly Game.Game game;
-        private readonly Board board;
         public const int MaxFailedTries = 5;
 
-        public GameRunner(HttpClient client, Game.Game game, Board board)
+        public GameRunner(HttpClient client, Game.Game game)
         {
             this.client = client;
             this.game = game;
-            this.board = board;
         }
 
         public async Task StartGameAsync()
@@ -74,47 +72,39 @@ namespace Risk.Api
             
             while (game.gameState == GameState.Attacking)
             {
-                foreach (var currentPlayer in game.Players)
+                for(int i = 0; i < game.Players.Count(); i++)
+                //foreach (var currentPlayer in game.Players)
                 {
-                    var beginAttackResponse = await askForAttackLocationAsync(currentPlayer, BeginAttackStatus.YourTurn);
+                    var beginAttackResponse = await askForAttackLocationAsync(game.Players.ElementAt(i), BeginAttackStatus.YourTurn);
 
                     var failedTries = 0;
                     //check that this location exists and is available to be used (e.g. not occupied by another army)
 
                     var attackingTerritory = new Territory(beginAttackResponse.From);
                     var defendingTerritory = new Territory(beginAttackResponse.To);
-                    while (game.AttackOwnershipValid(currentPlayer.Token, beginAttackResponse.From, beginAttackResponse.To) is false || !game.EnoughArmiesToAttack(attackingTerritory) || !board.GetNeighbors(attackingTerritory).ToList().Contains(defendingTerritory))
+                    while (game.AttackOwnershipValid(game.Players.ElementAt(i).Token, beginAttackResponse.From, beginAttackResponse.To) is false 
+                        || !game.EnoughArmiesToAttack(attackingTerritory) 
+                        || !game.Board.GetNeighbors(attackingTerritory).ToList().Contains(defendingTerritory))
                     {
                         failedTries++;
                         if (failedTries == MaxFailedTries)
                         {
-                            RemovePlayerFromBoard(currentPlayer.Token);
-                            //clear all used territories
+                            RemovePlayerFromBoard(game.Players.ElementAt(i).Token);
+                            game.RemovePlayerFromGame(game.Players.ElementAt(i).Token);
+                            i--;
                         }
-                        beginAttackResponse = await askForAttackLocationAsync(currentPlayer, BeginAttackStatus.PreviousAttackRequestFailed);
+                        beginAttackResponse = await askForAttackLocationAsync(game.Players.ElementAt(i), BeginAttackStatus.PreviousAttackRequestFailed);
                     }
                     var continueResponse = new ContinueAttackResponse();
-                    //do
-                    //{
-                    //    game.RollDice(beginAttackResponse);
-                    //    continueResponse = await askContinueAttackingAsync(currentPlayer); 
-                    //} 
-                    //while(attackingTerritory.Armies > 1 && continueResponse.ContinueAttacking == true);
 
                     do
                     {
                         game.RollDice(beginAttackResponse);
                         if (attackingTerritory.Armies > 1)
-                            continueResponse = await askContinueAttackingAsync(currentPlayer);
+                            continueResponse = await askContinueAttackingAsync(game.Players.ElementAt(i));
                         else
                             continueResponse.ContinueAttacking = false;
                     } while (continueResponse.ContinueAttacking);
-                   
-
-
-
-                    //if they still have more armies, ask if they want to continue attacking...
-                    //(this logic goes here in the game runner)
                 }
             }
         }
@@ -165,6 +155,8 @@ namespace Risk.Api
                 }
             }
         }
+
+        
         private async Task<ContinueAttackResponse> askContinueAttackingAsync(Player currentPlayer)
         {
             var continueAttackingRequest = new ContinueAttackRequest {

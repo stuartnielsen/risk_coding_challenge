@@ -16,6 +16,7 @@ namespace Risk.Game
         }
 
         private readonly List<Player> players;
+        private readonly List<Player> removedPlayers;
 
         public Board Board { get; private set; }
         public GameState gameState { get; set; }
@@ -24,6 +25,7 @@ namespace Risk.Game
         public GameState GameState => gameState;
 
         public IEnumerable<Player> Players => players;// { get; private set; }
+        public IEnumerable<Player> RemovedPlayers => removedPlayers;// { get; private set; }
 
         private IEnumerable<Territory> createTerritories(int height, int width)
         {
@@ -60,6 +62,17 @@ namespace Risk.Game
                 return p.Token;
             }
             throw new InvalidGameStateException("Unable to join game.", gameState);
+        }
+        public void RemovePlayerFromGame(string token)
+        {
+            for (int i = 0; i < players.Count; i++)
+            {
+                if (players[i].Token == token)
+                {
+                    players.Remove(players[i]);
+                    removedPlayers.Add(players[i]);
+                }
+            }
         }
 
         public bool TryPlaceArmy(string playerToken, Location desiredLocation)
@@ -118,7 +131,7 @@ namespace Risk.Game
         public bool CanChangeToAttackState()
         {
             int totalRemainingArmies = 0;
-            foreach(var p in players)
+            foreach (var p in players)
             {
                 totalRemainingArmies += GetPlayerRemainingArmies(p.Token);
             }
@@ -144,7 +157,7 @@ namespace Risk.Game
         {
             IDictionary<string, PlayerArmiesAndTerritories> playerInfo = new Dictionary<string, PlayerArmiesAndTerritories>();
 
-            foreach(var player in Players)
+            foreach (var player in Players)
             {
                 int numPlacedArmies = getNumPlacedArmies(player);
                 int numOwnedTerritories = Board.Territories.Where(t => t.Owner == player)
@@ -170,8 +183,6 @@ namespace Risk.Game
             var rand = new Random();
             var attackingTerritory = new Territory(beginAttack.From);
             var defendingTerritory = new Territory(beginAttack.To);
-
-
 
             int[] attackerDice = new int[3];
             int[] defenderDice = new int[2];
