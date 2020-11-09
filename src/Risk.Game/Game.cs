@@ -18,7 +18,7 @@ namespace Risk.Game
         private IEnumerable<IPlayer> players;
 
         public Board Board { get; private set; }
-        private GameState gameState { get; set; }
+        public GameState gameState { get; set; }
         public int StartingArmies { get; }
         public GameState GameState => gameState;
         public IEnumerable<IPlayer> Players => players;
@@ -102,7 +102,7 @@ namespace Risk.Game
         public bool CanChangeToAttackState()
         {
             int totalRemainingArmies = 0;
-            foreach(var p in players)
+            foreach (var p in players)
             {
                 totalRemainingArmies += GetPlayerRemainingArmies(p.Token);
             }
@@ -128,7 +128,7 @@ namespace Risk.Game
         {
             IDictionary<string, PlayerArmiesAndTerritories> playerInfo = new Dictionary<string, PlayerArmiesAndTerritories>();
 
-            foreach(var player in Players)
+            foreach (var player in Players)
             {
                 int numPlacedArmies = getNumPlacedArmies(player);
                 int numOwnedTerritories = Board.Territories.Where(t => t.Owner == player)
@@ -147,6 +147,36 @@ namespace Risk.Game
             return Board.Territories
                         .Where(t => t.Owner == player)
                         .Sum(t => t.Armies);
+        }
+
+        public void RollDice(BeginAttackResponse beginAttack)
+        {
+            var rand = new Random();
+            var attackingTerritory = new Territory(beginAttack.From);
+            var defendingTerritory = new Territory(beginAttack.To);
+
+            int[] attackerDice = new int[3];
+            int[] defenderDice = new int[2];
+
+
+
+            for (int i = 0; i < attackingTerritory.Armies - 1 && i <= 3; i++)
+            {
+                attackerDice[i] = rand.Next(1, 7);
+            }
+            for (int i = 0; i <= defendingTerritory.Armies && i <= 2; i++)
+            {
+                defenderDice[i] = rand.Next(1, 7);
+            }
+            Array.Sort(attackerDice);
+            Array.Sort(defenderDice);
+            for (int i = 0; i <= defendingTerritory.Armies && i <= defenderDice.Length; i++)
+            {
+                if (attackerDice[i] > defenderDice[i])
+                    defendingTerritory.Armies = defendingTerritory.Armies - 1;
+                else
+                    attackingTerritory.Armies = attackingTerritory.Armies - 1;
+            }
         }
     }
 }

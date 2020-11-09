@@ -15,12 +15,12 @@ namespace Risk.Tests
 {
     public class PlayerTests
     {
-        private ConcurrentBag<ApiPlayer> players;
+        private List<ApiPlayer> players;
 
         [SetUp]
         public void SetUp()
         {
-            players = new ConcurrentBag<ApiPlayer>();
+            players = new List<ApiPlayer>();
         }
 
         [Test]

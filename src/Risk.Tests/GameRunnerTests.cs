@@ -35,7 +35,7 @@ namespace Risk.Tests
             players.Add(new ApiPlayer("player2", player2Token, null));
 
             game.StartGame();
-            gameRunner = new GameRunner(game, players);
+            gameRunner = new GameRunner(game, players, new List<ApiPlayer>());
         }
 
         [Test]

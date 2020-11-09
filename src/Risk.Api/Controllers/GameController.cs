@@ -23,9 +23,10 @@ namespace Risk.Api.Controllers
         private IMemoryCache memoryCache;
         private readonly IHttpClientFactory clientFactory;
         private readonly IConfiguration config;
-        private readonly ConcurrentBag<ApiPlayer> players;
+        private readonly List<ApiPlayer> players;
+        private readonly List<ApiPlayer> removedPlayers = new List<ApiPlayer>();
 
-        public GameController(Game.Game game, IMemoryCache memoryCache, IHttpClientFactory client, IConfiguration config, ConcurrentBag<ApiPlayer> players)
+        public GameController(Game.Game game, IMemoryCache memoryCache, IHttpClientFactory client, IConfiguration config, List<ApiPlayer> players)
         {
             this.game = game;
             this.clientFactory = client;
@@ -109,7 +110,7 @@ namespace Risk.Api.Controllers
                 return BadRequest("Secret code doesn't match, unable to start game.");
             }
             game.StartGame();
-            var gameRunner = new GameRunner(game, players);
+            var gameRunner = new GameRunner(game, players, removedPlayers);
             await gameRunner.StartGameAsync();
             return Ok();
         }

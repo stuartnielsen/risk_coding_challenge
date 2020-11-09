@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -6,6 +7,7 @@ using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
+using Risk.Game;
 using Risk.Shared;
 
 namespace Risk.Api
@@ -13,13 +15,15 @@ namespace Risk.Api
     public class GameRunner
     {
         private readonly Game.Game game;
-        private readonly IEnumerable<ApiPlayer> players;
+        private readonly IList<ApiPlayer> players;
+        private readonly IList<ApiPlayer> removedPlayers;
         public const int MaxFailedTries = 5;
 
-        public GameRunner(Game.Game game, IEnumerable<ApiPlayer> players)
+        public GameRunner(Game.Game game, IList<ApiPlayer> players, IList<ApiPlayer> removedPlayers)
         {
             this.game = game;
             this.players = players;
+            this.removedPlayers = removedPlayers;
         }
 
         public async Task StartGameAsync()
@@ -68,30 +72,56 @@ namespace Risk.Api
 
         private async Task doBattle()
         {
-            //logic to determine whether or not we keep doing battle
-            foreach (var currentPlayer in players)
+
+            while (game.gameState == GameState.Attacking)
             {
-                var beginAttackResponse = await askForAttackLocationAsync(currentPlayer, BeginAttackStatus.YourTurn);
-
-                var failedTries = 0;
-                //check that this location exists and is available to be used (e.g. not occupied by another army)
-
-                while (game.AttackOwnershipValid(currentPlayer.Token, beginAttackResponse.From, beginAttackResponse.To) is false)
+                for(int i = 0; i < game.Players.Count(); i++)
+                //foreach (var currentPlayer in game.Players)
                 {
-                    failedTries++;
-                    if (failedTries == MaxFailedTries)
+                    var beginAttackResponse = await askForAttackLocationAsync(players[i], BeginAttackStatus.YourTurn);
+
+                    var failedTries = 0;
+                    //check that this location exists and is available to be used (e.g. not occupied by another army)
+
+                    var attackingTerritory = new Territory(beginAttackResponse.From);
+                    var defendingTerritory = new Territory(beginAttackResponse.To);
+                    while (game.AttackOwnershipValid(players[i].Token, beginAttackResponse.From, beginAttackResponse.To) is false
+                        || !game.EnoughArmiesToAttack(attackingTerritory)
+                        || !game.Board.GetNeighbors(attackingTerritory).ToList().Contains(defendingTerritory))
                     {
-                        //remove army from game
-                        //clear all used territories
+                        failedTries++;
+                        if (failedTries == MaxFailedTries)
+                        {
+                            RemovePlayerFromBoard(players[i].Token);
+                            RemovePlayerFromGame(players[i].Token);
+                            i--;
+                        }
+                        beginAttackResponse = await askForAttackLocationAsync(players[i], BeginAttackStatus.PreviousAttackRequestFailed);
                     }
-                    beginAttackResponse = await askForAttackLocationAsync(currentPlayer, BeginAttackStatus.PreviousAttackRequestFailed);
+                    var continueResponse = new ContinueAttackResponse();
+
+                    do
+                    {
+                        game.RollDice(beginAttackResponse);
+                        if (attackingTerritory.Armies > 1)
+                            continueResponse = await askContinueAttackingAsync(players[i]);
+                        else
+                            continueResponse.ContinueAttacking = false;
+                    } while (continueResponse.ContinueAttacking);
                 }
+            }
+        }
 
-                //roll the dice and see how many armies from each side die
-                //(this logic should be in the game object)
-
-                //if they still have more armies, ask if they want to continue attacking...
-                //(this logic goes here in the game runner)
+        private void RemovePlayerFromGame(string token)
+        {
+            for (int i = 0; i < players.Count(); i++)
+            {
+                var player = players.ElementAt(i);
+                if (player.Token == token)
+                {
+                    players.Remove(player);
+                    removedPlayers.Add(player);
+                }
             }
         }
 
@@ -124,8 +154,6 @@ namespace Risk.Api
             {
                 return false;
             }
-
-
         }
 
         public void RemovePlayerFromBoard(String token)
@@ -138,6 +166,17 @@ namespace Risk.Api
                     territory.Armies = 0;
                 }
             }
+        }
+
+        private async Task<ContinueAttackResponse> askContinueAttackingAsync(ApiPlayer currentPlayer)
+        {
+            var continueAttackingRequest = new ContinueAttackRequest {
+                Board = game.Board.Territories
+            };
+            var continueAttackingResponse = await (await currentPlayer.HttpClient.PostAsJsonAsync("/continueAttacking", continueAttackingRequest))
+                .EnsureSuccessStatusCode()
+                .Content.ReadFromJsonAsync<ContinueAttackResponse>();
+            return continueAttackingResponse;
         }
     }
 }
