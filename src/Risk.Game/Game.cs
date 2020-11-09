@@ -87,6 +87,7 @@ namespace Risk.Game
             return placeResult;
         }
 
+
         public int GetPlayerRemainingArmies(string playerToken)
         {
             var player = getPlayer(playerToken);

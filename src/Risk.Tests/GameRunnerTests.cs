@@ -61,12 +61,6 @@ namespace Risk.Tests
             Assert.IsFalse(gameRunner.IsAllArmiesPlaced());
         }
 
-        [Test][Ignore("Failing test - don't leave it this way but come back to it!")]
-        public void After1DeploymentRequestFailuresKickPlayer()
-        {
-            Assert.AreEqual(1, game.Players.Count());
-        }
-
         [Test]
         public void After1DeploymentRequestFailuresRemovesPlayerFromBoard()
         {
@@ -84,6 +78,26 @@ namespace Risk.Tests
             }
             Assert.IsFalse(isPlayerOnBoard);
 
+        }
+
+        [Test]
+        public void RemovePlayerAfterXFailedContactAttemps()
+        {
+            bool isPlayerOnBoard = true;
+            game.TryPlaceArmy(player1Token, new Location(0, 0));
+            game.TryPlaceArmy(player2Token, new Location(1, 0));
+            gameRunner.BootPlayerFromGame(players[0]);
+
+            Assert.AreEqual(1, game.Players.Count());
+
+            foreach (Territory territory in game.Board.Territories)
+            {
+                if (territory.Owner != null && territory.Owner.Token != player1Token)
+                {
+                    isPlayerOnBoard = false;
+                }
+            }
+            Assert.IsFalse(isPlayerOnBoard);
         }
 
     }

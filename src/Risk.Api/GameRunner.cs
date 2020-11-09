@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Numerics;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
@@ -48,8 +49,7 @@ namespace Risk.Api
                         failedTries++;
                         if (failedTries == MaxFailedTries)
                         {
-                            //remove army from game
-                            //clear all used territories
+                            BootPlayerFromGame(currentPlayer);
                         }
                         deployArmyResponse = await askForDeployLocationAsync(currentPlayer, DeploymentStatus.PreviousAttemptFailed);
                     }
@@ -178,5 +178,13 @@ namespace Risk.Api
                 .Content.ReadFromJsonAsync<ContinueAttackResponse>();
             return continueAttackingResponse;
         }
+
+        public void BootPlayerFromGame(ApiPlayer player)
+        {
+            RemovePlayerFromBoard(player.Token);
+            players.Remove(player);
+        }
+
+
     }
 }
