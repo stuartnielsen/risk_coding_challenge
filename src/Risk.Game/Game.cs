@@ -123,6 +123,26 @@ namespace Risk.Game
             return (territoryFrom.Owner == player && territoryTo.Owner != player);
         }
 
+        public bool PlayerCanAttack(IPlayer player)
+        {
+            var playerTerritories = Board.Territories.Where(t => t.Owner == player);
+            for (int i = 0; i < playerTerritories.Count(); i++)
+            {
+                if (playerTerritories.ElementAt(i).Armies > 1)
+                {
+                    var neighbors = Board.GetNeighbors(playerTerritories.ElementAt(i));
+                    for (int j = 0; j < neighbors.Count(); j++)
+                    {
+                        if (neighbors.Where(t => t.Owner != player).Count() > 0)
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
 
         public GameStatus GetGameStatus()
         {
