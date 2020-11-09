@@ -18,6 +18,7 @@ namespace Risk.Shared
 
         public IPlayer Owner { get; set; }
         public int Armies { get; set; }
+        public int numLocations { get; set; }
 
         public override string ToString()
         {

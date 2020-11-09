@@ -61,6 +61,7 @@ namespace Risk.Game
             if (territory.Owner == null)
             {
                 territory.Owner = getPlayer(playerToken);
+                territory.numLocations++;
                 territory.Armies = 1;
                 placeResult = true;
             }
@@ -148,5 +149,14 @@ namespace Risk.Game
                         .Where(t => t.Owner == player)
                         .Sum(t => t.Armies);
         }
+
+
+        public int getNumTerritories(IPlayer player)
+        {
+            return Board.Territories
+                        .Where(t => t.Owner == player)
+                        .Sum(t => t.numLocations);
+        }
+
     }
 }

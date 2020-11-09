@@ -108,8 +108,24 @@ namespace Risk.Api
 
         private Task reportWinner()
         {
-            throw new NotImplementedException();
-        }
+            var maxNumOfTerritories = 0;
+            var winnerPlayer = new ApiPlayer();
+            
+            foreach (var currentPlayer in players)
+            {
+
+                var numOfTerritories = game.getNumTerritories(currentPlayer);
+                
+                if(numOfTerritories >= maxNumOfTerritories)
+                {
+                    maxNumOfTerritories = numOfTerritories;
+                    winnerPlayer = currentPlayer;
+                }
+
+
+
+
+            }
 
         public bool IsAllArmiesPlaced()
         {
