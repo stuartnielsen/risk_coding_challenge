@@ -26,9 +26,22 @@ namespace Risk.SampleClient.Pages
         public async Task OnGetAsync()
         {
             var client = httpClientFactory.CreateClient();
+            await refreshStatus(client);
+        }
+
+        private async Task refreshStatus(HttpClient client)
+        {
             Status = await client.GetFromJsonAsync<GameStatus>($"{ServerName}/status");
         }
 
         public GameStatus Status { get; set; }
+
+        public async Task OnPostStartGameAsync(string server, string secretCode)
+        {
+            var client = httpClientFactory.CreateClient();
+            await client.PostAsJsonAsync($"{server}/startgame", new StartGameRequest { SecretCode = secretCode });
+            ServerName = server;
+            await refreshStatus(client);
+        }
     }
 }

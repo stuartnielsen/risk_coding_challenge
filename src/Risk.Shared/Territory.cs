@@ -4,12 +4,17 @@ namespace Risk.Shared
 {
     public class Territory
     {
+        public Territory()
+        {
+
+        }
+
         public Territory(Location location)
         {
             Location = location;
         }
 
-        public Location Location { get; }
+        public Location Location { get; set; }
 
         public Player Owner { get; set; }
         public int Armies { get; set; }

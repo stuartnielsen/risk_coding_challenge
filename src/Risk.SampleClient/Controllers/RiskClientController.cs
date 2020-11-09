@@ -12,21 +12,17 @@ namespace Risk.SampleClient.Controllers
     public class RiskClientController : Controller
     {
         private readonly IHttpClientFactory httpClientFactory;
+        private static string serverAdress;
 
         public RiskClientController(IHttpClientFactory httpClientFactory)
         {
             this.httpClientFactory = httpClientFactory;
         }
 
-        //[HttpGet("/")]
-        //public string Info()
-        //{
-        //    return "Submit a get request to /joinServer/{serverAddress} to join a game.";
-        //}
-
         [HttpGet("joinServer/{*server}")]
         public async Task<IActionResult> JoinAsync(string server)
         {
+            serverAdress = server;
             var client = httpClientFactory.CreateClient();
             string baseUrl = string.Format("{0}://{1}{2}", Request.Scheme, Request.Host, Request.PathBase);
             var joinRequest = new JoinRequest {
@@ -35,7 +31,7 @@ namespace Risk.SampleClient.Controllers
             };
             try
             {
-                var joinResponse = await client.PostAsJsonAsync($"{server}/join", joinRequest);
+                var joinResponse = await client.PostAsJsonAsync($"{serverAdress}/join", joinRequest);
                 var content = await joinResponse.Content.ReadAsStringAsync();
                 return Ok();
             }
@@ -57,5 +53,39 @@ namespace Risk.SampleClient.Controllers
         {
             return "yes";
         }
+
+        [HttpPost("deployArmy")]
+        public DeployArmyResponse DeployArmy([FromBody]DeployArmyRequest deployArmyRequest)
+        {
+            DeployArmyResponse response = new DeployArmyResponse();
+            response.DesiredLocation = new Location(1,1);
+            return response;
+        }
+
+        [HttpPost("beginAttack")]
+        public BeginAttackResponse BeginAttack([FromBody]BeginAttackRequest beginAttackRequest)
+        {
+            BeginAttackResponse response = new BeginAttackResponse();
+            response.From = new Location(1, 1);
+            response.To = new Location(1, 2);
+            return response;
+        }
+
+        [HttpPost("continueAttack")]
+        public ContinueAttackResponse ContinueAttack([FromBody]ContinueAttackRequest continueAttackRequest)
+        {
+            ContinueAttackResponse response = new ContinueAttackResponse();
+            response.ContinueAttacking = true;
+
+            return response;
+        }
+
+
+        [HttpPost("gameOver")]
+        public IActionResult GameOver([FromBody]GameOverRequest gameOverRequest)
+        {
+            return Ok(gameOverRequest);
+        }
+
     }
 }

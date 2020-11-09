@@ -5,6 +5,8 @@ namespace Risk.Shared
 {
     public class Location
     {
+        public Location() { }
+
         public Location(int row, int col)
         {
             Row = row;
@@ -14,12 +16,12 @@ namespace Risk.Shared
         /// <summary>
         /// Starting from the bottom, row 0 is the bottom row
         /// </summary>
-        public int Row { get; }
+        public int Row { get; set; }
 
         /// <summary>
         /// Starting from the left.  Column 0 is the far left column.
         /// </summary>
-        public int Column { get; }
+        public int Column { get; set; }
 
         public override bool Equals(object obj)
         {

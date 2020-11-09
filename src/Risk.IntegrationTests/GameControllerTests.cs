@@ -1,47 +1,25 @@
 using System;
-using System.Net.Http;
+using System.Collections.Generic;
+using System.Net.Http.Json;
+using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc.Testing;
+using NUnit.Framework;
 using Risk.Shared;
-using Xunit;
 
 namespace Risk.IntegrationTests
 {
-    public class GameControllerTests : IClassFixture<WebApplicationFactory<Risk.Api.Startup>>
+    public class GameControllerTests
     {
-        private HttpClient httpClient;
-        private readonly WebApplicationFactory<Risk.Api.Startup> factory;
-
-        public GameControllerTests(WebApplicationFactory<Risk.Api.Startup> factory)
+        [Test]
+        public async Task GetStatus_WithoutGameStarted_ShowsNothing()
         {
-            this.factory = factory;
-        }
+            //var joinRequest = new JoinRequest {
+            //    CallbackBaseAddress = "http://localhost:6001",
+            //    Name = "in-memory client"
+            //};
+            //var joinResponse = await (await serverClient.PostAsJsonAsync("/join", joinRequest)).Content.ReadAsStringAsync();
 
-        [Fact]
-        public async Task CanHitGameStatus()
-        {
-            httpClient = factory.CreateClient();
-
-            var response = await httpClient.GetAsync("/GameStatus");
-
-            Assert.True(response.IsSuccessStatusCode);
-
-
-        }
-
-        [Fact]
-        public async Task CanGetGameStatusWhileInJoining()
-        {
-            httpClient = factory.CreateClient();
-
-            var response = await httpClient.GetAsync("/GameStatus");
-
-        }
-
-        [Fact]
-        public async Task CanOnlyJoinWhenInJoining()
-        {
-            httpClient = factory.CreateClient();
+            //var status = serverClient.GetAsync("/status");
         }
     }
 }

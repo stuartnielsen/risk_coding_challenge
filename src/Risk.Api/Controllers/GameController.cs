@@ -2,10 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Runtime.InteropServices.ComTypes;
 using System.Threading.Tasks;
+using FluentAssertions.Common;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Configuration;
 using Risk.Shared;
 
 namespace Risk.Api.Controllers
@@ -15,12 +18,15 @@ namespace Risk.Api.Controllers
     {
         private readonly Game.Game game;
         private IMemoryCache memoryCache;
-        private readonly IHttpClientFactory client;
+        private readonly IHttpClientFactory clientFactory;
+        private readonly IConfiguration config;
 
-        public GameController(Game.Game game, IMemoryCache memoryCache, IHttpClientFactory client)
+        //ToDo: Register gameRunner as a service and inject into constructor so integration tests can be run
+        public GameController(Game.Game game, IMemoryCache memoryCache, IHttpClientFactory client, IConfiguration config)
         {
             this.game = game;
-            this.client = client;
+            this.clientFactory = client;
+            this.config = config;
             this.memoryCache = memoryCache;
         }
 
@@ -30,7 +36,7 @@ namespace Risk.Api.Controllers
             var response = await CheckClientConnection(joinRequest.CallbackBaseAddress);
             if (game.GameState == GameState.Joining && response == "yes")
             {
-                string playerToken = game.AddPlayer(joinRequest.Name);
+                string playerToken = game.AddPlayer(joinRequest.Name, joinRequest.CallbackBaseAddress);
                 return Ok(new JoinResponse {
                     Token = playerToken
                 });
@@ -44,7 +50,7 @@ namespace Risk.Api.Controllers
         private async Task<string> CheckClientConnection(string baseAddress)
         {
             //client.CreateClient().BaseAddress = new Uri(baseAddress);
-            var response = await client.CreateClient().GetStringAsync($"{baseAddress}/areYouThere");
+            var response = await clientFactory.CreateClient().GetStringAsync($"{baseAddress}/areYouThere");
             return response;
         }
 
@@ -77,6 +83,23 @@ namespace Risk.Api.Controllers
 
             newGame.StartJoining();
             return newGame;
+        }
+
+        [HttpPost("[action]")]
+        public async Task<IActionResult> StartGame(StartGameRequest startGameRequest)
+        {
+            if(game.GameState != GameState.Joining)
+            {
+                return BadRequest("Game not in Joining state");
+            }
+            if(config["secretCode"] != startGameRequest.SecretCode)
+            {
+                return BadRequest("Secret code doesn't match, unable to start game.");
+            }
+            game.StartGame();
+            var gameRunner = new GameRunner(clientFactory.CreateClient(), game);
+            await gameRunner.StartGameAsync();
+            return Ok();
         }
     }
 }
