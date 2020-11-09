@@ -68,6 +68,7 @@ namespace Risk.Api
 
         private async Task doBattle()
         {
+            game.startTime = DateTime.Now;
             //logic to determine whether or not we keep doing battle
             foreach (var currentPlayer in players)
             {
@@ -106,26 +107,45 @@ namespace Risk.Api
                 .Content.ReadFromJsonAsync<BeginAttackResponse>();
         }
 
-        private Task reportWinner()
+        private async Task reportWinner()
         {
-            var maxNumOfTerritories = 0;
-            var winnerPlayer = new ApiPlayer();
-            
+            game.endTime = DateTime.Now;
+            TimeSpan gameDuration = game.endTime - game.startTime;
+
+            var scores = new List<(int, ApiPlayer)>();
+
             foreach (var currentPlayer in players)
             {
+                var playerScore = 2 * game.getNumTerritories(currentPlayer) + game.getNumPlacedArmies(currentPlayer);
 
-                var numOfTerritories = game.getNumTerritories(currentPlayer);
-                
-                if(numOfTerritories >= maxNumOfTerritories)
+                foreach(var player in scores)
                 {
-                    maxNumOfTerritories = numOfTerritories;
-                    winnerPlayer = currentPlayer;
+
                 }
 
+                scores.Add((playerScore, currentPlayer));
 
-
-
+                await sendGameOverRequest(currentPlayer, gameDuration, scores);
             }
+
+        }
+
+
+        private Task sendGameOverRequest(ApiPlayer player, TimeSpan gameDuration, List<(int, ApiPlayer)> scores)
+        {
+            scores.Sort();
+            
+            var gameOverRequest = new GameOverRequest {
+                FinalBoard = game.Board.Territories,
+                GameDuration = gameDuration,
+                WinnerName = scores.Last().Item2.Name,
+                FinalScores = scores.ToDictionary(x => x.Item1, x => x.Item2.Name)
+            };
+
+            return (player.HttpClient.PostAsJsonAsync("/gameOver", gameOverRequest));
+               
+        }
+
 
         public bool IsAllArmiesPlaced()
         {

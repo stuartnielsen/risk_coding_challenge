@@ -19,6 +19,9 @@ namespace Risk.Game
 
         public Board Board { get; private set; }
         private GameState gameState { get; set; }
+
+        public DateTime startTime { get; set; }
+        public DateTime endTime { get; set; }
         public int StartingArmies { get; }
         public GameState GameState => gameState;
         public IEnumerable<IPlayer> Players => players;
@@ -155,8 +158,10 @@ namespace Risk.Game
         {
             return Board.Territories
                         .Where(t => t.Owner == player)
-                        .Sum(t => t.numLocations);
+                        .Count();
         }
+
+
 
     }
 }

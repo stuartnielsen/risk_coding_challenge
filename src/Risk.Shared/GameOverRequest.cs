@@ -17,7 +17,7 @@ namespace Risk.Shared
         /// <summary>
         /// Player name, final score
         /// </summary>
-        public Dictionary<string, int> FinalScores { get; set; }
+        public Dictionary<int, string> FinalScores { get; set; }
         public TimeSpan GameDuration { get; set; }
     }
 }
