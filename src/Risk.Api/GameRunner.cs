@@ -64,10 +64,10 @@ namespace Risk.Api
                 Status = deploymentStatus,
                 ArmiesRemaining = game.GetPlayerRemainingArmies(currentPlayer.Token)
             };
-            var deployArmyResponse = await (await currentPlayer.HttpClient.PostAsJsonAsync("/deployArmy", deployArmyRequest))
-                .EnsureSuccessStatusCode()
-                .Content.ReadFromJsonAsync<DeployArmyResponse>();
-            return deployArmyResponse;
+            var deployArmyResponse = (await currentPlayer.HttpClient.PostAsJsonAsync("/deployArmy", deployArmyRequest));
+            deployArmyResponse.EnsureSuccessStatusCode();
+            var r = await deployArmyResponse.Content.ReadFromJsonAsync<DeployArmyResponse>();
+            return r;
         }
 
         private async Task doBattle()
