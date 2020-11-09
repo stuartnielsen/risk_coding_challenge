@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -10,6 +11,7 @@ using FluentAssertions.Common;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Risk.Shared;
 
 namespace Risk.Api.Controllers
@@ -17,7 +19,7 @@ namespace Risk.Api.Controllers
     [ApiController]
     public class GameController : Controller
     {
-        private readonly Game.Game game;
+        private Game.Game game;
         private IMemoryCache memoryCache;
         private readonly IHttpClientFactory clientFactory;
         private readonly IConfiguration config;
@@ -81,12 +83,14 @@ namespace Risk.Api.Controllers
             return Ok(gameStatus);
         }
 
-        public static Game.Game InitializeGame (int height, int width, int numOfArmies)
+        public static Game.Game InitializeGame (int height, int width, int numOfArmies, IEnumerable<IPlayer> players)
         {
-            GameStartOptions startOptions = new GameStartOptions();
-            startOptions.Height = height;
-            startOptions.Width = width;
-            startOptions.StartingArmiesPerPlayer = numOfArmies;
+            GameStartOptions startOptions = new GameStartOptions {
+                Height = height,
+                Width = width,
+                StartingArmiesPerPlayer = numOfArmies,
+                Players = players
+            };
             Game.Game newGame = new Game.Game(startOptions);
 
             newGame.StartJoining();
