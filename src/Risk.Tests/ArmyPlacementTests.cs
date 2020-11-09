@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using FluentAssertions;
 using NUnit.Framework;
+using Risk.Api;
 using Risk.Game;
 using Risk.Shared;
 
@@ -11,31 +12,37 @@ namespace Risk.Tests
     public class ArmyPlacementTests
     {
         private Game.Game game;
-        private string player1;
-        private string player2;
+        private string player1Token;
+        private string player2Token;
+        private List<ApiPlayer> players;
 
         [SetUp]
         public void SetUp()
         {
-            game = new Game.Game(new GameStartOptions { Height = 2, Width = 2, StartingArmiesPerPlayer = 5 });
+            players = new List<ApiPlayer>();
+            game = new Game.Game(new GameStartOptions { Height = 2, Width = 2, StartingArmiesPerPlayer = 5, Players = players });
             game.StartJoining();
-            player1 = game.AddPlayer("player1", "");
-            player2 = game.AddPlayer("player2", "");
+
+            player1Token = Guid.NewGuid().ToString();
+            player2Token = Guid.NewGuid().ToString();
+
+            players.Add(new ApiPlayer("player1", player1Token, null));
+            players.Add(new ApiPlayer("player2", player2Token, null));
             game.StartGame();
         }
 
         [Test]
         public void CanPlaceArmyInUnoccupiedTerritory()
         {
-            var placeResult = game.TryPlaceArmy(player1, new Location(0, 0));
+            var placeResult = game.TryPlaceArmy(player1Token, new Location(0, 0));
             placeResult.Should().BeTrue();
         }
 
         [Test]
         public void CannotPlaceArmyInTerritoryOccupiedByAnotherPlayer()
         {
-            game.TryPlaceArmy(player1, new Location(0, 0));
-            var placeResult = game.TryPlaceArmy(player2, new Location(0, 0));
+            game.TryPlaceArmy(player1Token, new Location(0, 0));
+            var placeResult = game.TryPlaceArmy(player2Token, new Location(0, 0));
             placeResult.Should().BeFalse();
         }
 
@@ -43,8 +50,8 @@ namespace Risk.Tests
         public void PlacingAnotherArmyOnTheSameTerritoryIncreasesTheNumberOfArmies()
         {
             var location = new Location(0, 0);
-            game.TryPlaceArmy(player1, location);
-            game.TryPlaceArmy(player1, location);
+            game.TryPlaceArmy(player1Token, location);
+            game.TryPlaceArmy(player1Token, location);
             var territory = game.Board.GetTerritory(location);
             territory.Armies.Should().Be(2);
         }
@@ -53,10 +60,10 @@ namespace Risk.Tests
         public void AfterPlacingTwoArmiesYouHaveThreeArmiesRemaining()
         {
             var location = new Location(0, 0);
-            game.TryPlaceArmy(player1, location);
-            game.TryPlaceArmy(player1, location);
+            game.TryPlaceArmy(player1Token, location);
+            game.TryPlaceArmy(player1Token, location);
 
-            var remainingArmies = game.GetPlayerRemainingArmies(player1);
+            var remainingArmies = game.GetPlayerRemainingArmies(player1Token);
             remainingArmies.Should().Be(3);
         }
 
@@ -66,17 +73,17 @@ namespace Risk.Tests
             //AAA: arrange, act, assert
             //Arrange
             var location = new Location(0, 0);
-            game.TryPlaceArmy(player1, location);
-            game.TryPlaceArmy(player1, location);
-            game.TryPlaceArmy(player1, location);
-            game.TryPlaceArmy(player1, location);
-            var placeResult = game.TryPlaceArmy(player1, location);
-            var remainingArmies = game.GetPlayerRemainingArmies(player1);
+            game.TryPlaceArmy(player1Token, location);
+            game.TryPlaceArmy(player1Token, location);
+            game.TryPlaceArmy(player1Token, location);
+            game.TryPlaceArmy(player1Token, location);
+            var placeResult = game.TryPlaceArmy(player1Token, location);
+            var remainingArmies = game.GetPlayerRemainingArmies(player1Token);
             placeResult.Should().BeTrue();
             remainingArmies.Should().Be(0);
 
             //Act
-            placeResult = game.TryPlaceArmy(player1, location);
+            placeResult = game.TryPlaceArmy(player1Token, location);
 
             //Assert
             placeResult.Should().BeFalse();
@@ -89,31 +96,30 @@ namespace Risk.Tests
             //AAA: arrange, act, assert
             //Arrange
             var location = new Location(0, 0);
-            game.TryPlaceArmy(player1, location);
-            game.TryPlaceArmy(player1, location);
-            game.TryPlaceArmy(player1, location);
-            game.TryPlaceArmy(player1, location);
-            game.TryPlaceArmy(player1, location);               //Placing 5th army
+            game.TryPlaceArmy(player1Token, location);
+            game.TryPlaceArmy(player1Token, location);
+            game.TryPlaceArmy(player1Token, location);
+            game.TryPlaceArmy(player1Token, location);
+            game.TryPlaceArmy(player1Token, location);               //Placing 5th army
 
-            var remainingArmies = game.GetPlayerRemainingArmies(player1);
+            var remainingArmies = game.GetPlayerRemainingArmies(player1Token);
 
             remainingArmies.Should().Be(0);       //remainingArmies should be 0
 
-            var placeResult = game.TryPlaceArmy(player1, location);      //Trying to place army after armyDeploymentState is False
+            var placeResult = game.TryPlaceArmy(player1Token, location);      //Trying to place army after armyDeploymentState is False
             placeResult.Should().BeFalse();           //Result returns false
         }
 
         [Test]
         public void CannotPlaceArmyWhenNotInArmyDeploymentState()
         {
-            game = new Game.Game(new GameStartOptions { Height = 2, Width = 2, StartingArmiesPerPlayer = 5 });
+            game = new Game.Game(new GameStartOptions { Height = 2, Width = 2, StartingArmiesPerPlayer = 5 , Players = players});
             game.StartJoining();
-            player1 = game.AddPlayer("player1", "");
-            player2 = game.AddPlayer("player2", "");
+
             //game.StartGame(); don't start the game, gamestate stays 'joining'
 
             var location = new Location(0, 0);
-            var placeResults = game.TryPlaceArmy(player1, location);
+            var placeResults = game.TryPlaceArmy(player1Token, location);
 
             placeResults.Should().BeFalse();
         }

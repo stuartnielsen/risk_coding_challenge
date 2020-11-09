@@ -12,14 +12,14 @@ namespace Risk.Api
 {
     public class GameRunner
     {
-        private readonly HttpClient client;
         private readonly Game.Game game;
+        private readonly IEnumerable<ApiPlayer> players;
         public const int MaxFailedTries = 5;
 
-        public GameRunner(HttpClient client, Game.Game game)
+        public GameRunner(Game.Game game, IEnumerable<ApiPlayer> players)
         {
-            this.client = client;
             this.game = game;
+            this.players = players;
         }
 
         public async Task StartGameAsync()
@@ -31,9 +31,9 @@ namespace Risk.Api
 
         private async Task deployArmiesAsync()
         {
-            while(game.Board.Territories.Sum(t=>t.Armies) < game.StartingArmies * game.Players.Count())
+            while(game.Board.Territories.Sum(t=>t.Armies) < game.StartingArmies * players.Count())
             {
-                foreach (var currentPlayer in game.Players)
+                foreach (var currentPlayer in players)
                 {
                     var deployArmyResponse = await askForDeployLocationAsync(currentPlayer, DeploymentStatus.YourTurn);
 
@@ -53,14 +53,14 @@ namespace Risk.Api
             }
         }
 
-        private async Task<DeployArmyResponse> askForDeployLocationAsync(Player currentPlayer, DeploymentStatus deploymentStatus)
+        private async Task<DeployArmyResponse> askForDeployLocationAsync(ApiPlayer currentPlayer, DeploymentStatus deploymentStatus)
         {
             var deployArmyRequest = new DeployArmyRequest {
                 Board = game.Board.Territories,
                 Status = deploymentStatus,
                 ArmiesRemaining = game.GetPlayerRemainingArmies(currentPlayer.Token)
             };
-            var deployArmyResponse = await (await client.PostAsJsonAsync($"{currentPlayer.CallbackAddress}/deployArmy", deployArmyRequest))
+            var deployArmyResponse = await (await currentPlayer.HttpClient.PostAsJsonAsync("/deployArmy", deployArmyRequest))
                 .EnsureSuccessStatusCode()
                 .Content.ReadFromJsonAsync<DeployArmyResponse>();
             return deployArmyResponse;
@@ -69,7 +69,7 @@ namespace Risk.Api
         private async Task doBattle()
         {
             //logic to determine whether or not we keep doing battle
-            foreach (var currentPlayer in game.Players)
+            foreach (var currentPlayer in players)
             {
                 var beginAttackResponse = await askForAttackLocationAsync(currentPlayer, BeginAttackStatus.YourTurn);
 
@@ -95,13 +95,13 @@ namespace Risk.Api
             }
         }
 
-        private async Task<BeginAttackResponse> askForAttackLocationAsync(Player player, BeginAttackStatus beginAttackStatus )
+        private async Task<BeginAttackResponse> askForAttackLocationAsync(ApiPlayer player, BeginAttackStatus beginAttackStatus )
         {
             var beginAttackRequest = new BeginAttackRequest {
                 Board = game.Board.Territories,
                 Status = beginAttackStatus
             };
-            return await (await client.PostAsJsonAsync($"{player.CallbackAddress}/beginAttack", beginAttackRequest))
+            return await (await player.HttpClient.PostAsJsonAsync("/beginAttack", beginAttackRequest))
                 .EnsureSuccessStatusCode()
                 .Content.ReadFromJsonAsync<BeginAttackResponse>();
         }

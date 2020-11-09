@@ -6,6 +6,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using Risk.Shared;
 using Risk.Game;
+using Risk.Api;
 
 namespace Risk.Tests
 {
@@ -13,16 +14,16 @@ namespace Risk.Tests
     {
 
         Game.Game game;
-        string player1;
-        string player2;
+        private List<ApiPlayer> players;
 
         [SetUp]
         public void SetUp()
         {
-            game = new Game.Game(new GameStartOptions { Height = 2, Width = 2, StartingArmiesPerPlayer = 5 });
+            players = new List<ApiPlayer>();
+            game = new Game.Game(new GameStartOptions { Height = 2, Width = 2, StartingArmiesPerPlayer = 5, Players = players });
             game.StartJoining();
-            player1 = game.AddPlayer("player1", "");
-            player2 = game.AddPlayer("player2", "");
+            players.Add(new ApiPlayer("player1", "", null));
+            players.Add(new ApiPlayer("player2", "", null));
         }
 
         [Test]

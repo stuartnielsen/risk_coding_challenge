@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using NUnit.Framework;
+using Risk.Api;
 using Risk.Shared;
 
 namespace Risk.Tests
@@ -11,22 +12,23 @@ namespace Risk.Tests
     {
         private Game.Game game;
         private Territory territory;
+        private List<ApiPlayer> players;
         [SetUp]
         public void Setup()
         {
             int width = 2;
             int height = 2;
 
-            game = new Game.Game(new GameStartOptions { Height = height, Width = width, StartingArmiesPerPlayer = 5 });
+            players = new List<ApiPlayer>();
+            game = new Game.Game(new GameStartOptions { Height = height, Width = width, StartingArmiesPerPlayer = 5, Players = players });
             game.StartJoining();
         }
 
         [Test]
         public void GetGameStatusReturnsAllPlayersWhoveJoined()
         {
-            var player1 = new Player("player1", "token", "callBackAddress");
-
-            game.AddPlayer(player1.Name, player1.CallbackAddress);
+            var player1 = new ApiPlayer("player1", "token", null);
+            players.Add(player1);
 
             var gameStatus = game.GetGameStatus();
 
@@ -45,11 +47,8 @@ namespace Risk.Tests
         [Test]
         public void GetGameStatusHasPlayersWithArmyAndTerritoryCount()
         {
-            string playerName = "Player1";
-            string playerCallBackAddress = "";
-            game.AddPlayer(playerName, playerCallBackAddress);
-
-            var player1 = game.Players.First();
+            var player1 = new ApiPlayer("player1", "token", null);
+            players.Add(player1);
 
             game.StartGame();
 

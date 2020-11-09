@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -20,24 +21,32 @@ namespace Risk.Api.Controllers
         private IMemoryCache memoryCache;
         private readonly IHttpClientFactory clientFactory;
         private readonly IConfiguration config;
+        private readonly ConcurrentBag<ApiPlayer> players;
 
-        public GameController(Game.Game game, IMemoryCache memoryCache, IHttpClientFactory client, IConfiguration config)
+        public GameController(Game.Game game, IMemoryCache memoryCache, IHttpClientFactory client, IConfiguration config, ConcurrentBag<ApiPlayer> players)
         {
             this.game = game;
             this.clientFactory = client;
             this.config = config;
+            this.players = players;
             this.memoryCache = memoryCache;
         }
 
         [HttpPost("[action]")]
         public async Task<IActionResult> Join(JoinRequest joinRequest)
         {
-            var response = await CheckClientConnection(joinRequest.CallbackBaseAddress);
-            if (game.GameState == GameState.Joining && response == "yes")
+            if (game.GameState == GameState.Joining && await ClientIsRepsonsive(joinRequest.CallbackBaseAddress))
             {
-                string playerToken = game.AddPlayer(joinRequest.Name, joinRequest.CallbackBaseAddress);
+                var newPlayer = new ApiPlayer(
+                    name: joinRequest.Name,
+                    token: Guid.NewGuid().ToString(),
+                    httpClient: clientFactory.CreateClient()
+                );
+                newPlayer.HttpClient.BaseAddress = new Uri(joinRequest.CallbackBaseAddress);
+
+                players.Add(newPlayer);
                 return Ok(new JoinResponse {
-                    Token = playerToken
+                    Token = newPlayer.Token
                 });
             }
             else
@@ -46,11 +55,11 @@ namespace Risk.Api.Controllers
             }
         }
 
-        private async Task<string> CheckClientConnection(string baseAddress)
+        private async Task<bool> ClientIsRepsonsive(string baseAddress)
         {
             //client.CreateClient().BaseAddress = new Uri(baseAddress);
             var response = await clientFactory.CreateClient().GetStringAsync($"{baseAddress}/areYouThere");
-            return response;
+            return response == "yes";
         }
 
         [HttpGet("status")]
@@ -96,7 +105,7 @@ namespace Risk.Api.Controllers
                 return BadRequest("Secret code doesn't match, unable to start game.");
             }
             game.StartGame();
-            var gameRunner = new GameRunner(clientFactory.CreateClient(), game);
+            var gameRunner = new GameRunner(game, players);
             await gameRunner.StartGameAsync();
             return Ok();
         }

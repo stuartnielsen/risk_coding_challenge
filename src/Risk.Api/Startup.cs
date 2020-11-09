@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
@@ -32,10 +33,11 @@ namespace Risk.Api
             services.AddControllers()
                 .AddJsonOptions(options =>
                     options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase);
-            services.AddSingleton<Game.Game>(GameController.InitializeGame(
+            services.AddSingleton(GameController.InitializeGame(
                 int.Parse(Configuration["height"] ?? "5"),
                 int.Parse(Configuration["width"] ?? "5"),
                 int.Parse(Configuration["startingArmies"] ?? "5")));
+            services.AddSingleton(new ConcurrentBag<ApiPlayer>());
 
             services.AddMemoryCache();
             services.AddHttpClient();

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using FluentAssertions;
 using NUnit.Framework;
+using Risk.Api;
 using Risk.Game;
 using Risk.Shared;
 
@@ -19,7 +20,7 @@ namespace Risk.Tests
             int height = 2;
 
             game = new Game.Game(new GameStartOptions { Height = height, Width = width });
-            Player player = new Player("Rusty", "kc7wzl", "");
+            IPlayer player = new ApiPlayer("Rusty", "kc7wzl", null);
             Location attacker = new Location(1,1);
             territory = new Territory(attacker);
             territory.Owner = player;

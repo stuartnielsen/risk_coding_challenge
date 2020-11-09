@@ -13,9 +13,10 @@ namespace Risk.Tests
     public class GameRunnerTests
     {
         private Game.Game game;
-        private string player1;
-        private string player2;
+        private string player1Token;
+        private string player2Token;
         private GameRunner gameRunner;
+        private List<ApiPlayer> players;
 
         [SetUp]
         public void SetUp()
@@ -23,19 +24,25 @@ namespace Risk.Tests
             var httpClientMock = new Mock<HttpClient>();
             //httpClientMock.Setup()
 
-            game = new Game.Game(new GameStartOptions { Height = 2, Width = 2, StartingArmiesPerPlayer = 1 });
+            players = new List<ApiPlayer>();
+            game = new Game.Game(new GameStartOptions { Height = 2, Width = 2, StartingArmiesPerPlayer = 1, Players = players });
             game.StartJoining();
-            player1 = game.AddPlayer("player1", "");
-            player2 = game.AddPlayer("player2", "");
+
+            player1Token = Guid.NewGuid().ToString();
+            player2Token = Guid.NewGuid().ToString();
+
+            players.Add(new ApiPlayer("player1", player1Token, null));
+            players.Add(new ApiPlayer("player2", player2Token, null));
+
             game.StartGame();
-            gameRunner = new GameRunner(httpClientMock.Object, game);
+            gameRunner = new GameRunner(game, players);
         }
 
         [Test]
         public void IsAllArmiesPlacedReturnsTrueIfAllArmiesArePlace()
         {
-            game.TryPlaceArmy(player1, new Location(0, 0));
-            game.TryPlaceArmy(player2, new Location(1, 0));
+            game.TryPlaceArmy(player1Token, new Location(0, 0));
+            game.TryPlaceArmy(player2Token, new Location(1, 0));
 
             Assert.IsTrue(gameRunner.IsAllArmiesPlaced());
         }
@@ -43,7 +50,7 @@ namespace Risk.Tests
         [Test]
         public void IsAllArmiesPlacedReturnsFalseIfOnePlayerHasRemainingArmies()
         {
-            game.TryPlaceArmy(player1, new Location(0, 0));
+            game.TryPlaceArmy(player1Token, new Location(0, 0));
             Assert.IsFalse(gameRunner.IsAllArmiesPlaced());
         }
 
@@ -64,13 +71,13 @@ namespace Risk.Tests
         public void After1DeploymentRequestFailuresRemovesPlayerFromBoard()
         {
             bool isPlayerOnBoard = true;
-            game.TryPlaceArmy(player1, new Location(0, 0));
-            game.TryPlaceArmy(player2, new Location(1, 0));
-            gameRunner.RemovePlayerFromBoard(player1);
+            game.TryPlaceArmy(player1Token, new Location(0, 0));
+            game.TryPlaceArmy(player2Token, new Location(1, 0));
+            gameRunner.RemovePlayerFromBoard(player1Token);
 
             foreach (Territory territory in game.Board.Territories)
             {
-                if (territory.Owner != null && territory.Owner.Token != player1)
+                if (territory.Owner != null && territory.Owner.Token != player1Token)
                 {
                     isPlayerOnBoard = false;
                 }

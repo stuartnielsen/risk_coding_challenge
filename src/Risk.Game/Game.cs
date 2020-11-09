@@ -9,21 +9,19 @@ namespace Risk.Game
     {
         public Game(GameStartOptions startOptions)
         {
-            players = new List<Player>();
+            players = startOptions.Players;
             Board = new Board(createTerritories(startOptions.Height, startOptions.Width));
             StartingArmies = startOptions.StartingArmiesPerPlayer;
             gameState = GameState.Initializing;
         }
 
-        private readonly List<Player> players;
+        private IEnumerable<IPlayer> players;
 
         public Board Board { get; private set; }
         private GameState gameState { get; set; }
         public int StartingArmies { get; }
-
         public GameState GameState => gameState;
-
-        public IEnumerable<Player> Players => players;// { get; private set; }
+        public IEnumerable<IPlayer> Players => players;
 
         private IEnumerable<Territory> createTerritories(int height, int width)
         {
@@ -46,20 +44,6 @@ namespace Risk.Game
         public void StartGame()
         {
             gameState = GameState.Deploying;
-        }
-
-        public string AddPlayer(string playerName, string callbackAddress)
-        {
-            if (gameState == GameState.Joining)
-            {
-                var p = new Player(
-                    name: playerName,
-                    token: Guid.NewGuid().ToString(),
-                    callbackAddress: callbackAddress);
-                players.Add(p);
-                return p.Token;
-            }
-            throw new InvalidGameStateException("Unable to join game.", gameState);
         }
 
         public bool TryPlaceArmy(string playerToken, Location desiredLocation)
@@ -110,7 +94,7 @@ namespace Risk.Game
             return StartingArmies - armiesOnBoard;
         }
 
-        public Player getPlayer(string token)
+        public IPlayer getPlayer(string token)
         {
             return players.Single(p => p.Token == token);
         }
@@ -158,7 +142,7 @@ namespace Risk.Game
             return new GameStatus(players, GameState, playerInfo);
         }
 
-        public int getNumPlacedArmies(Player player)
+        public int getNumPlacedArmies(IPlayer player)
         {
             return Board.Territories
                         .Where(t => t.Owner == player)
