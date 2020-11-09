@@ -63,7 +63,7 @@ namespace Risk.Game
 
             if (territory.Owner == null)
             {
-                territory.Owner = getPlayer(playerToken);
+                territory.Owner = GetPlayer(playerToken);
                 territory.Armies = 1;
                 placeResult = true;
             }
@@ -90,15 +90,14 @@ namespace Risk.Game
             return placeResult;
         }
 
-
         public int GetPlayerRemainingArmies(string playerToken)
         {
-            var player = getPlayer(playerToken);
+            var player = GetPlayer(playerToken);
             var armiesOnBoard = GetNumPlacedArmies(player);
             return StartingArmies - armiesOnBoard;
         }
 
-        public IPlayer getPlayer(string token)
+        public IPlayer GetPlayer(string token)
         {
             return players.Single(p => p.Token == token);
         }
@@ -123,10 +122,9 @@ namespace Risk.Game
         {
             var territoryFrom = Board.Territories.Single(t => t.Location == from);
             var territoryTo = Board.Territories.Single(t => t.Location == to);
-            var player = getPlayer(playerToken);
+            var player = GetPlayer(playerToken);
             return (territoryFrom.Owner == player && territoryTo.Owner != player);
         }
-
 
         public GameStatus GetGameStatus()
         {
@@ -162,8 +160,6 @@ namespace Risk.Game
             int[] attackerDice = new int[3];
             int[] defenderDice = new int[2];
 
-
-
             for (int i = 0; i < attackingTerritory.Armies - 1 && i <= 3; i++)
             {
                 attackerDice[i] = rand.Next(1, 7);
@@ -182,7 +178,6 @@ namespace Risk.Game
                     attackingTerritory.Armies = attackingTerritory.Armies - 1;
             }
         }
-
 
         public int GetNumTerritories(IPlayer player)
         {

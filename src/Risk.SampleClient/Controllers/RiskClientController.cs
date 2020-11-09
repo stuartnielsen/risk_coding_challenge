@@ -80,7 +80,6 @@ namespace Risk.SampleClient.Controllers
             return response;
         }
 
-
         [HttpPost("gameOver")]
         public IActionResult GameOver([FromBody]GameOverRequest gameOverRequest)
         {

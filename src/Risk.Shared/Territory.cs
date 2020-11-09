@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.Json.Serialization;
 
 namespace Risk.Shared
 {
@@ -16,17 +17,11 @@ namespace Risk.Shared
 
         public Location Location { get; set; }
 
+        [JsonIgnore]
         public IPlayer Owner { get; set; }
+
         public int Armies { get; set; }
 
-        public override string ToString()
-        {
-            if (Owner == null)
-            {
-                return $"{Location}: (Unoccupied)";
-            }
-
-            return $"{Location}: {Armies:n0} of {Owner}";
-        }
+        public override string ToString() => $"{Location}: {Armies:n0} of {Owner?.Name ?? "(Unoccupied)"}";
     }
 }

@@ -13,11 +13,19 @@ namespace Risk.Shared
         /// <summary>
         /// Final game state
         /// </summary>
-        public IEnumerable<Territory> FinalBoard { get; set; }
+        public IEnumerable<BoardTerritory> FinalBoard { get; set; }
         /// <summary>
         /// Player name, final score
         /// </summary>
-        public Dictionary<int, string> FinalScores { get; set; }
-        public TimeSpan GameDuration { get; set; }
+        public IEnumerable<string> FinalScores { get; set; }
+        public string GameDuration { get; set; }
+    }
+
+    public class BoardTerritory
+    {
+        public Location Location { get; set; }
+        public string OwnerName { get; set; }
+        public int Armies { get; set; }
+        public override string ToString() => $"{Location}: {Armies:n0} of {OwnerName ?? "(Unoccupied)"}";
     }
 }

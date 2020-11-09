@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Numerics;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
@@ -73,10 +74,9 @@ namespace Risk.Api
         private async Task doBattle()
         {
             game.StartTime = DateTime.Now;
-            while (game.GameState == GameState.Attacking)
+            while (players.Count > 1 && game.GameState == GameState.Attacking)
             {
-                for(int i = 0; i < game.Players.Count(); i++)
-                //foreach (var currentPlayer in game.Players)
+                for(int i = 0; i < players.Count; i++)
                 {
                     var beginAttackResponse = await askForAttackLocationAsync(players[i], BeginAttackStatus.YourTurn);
 
@@ -161,16 +161,14 @@ namespace Risk.Api
         private async Task sendGameOverRequest(ApiPlayer player, TimeSpan gameDuration, List<(int score, ApiPlayer player)> scores)
         {
             var gameOverRequest = new GameOverRequest {
-                FinalBoard = game.Board.Territories,
-                GameDuration = gameDuration,
+                FinalBoard = game.Board.Territories.Select(b=>new BoardTerritory { OwnerName = b.Owner?.Name, Armies = b.Armies, Location = b.Location }),
+                GameDuration = gameDuration.ToString(),
                 WinnerName = scores.Last().player.Name,
-                FinalScores = new Dictionary<int, string>(from s in scores
-                                                          select new KeyValuePair<int, string>(s.score, s.player.Name))
+                FinalScores = scores.Select(s => $"{s.player.Name} ({s.score})")
             };
 
-            await (player.HttpClient.PostAsJsonAsync("/gameOver", gameOverRequest));
+            var response = await (player.HttpClient.PostAsJsonAsync("/gameOver", gameOverRequest));
         }
-
 
         public bool IsAllArmiesPlaced()
         {
@@ -191,7 +189,7 @@ namespace Risk.Api
         {
             foreach (Territory territory in game.Board.Territories)
             {
-                if (territory.Owner == game.getPlayer(token))
+                if (territory.Owner == game.GetPlayer(token))
                 {
                     territory.Owner = null;
                     territory.Armies = 0;
