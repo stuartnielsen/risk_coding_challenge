@@ -18,7 +18,10 @@ namespace Risk.Game
         private IEnumerable<IPlayer> players;
 
         public Board Board { get; private set; }
-        public GameState gameState { get; set; }
+        private GameState gameState { get; set; }
+
+        public DateTime StartTime { get; set; }
+        public DateTime EndTime { get; set; }
         public int StartingArmies { get; }
         public GameState GameState => gameState;
         public IEnumerable<IPlayer> Players => players;
@@ -91,7 +94,7 @@ namespace Risk.Game
         public int GetPlayerRemainingArmies(string playerToken)
         {
             var player = getPlayer(playerToken);
-            var armiesOnBoard = getNumPlacedArmies(player);
+            var armiesOnBoard = GetNumPlacedArmies(player);
             return StartingArmies - armiesOnBoard;
         }
 
@@ -131,7 +134,7 @@ namespace Risk.Game
 
             foreach (var player in Players)
             {
-                int numPlacedArmies = getNumPlacedArmies(player);
+                int numPlacedArmies = GetNumPlacedArmies(player);
                 int numOwnedTerritories = Board.Territories.Where(t => t.Owner == player)
                                                             .Count();
 
@@ -143,7 +146,7 @@ namespace Risk.Game
             return new GameStatus(players, GameState, playerInfo);
         }
 
-        public int getNumPlacedArmies(IPlayer player)
+        public int GetNumPlacedArmies(IPlayer player)
         {
             return Board.Territories
                         .Where(t => t.Owner == player)
@@ -179,5 +182,16 @@ namespace Risk.Game
                     attackingTerritory.Armies = attackingTerritory.Armies - 1;
             }
         }
+
+
+        public int GetNumTerritories(IPlayer player)
+        {
+            return Board.Territories
+                        .Where(t => t.Owner == player)
+                        .Count();
+        }
+
+
+
     }
 }

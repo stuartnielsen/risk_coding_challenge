@@ -72,8 +72,8 @@ namespace Risk.Api
 
         private async Task doBattle()
         {
-
-            while (game.gameState == GameState.Attacking)
+            game.StartTime = DateTime.Now;
+            while (game.GameState == GameState.Attacking)
             {
                 for(int i = 0; i < game.Players.Count(); i++)
                 //foreach (var currentPlayer in game.Players)
@@ -136,10 +136,41 @@ namespace Risk.Api
                 .Content.ReadFromJsonAsync<BeginAttackResponse>();
         }
 
-        private Task reportWinner()
+        private async Task reportWinner()
         {
-            throw new NotImplementedException();
+            game.EndTime = DateTime.Now;
+            TimeSpan gameDuration = game.EndTime - game.StartTime;
+
+            var scores = new List<(int, ApiPlayer)>();
+
+            foreach (var currentPlayer in players)
+            {
+                var playerScore = 2 * game.GetNumTerritories(currentPlayer) + game.GetNumPlacedArmies(currentPlayer);
+
+                scores.Add((playerScore, currentPlayer));
+            }
+
+            scores.Sort();
+
+            foreach (var currentPlayer in players)
+            {
+                await sendGameOverRequest(currentPlayer, gameDuration, scores);
+            }
         }
+
+        private async Task sendGameOverRequest(ApiPlayer player, TimeSpan gameDuration, List<(int score, ApiPlayer player)> scores)
+        {
+            var gameOverRequest = new GameOverRequest {
+                FinalBoard = game.Board.Territories,
+                GameDuration = gameDuration,
+                WinnerName = scores.Last().player.Name,
+                FinalScores = new Dictionary<int, string>(from s in scores
+                                                          select new KeyValuePair<int, string>(s.score, s.player.Name))
+            };
+
+            await (player.HttpClient.PostAsJsonAsync("/gameOver", gameOverRequest));
+        }
+
 
         public bool IsAllArmiesPlaced()
         {
