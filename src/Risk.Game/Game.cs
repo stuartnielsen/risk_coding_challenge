@@ -153,7 +153,8 @@ namespace Risk.Game
 
         public void RollDice(BeginAttackResponse beginAttack)
         {
-            var rand = new Random();
+            int seed = 2;
+            var rand = new Random(seed);
             var attackingTerritory = new Territory(beginAttack.From);
             var defendingTerritory = new Territory(beginAttack.To);
 
