@@ -6,18 +6,17 @@ namespace Risk.Shared
 {
     public class GameStatus
     {
-        public IEnumerable<IPlayer> Players { get; }
+        public IEnumerable<string> Players { get; }
         public GameState GameState { get; set; }
-
-        public IDictionary<string, PlayerArmiesAndTerritories> PlayerInfo { get; set; }
+        public IEnumerable<BoardTerritory> Board { get; set; }
 
         public GameStatus() { }
 
-        public GameStatus(IEnumerable<IPlayer> players, GameState gameState, IDictionary<string, PlayerArmiesAndTerritories> playerInfo )
+        public GameStatus(IEnumerable<string> players, GameState gameState, IEnumerable<BoardTerritory> board )
         {
             Players = players;
             GameState = gameState;
-            PlayerInfo = playerInfo;
+            Board = board;
         }
     }
 }

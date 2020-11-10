@@ -32,8 +32,7 @@ namespace Risk.Tests
 
             var gameStatus = game.GetGameStatus();
 
-
-            Assert.IsTrue(gameStatus.PlayerInfo.Count()  == 1);
+            Assert.IsTrue(gameStatus.Players.Count()  == 1);
         }
 
         [Test]
@@ -56,9 +55,8 @@ namespace Risk.Tests
 
             var gameStatus = game.GetGameStatus();
 
-
-            Assert.That(gameStatus.PlayerInfo[player1.Name].NumTerritories == 1 && gameStatus.PlayerInfo[player1.Name].NumArmies == 1);
-
+            Assert.That(gameStatus.Board.Count() == 4);
+            Assert.That(gameStatus.Board.Single(t => t.Location == new Location(0, 0)).Armies == 1);
         }
 
     }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using Risk.Shared;
 
@@ -47,6 +48,16 @@ namespace Risk.Game
             int colDistance = Math.Abs(attackSource.Column - attackTarget.Column);
 
             return (colDistance <= 1 && rowDistance <= 1) && (colDistance == 1 || rowDistance == 1);
+        }
+
+        internal IEnumerable<BoardTerritory> AsBoardTerritoryList()
+        {
+            return from t in Territories
+                   select new BoardTerritory {
+                       Armies = t.Armies,
+                       Location = t.Location,
+                       OwnerName = t.Owner?.Name
+                   };
         }
     }
 }
