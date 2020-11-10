@@ -145,7 +145,7 @@ namespace Risk.Api
 
             foreach (var currentPlayer in players)
             {
-                var playerScore = 2 * game.GetNumTerritories(currentPlayer) + game.GetNumPlacedArmies(currentPlayer);
+                var playerScore = getPlayerScore(currentPlayer);
 
                 scores.Add((playerScore, currentPlayer));
             }
@@ -156,6 +156,11 @@ namespace Risk.Api
             {
                 await sendGameOverRequest(currentPlayer, gameDuration, scores);
             }
+        }
+
+        public int getPlayerScore(IPlayer player)
+        {
+            return 2 * game.GetNumTerritories(player) + game.GetNumPlacedArmies(player);
         }
 
         private async Task sendGameOverRequest(ApiPlayer player, TimeSpan gameDuration, List<(int score, ApiPlayer player)> scores)
