@@ -176,9 +176,9 @@ namespace Risk.Game
                 for (int i = 0; i <= defendingTerritory.Armies && i <= defenderDice.Length; i++)
                 {
                     if (attackerDice[i] > defenderDice[i])
-                        defendingTerritory.Armies = defendingTerritory.Armies - 1;
+                        defendingTerritory.Armies--;
                     else
-                        attackingTerritory.Armies = attackingTerritory.Armies - 1;
+                        attackingTerritory.Armies--;
                 }
             }
 
