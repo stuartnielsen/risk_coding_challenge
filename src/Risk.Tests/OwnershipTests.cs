@@ -75,5 +75,12 @@ namespace Risk.Tests
             var placeResult = testgame.AttackOwnershipValid(player1Token, new Location(0, 1), new Location(0, 0));
             placeResult.Should().BeFalse();
         }
+
+        [Test]
+        public void PlayerHasAtLeastOnePlaceToAttack()
+        {
+            var actual = testgame.PlayerCanAttack(players[1]);
+            actual.Should().BeTrue();
+        }
     }
 }
