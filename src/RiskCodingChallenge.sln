@@ -18,7 +18,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Risk.IntegrationTests", "Risk.IntegrationTests\Risk.IntegrationTests.csproj", "{B7CED318-7A7D-4322-BD20-935FC1BBF07B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Risk.IntegrationTests", "Risk.IntegrationTests\Risk.IntegrationTests.csproj", "{B7CED318-7A7D-4322-BD20-935FC1BBF07B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Clients", "Clients", "{C0AF6589-3B4C-481D-982C-C8B6D87C125C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DJClient", "clients\DJClient\DJClient.csproj", "{41289779-7425-4F69-9E6C-2292C8472BB6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -102,9 +106,24 @@ Global
 		{B7CED318-7A7D-4322-BD20-935FC1BBF07B}.Release|x64.Build.0 = Release|Any CPU
 		{B7CED318-7A7D-4322-BD20-935FC1BBF07B}.Release|x86.ActiveCfg = Release|Any CPU
 		{B7CED318-7A7D-4322-BD20-935FC1BBF07B}.Release|x86.Build.0 = Release|Any CPU
+		{41289779-7425-4F69-9E6C-2292C8472BB6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{41289779-7425-4F69-9E6C-2292C8472BB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{41289779-7425-4F69-9E6C-2292C8472BB6}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{41289779-7425-4F69-9E6C-2292C8472BB6}.Debug|x64.Build.0 = Debug|Any CPU
+		{41289779-7425-4F69-9E6C-2292C8472BB6}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{41289779-7425-4F69-9E6C-2292C8472BB6}.Debug|x86.Build.0 = Debug|Any CPU
+		{41289779-7425-4F69-9E6C-2292C8472BB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{41289779-7425-4F69-9E6C-2292C8472BB6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{41289779-7425-4F69-9E6C-2292C8472BB6}.Release|x64.ActiveCfg = Release|Any CPU
+		{41289779-7425-4F69-9E6C-2292C8472BB6}.Release|x64.Build.0 = Release|Any CPU
+		{41289779-7425-4F69-9E6C-2292C8472BB6}.Release|x86.ActiveCfg = Release|Any CPU
+		{41289779-7425-4F69-9E6C-2292C8472BB6}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{41289779-7425-4F69-9E6C-2292C8472BB6} = {C0AF6589-3B4C-481D-982C-C8B6D87C125C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {ECCD9A15-E800-433D-AC4B-3F8944659ADC}
