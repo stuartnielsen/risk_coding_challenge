@@ -151,32 +151,50 @@ namespace Risk.Game
                         .Sum(t => t.Armies);
         }
 
-        public void RollDice(BeginAttackResponse beginAttack)
+        public void RollDice(BeginAttackResponse beginAttack, int seed = 0)
         {
+
             var rand = new Random();
-            var attackingTerritory = new Territory(beginAttack.From);
-            var defendingTerritory = new Territory(beginAttack.To);
+            if(seed == 0)
+            {
+               rand = new Random();
+            }
+            else
+            {
+               rand = new Random(seed);
+            }
+           
+            var attackingTerritory = new Territory ();
+            attackingTerritory = Board.GetTerritory(beginAttack.From);
+            var defendingTerritory = new Territory();
+            defendingTerritory = Board.GetTerritory(beginAttack.To);
 
             int[] attackerDice = new int[3];
             int[] defenderDice = new int[2];
 
-            for (int i = 0; i < attackingTerritory.Armies - 1 && i <= 3; i++)
+            if (EnoughArmiesToAttack(attackingTerritory) && attackingTerritory.Owner != defendingTerritory.Owner)
             {
-                attackerDice[i] = rand.Next(1, 7);
+                for (int i = 0; i < attackingTerritory.Armies - 1 && i < 3; i++)
+                {
+                    attackerDice[i] = rand.Next(1, 7);
+                }
+                for (int i = 0; i <= defendingTerritory.Armies && i < 2; i++)
+                {
+                    defenderDice[i] = rand.Next(1, 7);
+                }
+                Array.Sort(attackerDice);
+                Array.Sort(defenderDice);
+                Array.Reverse(attackerDice);
+                Array.Reverse(defenderDice);
+                for (int i = 0; i <= defendingTerritory.Armies && i <= defenderDice.Length; i++)
+                {
+                    if (attackerDice[i] > defenderDice[i])
+                        defendingTerritory.Armies--;
+                    else
+                        attackingTerritory.Armies--;
+                }
             }
-            for (int i = 0; i <= defendingTerritory.Armies && i <= 2; i++)
-            {
-                defenderDice[i] = rand.Next(1, 7);
-            }
-            Array.Sort(attackerDice);
-            Array.Sort(defenderDice);
-            for (int i = 0; i <= defendingTerritory.Armies && i <= defenderDice.Length; i++)
-            {
-                if (attackerDice[i] > defenderDice[i])
-                    defendingTerritory.Armies = defendingTerritory.Armies - 1;
-                else
-                    attackingTerritory.Armies = attackingTerritory.Armies - 1;
-            }
+
         }
 
         public int GetNumTerritories(IPlayer player)
