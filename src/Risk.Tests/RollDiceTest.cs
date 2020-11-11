@@ -21,7 +21,7 @@ namespace Risk.Tests
         {
             int width = 2;
             int height = 2;
-            
+
 
             IPlayer player = new ApiPlayer("Rusty", "bazookaJoe", null);
             IPlayer player2 = new ApiPlayer("Emmanuel", "Macaco", null);
@@ -44,7 +44,7 @@ namespace Risk.Tests
             game.TryPlaceArmy(player2.Token, defender);
             game.TryPlaceArmy(player2.Token, defender2);
         }
-        
+
         //[TestCase( newAttackResponse, ExpectedResult = false)]
         //[TestCase(5, ExpectedResult = true)]
         //[TestCase(-2, ExpectedResult = false)]
@@ -52,21 +52,19 @@ namespace Risk.Tests
         //public bool canRollDice(BeginAttackResponse beginAttackResponse)
         //{
         //    game.RollDice(beginAttackResponse);
-            
+
         //    return can;
         //}
 
         [Test]
         public void RollDice()
         {
-            newAttackResponse = new BeginAttackResponse {
-                From = new Location(1,1),
-                To = new Location(0,0)
-            };
-            game.RollDice(newAttackResponse, 2);
+            var attackingTerritory = game.Board.GetTerritory(new Location(1, 1));
+            var defendingTerritory = game.Board.GetTerritory(new Location(0, 0));
+            var attackResult = game.TryAttack("bazookaJoe", attackingTerritory, defendingTerritory, 2);
 
-            Assert.IsTrue(game.Board.GetTerritory(newAttackResponse.From).Armies ==1);
-            Assert.IsTrue(game.Board.GetTerritory(newAttackResponse.To).Armies == 1);
+            Assert.IsFalse(attackResult.AttackInvalid);
+            Assert.IsTrue(attackResult.CanContinue);
 
             //Assert.IsTrue(game.GetPlayerRemainingArmies("Macaco") == 2);
             //Assert.IsTrue(game.GetPlayerRemainingArmies("bazookaJoe") == 2);
@@ -79,11 +77,11 @@ namespace Risk.Tests
         [Test]
         public void RollDiceNotEnoughArmies()
         {
-            newAttackResponse = new BeginAttackResponse {
-                From = new Location(0, 1),
-                To = new Location(0, 0)
-            };
-            game.RollDice(newAttackResponse, 2);
+            //newAttackResponse = new BeginAttackResponse {
+            //    From = new Location(0, 1),
+            //    To = new Location(0, 0)
+            //};
+            //game.RollDice(newAttackResponse, 2);
 
 
 
@@ -101,11 +99,11 @@ namespace Risk.Tests
         [Test]
         public void RollDiceSameOwner()
         {
-            newAttackResponse = new BeginAttackResponse {
-                From = new Location(1, 1),
-                To = new Location(0, 1)
-            };
-            game.RollDice(newAttackResponse, 2);
+            //newAttackResponse = new BeginAttackResponse {
+            //    From = new Location(1, 1),
+            //    To = new Location(0, 1)
+            //};
+            //game.RollDice(newAttackResponse, 2);
 
             //Assert.IsTrue(game.GetPlayerRemainingArmies("Macaco") == 3);
             //Assert.IsTrue(game.GetPlayerRemainingArmies("bazookaJoe") == 3);

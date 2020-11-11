@@ -161,6 +161,8 @@ namespace Risk.Game
                         .Sum(t => t.Armies);
         }
 
+        public const int MAX_ATTACKER_DICE = 3;
+        public const int MAX_DEFENDER_DICE = 2;
         public TryAttackResult TryAttack(string attackerToken, Territory attackingTerritory, Territory defendingTerritory, int seed = 0)
         {
             if (canAttack(attackerToken, attackingTerritory, defendingTerritory) is false)
@@ -178,14 +180,14 @@ namespace Risk.Game
                 rand = new Random(seed);
             }
 
-            int[] attackerDice = new int[3];
-            int[] defenderDice = new int[2];
+            int[] attackerDice = new int[MAX_ATTACKER_DICE];
+            int[] defenderDice = new int[MAX_DEFENDER_DICE];
 
-            for (int i = 0; i < attackingTerritory.Armies - 1 && i < 3; i++)
+            for (int i = 0; i < Math.Min(attackingTerritory.Armies, MAX_ATTACKER_DICE); i++)
             {
                 attackerDice[i] = rand.Next(1, 7);
             }
-            for (int i = 0; i <= defendingTerritory.Armies && i < 2; i++)
+            for (int i = 0; i < Math.Min(defendingTerritory.Armies, MAX_DEFENDER_DICE); i++)
             {
                 defenderDice[i] = rand.Next(1, 7);
             }
@@ -206,9 +208,9 @@ namespace Risk.Game
 
         private bool canAttack(string attackerToken, Territory attackingTerritory, Territory defendingTerritory)
         {
-            return AttackOwnershipValid(attackerToken, attackingTerritory.Location, defendingTerritory.Location) is false
-                 || !EnoughArmiesToAttack(attackingTerritory)
-                 || !Board.GetNeighbors(attackingTerritory).ToList().Contains(defendingTerritory);
+            return AttackOwnershipValid(attackerToken, attackingTerritory.Location, defendingTerritory.Location)
+                 && EnoughArmiesToAttack(attackingTerritory)
+                 && Board.GetNeighbors(attackingTerritory).ToList().Contains(defendingTerritory);
         }
 
         public int GetNumTerritories(IPlayer player)
