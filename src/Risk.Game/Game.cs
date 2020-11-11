@@ -151,7 +151,7 @@ namespace Risk.Game
                         .Sum(t => t.Armies);
         }
 
-        public void RollDice(BeginAttackResponse beginAttack, int seed)
+        public void RollDice(BeginAttackResponse beginAttack, int seed = 0)
         {
 
             var rand = new Random();
