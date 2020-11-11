@@ -7,8 +7,8 @@ namespace Risk.Shared
     public class GameStatus
     {
         public IEnumerable<string> Players { get; }
-        public GameState GameState { get; set; }
-        public IEnumerable<BoardTerritory> Board { get; set; }
+        public GameState GameState { get; }
+        public IEnumerable<BoardTerritory> Board { get;  }
 
         public GameStatus() { }
 

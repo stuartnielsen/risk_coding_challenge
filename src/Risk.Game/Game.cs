@@ -141,7 +141,7 @@ namespace Risk.Game
                 playerInfo.Add(player.Name, armiesAndTerritories);
             }
 
-            return new GameStatus(players.Select(p=>p.Name), GameState, Board.AsBoardTerritoryList());
+            return new GameStatus(players.Select(p => p.Name), GameState, Board.AsBoardTerritoryList());
         }
 
         public int GetNumPlacedArmies(IPlayer player)

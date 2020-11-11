@@ -1,0 +1,27 @@
+version: '3.8'
+services:
+	api:
+		build: 
+			context: .
+			dockerfile: Risk.Api/Dockerfile
+		ports: 
+			- 5000
+		environment:
+			- height=5
+			- width=5
+			- startingArmies=5
+			- SecretCode="BazookaJoe"
+
+	sampleClient1:
+		build: ./Risk.SampleClient
+		ports: 
+			- 5432
+		environment:
+			- ServerAddress=http://localhost:5000
+
+	sampleClient2:
+		build: ./Risk.SampleClient
+		ports: 
+			- 5434
+		environment:
+			- ServerAddress=http://localhost:5000

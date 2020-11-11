@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <ItemGroup>    <PackageReference Include="Microsoft.AspNet.Razor" Version="3.2.7" />    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor" Version="2.2.0" />    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.Extensions" Version="3.1.9" />    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="3.1.9" />    <PackageReference Include="Microsoft.AspNetCore.Mvc.RazorPages" Version="2.2.5" />    <PackageReference Include="Microsoft.AspNetCore.Mvc.TagHelpers" Version="2.2.0" />    <PackageReference Include="Microsoft.AspNetCore.Razor" Version="2.2.0" />    <PackageReference Include="Microsoft.AspNetCore.Razor.Language" Version="3.1.9" />    <PackageReference Include="Microsoft.AspNetCore.Razor.Runtime" Version="2.2.0" />    <PackageReference Include="System.Net.Http.Json" Version="3.2.1" />    <PackageReference Include="Westwind.AspNetCore.LiveReload" Version="0.2.14" />
+  <ItemGroup>    <PackageReference Include="Microsoft.AspNet.Razor" Version="3.2.7" />    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor" Version="2.2.0" />    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.Extensions" Version="3.1.9" />    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="3.1.9" />    <PackageReference Include="Microsoft.AspNetCore.Mvc.RazorPages" Version="2.2.5" />    <PackageReference Include="Microsoft.AspNetCore.Mvc.TagHelpers" Version="2.2.0" />    <PackageReference Include="Microsoft.AspNetCore.Razor" Version="2.2.0" />    <PackageReference Include="Microsoft.AspNetCore.Razor.Language" Version="3.1.9" />    <PackageReference Include="Microsoft.AspNetCore.Razor.Runtime" Version="2.2.0" />    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.9" />    <PackageReference Include="System.Net.Http.Json" Version="3.2.1" />    <PackageReference Include="Westwind.AspNetCore.LiveReload" Version="0.2.14" />
   </ItemGroup>
 
   <ItemGroup>
@@ -10,6 +10,8 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UserSecretsId>2cf5b6e6-246e-4e0d-9497-d9adb47d19e0</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
 
 
