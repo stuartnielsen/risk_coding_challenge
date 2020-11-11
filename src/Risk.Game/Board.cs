@@ -9,9 +9,9 @@ namespace Risk.Game
 {
     public class Board
     {
-        public Board(IEnumerable<Territory> territiories)
+        public Board(IEnumerable<Territory> territories)
         {
-            Territories = territiories;
+            Territories = territories;
         }
 
         public IEnumerable<Territory> Territories { get; }
