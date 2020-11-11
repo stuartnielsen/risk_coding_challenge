@@ -151,28 +151,41 @@ namespace Risk.Game
                         .Sum(t => t.Armies);
         }
 
-        public void RollDice(BeginAttackResponse beginAttack)
+        public void RollDice(BeginAttackResponse beginAttack, int seed)
         {
-            int seed = 2;
-            var rand = new Random(seed);
-            var attackingTerritory = new Territory(beginAttack.From);
-            var defendingTerritory = new Territory(beginAttack.To);
+
+            var rand = new Random();
+            if(seed == 0)
+            {
+               rand = new Random();
+            }
+            else
+            {
+               rand = new Random(seed);
+            }
+           
+            var attackingTerritory = new Territory ();
+            attackingTerritory = Board.GetTerritory(beginAttack.From);
+            var defendingTerritory = new Territory();
+            defendingTerritory = Board.GetTerritory(beginAttack.To);
 
             int[] attackerDice = new int[3];
             int[] defenderDice = new int[2];
 
             if (EnoughArmiesToAttack(attackingTerritory) && attackingTerritory.Owner != defendingTerritory.Owner)
             {
-                for (int i = 0; i < attackingTerritory.Armies - 1 && i <= 3; i++)
+                for (int i = 0; i < attackingTerritory.Armies - 1 && i < 3; i++)
                 {
                     attackerDice[i] = rand.Next(1, 7);
                 }
-                for (int i = 0; i <= defendingTerritory.Armies && i <= 2; i++)
+                for (int i = 0; i <= defendingTerritory.Armies && i < 2; i++)
                 {
                     defenderDice[i] = rand.Next(1, 7);
                 }
                 Array.Sort(attackerDice);
                 Array.Sort(defenderDice);
+                Array.Reverse(attackerDice);
+                Array.Reverse(defenderDice);
                 for (int i = 0; i <= defendingTerritory.Armies && i <= defenderDice.Length; i++)
                 {
                     if (attackerDice[i] > defenderDice[i])

@@ -102,7 +102,7 @@ namespace Risk.Api
 
                     do
                     {
-                        game.RollDice(beginAttackResponse);
+                        game.RollDice(beginAttackResponse, 0);
                         if (attackingTerritory.Armies > 1)
                             continueResponse = await askContinueAttackingAsync(players[i]);
                         else
