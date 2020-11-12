@@ -12,8 +12,8 @@ namespace WyattClient
         {
             DeployArmyResponse deployArmyResponse = new DeployArmyResponse();
             foreach (var territory in deployArmyRequest.Board)
-            {
-                if(territory.Owner.Name == "(Unoccupied)")
+            {   
+                if(territory.Owner == null)
                 {
                     deployArmyResponse.DesiredLocation = territory.Location;
                     return deployArmyResponse;
@@ -21,19 +21,27 @@ namespace WyattClient
             }
             foreach (var territory in deployArmyRequest.Board)
             {
-                if (territory.Owner.Name == "Wyatt" && territory.Armies < 3)
+                if(territory.Owner != null)
                 {
-                    deployArmyResponse.DesiredLocation = territory.Location;
-                    return deployArmyResponse;
+                    if (territory.Owner.Name == "Wyatt" && territory.Armies < 3)
+                    {
+                        deployArmyResponse.DesiredLocation = territory.Location;
+                        return deployArmyResponse;
+                    }
                 }
+                
             }
             foreach (var territory in deployArmyRequest.Board)
             {
-                if (territory.Owner.Name == "Wyatt" && territory.Armies == 3)
+                if(territory.Owner != null)
                 {
-                    deployArmyResponse.DesiredLocation = territory.Location;
-                    return deployArmyResponse;
+                    if (territory.Owner.Name == "Wyatt" && territory.Armies == 3)
+                    {
+                        deployArmyResponse.DesiredLocation = territory.Location;
+                        return deployArmyResponse;
+                    }
                 }
+             
             }
             return deployArmyResponse;
         }
@@ -44,19 +52,23 @@ namespace WyattClient
             BeginAttackResponse beginAttackResponse = new BeginAttackResponse();
             foreach(var territory in beginAttackRequest.Board)
             {
-                if (territory.Owner.Name == "Wyatt" && territory.Armies >= 3)
+                if(territory.Owner != null)
                 {
-                    foreach(var neighbor in neighbors)
+                    if (territory.Owner.Name == "Wyatt" && territory.Armies >= 3)
                     {
-                        if(neighbor.Owner.Name != "Wyatt")
+                        foreach (var neighbor in neighbors)
                         {
-                            beginAttackResponse.From = territory.Location;
-                            beginAttackResponse.To = neighbor.Location;
-                            return beginAttackResponse;
+                            if (neighbor.Owner.Name != "Wyatt")
+                            {
+                                beginAttackResponse.From = territory.Location;
+                                beginAttackResponse.To = neighbor.Location;
+                                return beginAttackResponse;
+                            }
                         }
+
                     }
-                   
-                } 
+                }
+               
             }
             return beginAttackResponse;
         }
