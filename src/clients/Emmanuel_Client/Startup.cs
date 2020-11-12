@@ -53,11 +53,11 @@ namespace Emmanuel_Client
                 endpoints.MapControllers();
             });
 
-            var server = Configuration["ServerName"];
-            var httpClient = httpClientFactory.CreateClient();
-            var clientBaseAddress = app.ServerFeatures.Get<IServerAddressesFeature>().Addresses.ToArray()[1];
+            //var server = Configuration["ServerName"];
+            //var httpClient = httpClientFactory.CreateClient();
+            //var clientBaseAddress = app.ServerFeatures.Get<IServerAddressesFeature>().Addresses.ToArray()[1];
 
-            JoinServer(httpClient, server, clientBaseAddress);
+            //JoinServer(httpClient, server, clientBaseAddress);
         }
 
         private async Task JoinServer(HttpClient httpClient, string serverName, string clientBaseAddress)
