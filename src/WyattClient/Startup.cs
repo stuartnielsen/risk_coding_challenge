@@ -8,6 +8,10 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Risk.Shared;
+using System.Net.Http.Json;
+using Microsoft.AspNetCore.Hosting.Server.Features;
+using System.Net.Http;
 
 namespace WyattClient
 {
@@ -28,7 +32,7 @@ namespace WyattClient
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHttpClientFactory httpClientFactory)
         {
             if (env.IsDevelopment())
             {
@@ -50,8 +54,23 @@ namespace WyattClient
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapRazorPages();
+                endpoints.MapControllers();
             });
+
+            var server = Configuration["ServerName"];
+            var httpClient = httpClientFactory.CreateClient();
+            var addresses = app.ServerFeatures.Get<IServerAddressesFeature>().Addresses;
+            var clientBaseAddress = addresses.ToArray()[1];
+
+            JoinServer(httpClient, server, clientBaseAddress);
+        }
+
+        private async Task JoinServer(HttpClient httpClient, string serverName, string clientBaseAddress)
+        {
+            var joinRequest = new JoinRequest { CallbackBaseAddress = clientBaseAddress, Name = "Wyatt" };
+
+            var joinResponse = await httpClient.PostAsJsonAsync($"{serverName}/join", joinRequest);
+
         }
     }
 }

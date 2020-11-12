@@ -9,7 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Risk.Shared;
 using WyattClient;
 
-namespace DJClient.Controllers
+namespace WyattClient.Controllers
 {
 
     public class ClientController : Controller
