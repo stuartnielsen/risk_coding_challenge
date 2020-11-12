@@ -11,7 +11,7 @@ namespace StuartClient.Controllers
     {
         private readonly IHttpClientFactory clientFactory;
         private static string serverAddress;
-        private GameStrategy gameStrategy;
+        private GameStrategy gameStrategy = new GameStrategy();
 
         public RiskStrategyController(IHttpClientFactory clientFactory)
         {
@@ -60,28 +60,20 @@ namespace StuartClient.Controllers
         [HttpPost("deployArmy")]
         public DeployArmyResponse DeployArmy([FromBody] DeployArmyRequest deployArmyRequest)
         {
-            //return gameStrategy.DecideArmyWhereToPlacement(deployArmyRequest);
-            DeployArmyResponse response = new DeployArmyResponse();
-            response.DesiredLocation = new Location(1, 1);
-            return response;
+            return gameStrategy.DecideArmyWhereToPlacement(deployArmyRequest);
+            
         }
 
         [HttpPost("beginAttack")]
         public BeginAttackResponse BeginAttack([FromBody] BeginAttackRequest beginAttackRequest)
         {
-            BeginAttackResponse response = new BeginAttackResponse();
-            response.From = new Location(1, 1);
-            response.To = new Location(1, 2);
-            return response;
+            return gameStrategy.DecideWhereToAttack(beginAttackRequest);
         }
 
         [HttpPost("continueAttack")]
         public ContinueAttackResponse ContinueAttack([FromBody] ContinueAttackRequest continueAttackRequest)
         {
-            ContinueAttackResponse response = new ContinueAttackResponse();
-            response.ContinueAttacking = true;
-
-            return response;
+            return gameStrategy.DecideToContinueAttack(continueAttackRequest);
         }
 
         [HttpPost("gameOver")]

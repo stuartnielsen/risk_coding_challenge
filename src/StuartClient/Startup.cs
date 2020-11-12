@@ -1,13 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Risk.Shared;
 
 namespace StuartClient
 {
@@ -28,7 +32,7 @@ namespace StuartClient
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHttpClientFactory httpClientFactory)
         {
             if (env.IsDevelopment())
             {
@@ -49,10 +53,27 @@ namespace StuartClient
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapControllers();
             });
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
+
+            var server = Configuration["ServerName"];
+            var httpClient = httpClientFactory.CreateClient();
+            var addresses = app.ServerFeatures.Get<IServerAddressesFeature>().Addresses;
+            var clientBaseAddress = addresses.ToArray()[1];
+            JoinServer(httpClient, server, clientBaseAddress);
         }
-    }
+
+
+
+        private async void JoinServer(HttpClient httpClient, string serverName, string clientBaseAddress)
+        {
+            var joinRequest = new JoinRequest { CallbackBaseAddress = clientBaseAddress, Name = "Stuart" };
+            var joinResponse = await httpClient.PostAsJsonAsync($"{serverName}/join", joinRequest);
+        }
+ }   
 }
+
