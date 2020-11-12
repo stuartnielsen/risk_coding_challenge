@@ -16,7 +16,7 @@ namespace WyattClient.Controllers
     {
         private readonly IHttpClientFactory clientFactory;
         private static string serverAddress;
-        private GameStrategy gameStrategy;
+        private GameStrategy gameStrategy = new GameStrategy();
 
 
         public ClientController(IHttpClientFactory clientFactory)
