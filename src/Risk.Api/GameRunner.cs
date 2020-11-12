@@ -106,7 +106,7 @@ namespace Risk.Api
 
                         while(attackResult.CanContinue)
                         {
-                            var continueResponse = await askContinueAttackingAsync(players[i]);
+                            var continueResponse = await askContinueAttackingAsync(players[i], attackingTerritory, defendingTerritory);
                             if (continueResponse.ContinueAttacking)
                             {
                                 attackResult = game.TryAttack(players[i].Token, attackingTerritory, defendingTerritory);
@@ -206,10 +206,12 @@ namespace Risk.Api
             }
         }
 
-        private async Task<ContinueAttackResponse> askContinueAttackingAsync(ApiPlayer currentPlayer)
+        private async Task<ContinueAttackResponse> askContinueAttackingAsync(ApiPlayer currentPlayer, Territory attackingTerritory, Territory defendingTerritory)
         {
             var continueAttackingRequest = new ContinueAttackRequest {
-                Board = game.Board.Territories
+                Board = game.Board.Territories,
+                AttackingTerritorry = attackingTerritory,
+                DefendingTerritorry = defendingTerritory                
             };
             var continueAttackingResponse = await (await currentPlayer.HttpClient.PostAsJsonAsync("/continueAttacking", continueAttackingRequest))
                 .EnsureSuccessStatusCode()
