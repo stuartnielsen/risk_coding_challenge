@@ -126,6 +126,16 @@ namespace Risk.Game
             return (territoryFrom.Owner == player && territoryTo.Owner != player);
         }
 
+        public bool PlayerCanAttack(IPlayer player)
+        {
+            foreach (var territory in Board.Territories.Where(t => t.Owner == player && EnoughArmiesToAttack(t)))
+            {
+                var neighbors = Board.GetNeighbors(territory);
+                return neighbors.Any(n => n.Owner != player);
+            }
+            return false;
+        }
+
         public GameStatus GetGameStatus()
         {
             IDictionary<string, PlayerArmiesAndTerritories> playerInfo = new Dictionary<string, PlayerArmiesAndTerritories>();
@@ -141,7 +151,7 @@ namespace Risk.Game
                 playerInfo.Add(player.Name, armiesAndTerritories);
             }
 
-            return new GameStatus(players.Select(p=>p.Name), GameState, Board.AsBoardTerritoryList());
+            return new GameStatus(players.Select(p => p.Name), GameState, Board.AsBoardTerritoryList());
         }
 
         public int GetNumPlacedArmies(IPlayer player)
@@ -151,32 +161,61 @@ namespace Risk.Game
                         .Sum(t => t.Armies);
         }
 
-        public void RollDice(BeginAttackResponse beginAttack)
+        public const int MAX_ATTACKER_DICE = 3;
+        public const int MAX_DEFENDER_DICE = 2;
+        public TryAttackResult TryAttack(string attackerToken, Territory attackingTerritory, Territory defendingTerritory, int seed = 0)
         {
+            if (canAttack(attackerToken, attackingTerritory, defendingTerritory) is false)
+            {
+                return new TryAttackResult { AttackInvalid = true };
+            }
+
             var rand = new Random();
-            var attackingTerritory = new Territory(beginAttack.From);
-            var defendingTerritory = new Territory(beginAttack.To);
+            if (seed == 0)
+            {
+                rand = new Random();
+            }
+            else
+            {
+                rand = new Random(seed);
+            }
 
-            int[] attackerDice = new int[3];
-            int[] defenderDice = new int[2];
+            int[] attackerDice = new int[MAX_ATTACKER_DICE];
+            int[] defenderDice = new int[MAX_DEFENDER_DICE];
 
-            for (int i = 0; i < attackingTerritory.Armies - 1 && i <= 3; i++)
+            for (int i = 0; i < Math.Min(attackingTerritory.Armies, MAX_ATTACKER_DICE); i++)
             {
                 attackerDice[i] = rand.Next(1, 7);
             }
-            for (int i = 0; i <= defendingTerritory.Armies && i <= 2; i++)
+            for (int i = 0; i < Math.Min(defendingTerritory.Armies, MAX_DEFENDER_DICE); i++)
             {
                 defenderDice[i] = rand.Next(1, 7);
             }
             Array.Sort(attackerDice);
             Array.Sort(defenderDice);
+            Array.Reverse(attackerDice);
+            Array.Reverse(defenderDice);
             for (int i = 0; i <= defendingTerritory.Armies && i <= defenderDice.Length; i++)
             {
                 if (attackerDice[i] > defenderDice[i])
-                    defendingTerritory.Armies = defendingTerritory.Armies - 1;
+                    defendingTerritory.Armies--;
                 else
-                    attackingTerritory.Armies = attackingTerritory.Armies - 1;
+                    attackingTerritory.Armies--;
             }
+            if(defendingTerritory.Armies < 1)
+            {
+                BattleWasWon(attackingTerritory, defendingTerritory);
+                return new TryAttackResult { CanContinue = false,
+                AttackInvalid = false};
+            }
+            return new TryAttackResult { CanContinue = attackingTerritory.Armies > 1 };
+        }
+
+        private bool canAttack(string attackerToken, Territory attackingTerritory, Territory defendingTerritory)
+        {
+            return AttackOwnershipValid(attackerToken, attackingTerritory.Location, defendingTerritory.Location)
+                 && EnoughArmiesToAttack(attackingTerritory)
+                 && Board.GetNeighbors(attackingTerritory).ToList().Contains(defendingTerritory);
         }
 
         public int GetNumTerritories(IPlayer player)
@@ -185,8 +224,11 @@ namespace Risk.Game
                         .Where(t => t.Owner == player)
                         .Count();
         }
-
-
-
+        public void BattleWasWon(Territory attackingTerritory, Territory defendingTerritory)
+        {
+            defendingTerritory.Owner = attackingTerritory.Owner;
+            defendingTerritory.Armies = attackingTerritory.Armies - 1;
+            attackingTerritory.Armies = attackingTerritory.Armies - defendingTerritory.Armies;
+        }
     }
 }

@@ -14,19 +14,19 @@ namespace DJClient
 
         public DeployArmyResponse DeployArmy(DeployArmyRequest deployArmyRequest)
         {
-            
 
-            foreach(Territory territory in deployArmyRequest.Board)
+
+            foreach(var territory in deployArmyRequest.Board)
             {
-                if (territory.Owner == null)
+                if (territory.OwnerName == null)
                 {
                     return new DeployArmyResponse { DesiredLocation = territory.Location };
                 }
             }
 
-            foreach (Territory territory in deployArmyRequest.Board)
+            foreach (var territory in deployArmyRequest.Board)
             {
-                if (territory.Owner.Token == Player.Token)
+                if (territory.OwnerName == Player.Name)
                 {
                     return new DeployArmyResponse { DesiredLocation = territory.Location };
                 }
@@ -37,12 +37,12 @@ namespace DJClient
 
         public BeginAttackResponse DecideBeginAttack(BeginAttackRequest beginAttackRequest)
         {
-            var ownedTerritories = beginAttackRequest.Board.Where(t => t.Owner == Player);
-            var enemyTerritories = beginAttackRequest.Board.Where(t => t.Owner != null && t.Owner != Player);
+            var ownedTerritories = beginAttackRequest.Board.Where(t => t.OwnerName == Player.Name);
+            var enemyTerritories = beginAttackRequest.Board.Where(t => t.OwnerName != null && t.OwnerName != Player.Name);
 
-            foreach(Territory ownedTerritory in ownedTerritories)
+            foreach(var ownedTerritory in ownedTerritories)
             {
-                foreach(Territory enemyTerritory in enemyTerritories)
+                foreach(var enemyTerritory in enemyTerritories)
                 {
                     if (areAdjacent(ownedTerritory, enemyTerritory))
                     {
@@ -60,7 +60,7 @@ namespace DJClient
             return new ContinueAttackResponse { ContinueAttacking = true };
         }
 
-        public bool areAdjacent(Territory territory1, Territory territory2)
+        public bool areAdjacent(BoardTerritory territory1, BoardTerritory territory2)
         {
             int rowDistance = Math.Abs(territory1.Location.Row - territory2.Location.Row);
             int colDistance = Math.Abs(territory1.Location.Column - territory2.Location.Column);

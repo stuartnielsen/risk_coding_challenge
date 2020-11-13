@@ -37,7 +37,7 @@ namespace Risk.Api
 
         private async Task deployArmiesAsync()
         {
-            while(game.Board.Territories.Sum(t=>t.Armies) < game.StartingArmies * players.Count())
+            while (game.Board.Territories.Sum(t => t.Armies) < game.StartingArmies * players.Count())
             {
                 foreach (var currentPlayer in players)
                 {
@@ -61,10 +61,11 @@ namespace Risk.Api
         private async Task<DeployArmyResponse> askForDeployLocationAsync(ApiPlayer currentPlayer, DeploymentStatus deploymentStatus)
         {
             var deployArmyRequest = new DeployArmyRequest {
-                Board = game.Board.Territories,
+                Board = game.Board.SerializableTerritories,
                 Status = deploymentStatus,
                 ArmiesRemaining = game.GetPlayerRemainingArmies(currentPlayer.Token)
             };
+            var json = System.Text.Json.JsonSerializer.Serialize(deployArmyRequest);
             var deployArmyResponse = (await currentPlayer.HttpClient.PostAsJsonAsync("/deployArmy", deployArmyRequest));
             deployArmyResponse.EnsureSuccessStatusCode();
             var r = await deployArmyResponse.Content.ReadFromJsonAsync<DeployArmyResponse>();
@@ -78,36 +79,45 @@ namespace Risk.Api
             {
                 for(int i = 0; i < players.Count; i++)
                 {
-                    var beginAttackResponse = await askForAttackLocationAsync(players[i], BeginAttackStatus.YourTurn);
-
-                    var failedTries = 0;
-                    //check that this location exists and is available to be used (e.g. not occupied by another army)
-
-                    var attackingTerritory = new Territory(beginAttackResponse.From);
-                    var defendingTerritory = new Territory(beginAttackResponse.To);
-                    while (game.AttackOwnershipValid(players[i].Token, beginAttackResponse.From, beginAttackResponse.To) is false
-                        || !game.EnoughArmiesToAttack(attackingTerritory)
-                        || !game.Board.GetNeighbors(attackingTerritory).ToList().Contains(defendingTerritory))
+                    if (game.PlayerCanAttack(players[i]))
                     {
-                        failedTries++;
-                        if (failedTries == MaxFailedTries)
+                        var failedTries = 0;
+
+                        TryAttackResult attackResult;
+                        Territory attackingTerritory;
+                        Territory defendingTerritory;
+                        do
                         {
-                            RemovePlayerFromBoard(players[i].Token);
-                            RemovePlayerFromGame(players[i].Token);
-                            i--;
-                        }
-                        beginAttackResponse = await askForAttackLocationAsync(players[i], BeginAttackStatus.PreviousAttackRequestFailed);
-                    }
-                    var continueResponse = new ContinueAttackResponse();
+                            var beginAttackResponse = await askForAttackLocationAsync(players[i], BeginAttackStatus.PreviousAttackRequestFailed);
+                            attackingTerritory = new Territory(beginAttackResponse.From);
+                            defendingTerritory = new Territory(beginAttackResponse.To);
+                            attackResult = game.TryAttack(players[i].Token, attackingTerritory, defendingTerritory);
 
-                    do
-                    {
-                        game.RollDice(beginAttackResponse);
-                        if (attackingTerritory.Armies > 1)
-                            continueResponse = await askContinueAttackingAsync(players[i]);
-                        else
-                            continueResponse.ContinueAttacking = false;
-                    } while (continueResponse.ContinueAttacking);
+                            if (attackResult.AttackInvalid)
+                            {
+                                failedTries++;
+                                if (failedTries == MaxFailedTries)
+                                {
+                                    RemovePlayerFromBoard(players[i].Token);
+                                    RemovePlayerFromGame(players[i].Token);
+                                    i--;
+                                }
+                            }
+                        } while (attackResult.AttackInvalid);
+
+                        while(attackResult.CanContinue)
+                        {
+                            var continueResponse = await askContinueAttackingAsync(players[i], attackingTerritory, defendingTerritory);
+                            if (continueResponse.ContinueAttacking)
+                            {
+                                attackResult = game.TryAttack(players[i].Token, attackingTerritory, defendingTerritory);
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -125,10 +135,10 @@ namespace Risk.Api
             }
         }
 
-        private async Task<BeginAttackResponse> askForAttackLocationAsync(ApiPlayer player, BeginAttackStatus beginAttackStatus )
+        private async Task<BeginAttackResponse> askForAttackLocationAsync(ApiPlayer player, BeginAttackStatus beginAttackStatus)
         {
             var beginAttackRequest = new BeginAttackRequest {
-                Board = game.Board.Territories,
+                Board = game.Board.SerializableTerritories,
                 Status = beginAttackStatus
             };
             return await (await player.HttpClient.PostAsJsonAsync("/beginAttack", beginAttackRequest))
@@ -161,7 +171,7 @@ namespace Risk.Api
         private async Task sendGameOverRequest(ApiPlayer player, TimeSpan gameDuration, List<(int score, ApiPlayer player)> scores)
         {
             var gameOverRequest = new GameOverRequest {
-                FinalBoard = game.Board.Territories.Select(b=>new BoardTerritory { OwnerName = b.Owner?.Name, Armies = b.Armies, Location = b.Location }),
+                FinalBoard = game.Board.SerializableTerritories,
                 GameDuration = gameDuration.ToString(),
                 WinnerName = scores.Last().player.Name,
                 FinalScores = scores.Select(s => $"{s.player.Name} ({s.score})")
@@ -197,10 +207,12 @@ namespace Risk.Api
             }
         }
 
-        private async Task<ContinueAttackResponse> askContinueAttackingAsync(ApiPlayer currentPlayer)
+        private async Task<ContinueAttackResponse> askContinueAttackingAsync(ApiPlayer currentPlayer, Territory attackingTerritory, Territory defendingTerritory)
         {
             var continueAttackingRequest = new ContinueAttackRequest {
-                Board = game.Board.Territories
+                Board = game.Board.SerializableTerritories,
+                AttackingTerritorry = attackingTerritory,
+                DefendingTerritorry = defendingTerritory
             };
             var continueAttackingResponse = await (await currentPlayer.HttpClient.PostAsJsonAsync("/continueAttacking", continueAttackingRequest))
                 .EnsureSuccessStatusCode()

@@ -15,6 +15,8 @@ namespace Risk.Tests
         private string player1Token;
         private string player2Token;
         private List<ApiPlayer> players;
+        Territory territory1 = new Territory() { Location = new Location(0, 0) };
+        Territory territory2 = new Territory() { Location = new Location(0, 1) };
 
         [SetUp]
         public void SetUp()
@@ -22,26 +24,26 @@ namespace Risk.Tests
             players = new List<ApiPlayer>();
             testgame = new Game.Game(new GameStartOptions { Height = 2, Width = 2, StartingArmiesPerPlayer = 5, Players = players });
             testgame.StartJoining();
-            player1Token= Guid.NewGuid().ToString();
-            player2Token= Guid.NewGuid().ToString();
+            player1Token = Guid.NewGuid().ToString();
+            player2Token = Guid.NewGuid().ToString();
             players.Add(new ApiPlayer("player1", player1Token, null));
             players.Add(new ApiPlayer("player2", player2Token, null));
 
             testgame.StartGame();
 
             //place 5 armies
-            testgame.TryPlaceArmy(player1Token, new Location(0, 0));
-            testgame.TryPlaceArmy(player1Token, new Location(0, 0));
-            testgame.TryPlaceArmy(player1Token, new Location(0, 0));
-            testgame.TryPlaceArmy(player1Token, new Location(0, 0));
-            testgame.TryPlaceArmy(player1Token, new Location(0, 0));
+            testgame.TryPlaceArmy(player1Token, territory1.Location);
+            testgame.TryPlaceArmy(player1Token, territory1.Location);
+            testgame.TryPlaceArmy(player1Token, territory1.Location);
+            testgame.TryPlaceArmy(player1Token, territory1.Location);
+            testgame.TryPlaceArmy(player1Token, territory1.Location);
 
             //player2 places 5 armies
-            testgame.TryPlaceArmy(player2Token, new Location(0, 1));
-            testgame.TryPlaceArmy(player2Token, new Location(0, 1));
-            testgame.TryPlaceArmy(player2Token, new Location(0, 1));
-            testgame.TryPlaceArmy(player2Token, new Location(0, 1));
-            testgame.TryPlaceArmy(player2Token, new Location(0, 1));
+            testgame.TryPlaceArmy(player2Token, territory2.Location);
+            testgame.TryPlaceArmy(player2Token, territory2.Location);
+            testgame.TryPlaceArmy(player2Token, territory2.Location);
+            testgame.TryPlaceArmy(player2Token, territory2.Location);
+            testgame.TryPlaceArmy(player2Token, territory2.Location);
         }
 
         //Player owns first territory, attacks second territory he doesn't own | should be true
@@ -74,6 +76,25 @@ namespace Risk.Tests
         {
             var placeResult = testgame.AttackOwnershipValid(player1Token, new Location(0, 1), new Location(0, 0));
             placeResult.Should().BeFalse();
+        }
+
+        [Test]
+        public void PlayerHasAtLeastOnePlaceToAttack()
+        {
+            var actual = testgame.PlayerCanAttack(players[1]);
+            actual.Should().BeTrue();
+        }
+        [Test]
+        public void TerritoryTakenOver()
+        {
+            territory1.Armies = 5;
+            territory2.Armies = 5;
+            territory1.Owner = new ApiPlayer("player1",player1Token, null) ;
+            territory2.Owner = new ApiPlayer("player2",player2Token, null);
+            testgame.BattleWasWon(territory1, territory2);
+            territory1.Armies.Should().Be(1);
+            territory2.Armies.Should().Be(4);
+            territory2.Owner.Name.Should().Be(players[0].Name);
         }
     }
 }
