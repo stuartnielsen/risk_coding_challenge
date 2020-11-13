@@ -163,6 +163,12 @@ namespace Risk.Game
 
         public const int MAX_ATTACKER_DICE = 3;
         public const int MAX_DEFENDER_DICE = 2;
+
+        public void SetGameOver()
+        {
+            gameState = GameState.GameOver;
+        }
+
         public TryAttackResult TryAttack(string attackerToken, Territory attackingTerritory, Territory defendingTerritory, int seed = 0)
         {
             if (canAttack(attackerToken, attackingTerritory, defendingTerritory) is false)

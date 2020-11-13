@@ -77,10 +77,13 @@ namespace Risk.Api
             game.StartTime = DateTime.Now;
             while (players.Count > 1 && game.GameState == GameState.Attacking)
             {
+                bool someonePlayedThisRound = false;
+
                 for(int i = 0; i < players.Count; i++)
                 {
                     if (game.PlayerCanAttack(players[i]))
                     {
+                        someonePlayedThisRound = true;
                         var failedTries = 0;
 
                         TryAttackResult attackResult;
@@ -118,6 +121,12 @@ namespace Risk.Api
                             }
                         }
                     }
+                }
+
+                if(someonePlayedThisRound is false)
+                {
+                    game.SetGameOver();
+                    return;
                 }
             }
         }
