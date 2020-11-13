@@ -89,10 +89,12 @@ namespace Risk.Tests
         {
             territory1.Armies = 5;
             territory2.Armies = 5;
+            territory1.Owner = new ApiPlayer("player1",player1Token, null) ;
+            territory2.Owner = new ApiPlayer("player2",player2Token, null);
             testgame.BattleWasWon(territory1, territory2);
             territory1.Armies.Should().Be(1);
             territory2.Armies.Should().Be(4);
-            //territory2.Owner.Name.Should().Be("player1");
+            territory2.Owner.Name.Should().Be(players[0].Name);
         }
     }
 }
