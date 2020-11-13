@@ -82,11 +82,11 @@ namespace Emmanuel_Client.Controllers
 
             //This logic will not grab a neighbour of the territory.
             foreach (var ter in beginAttack.Board) {
-                if (!(ter.Owner.Name is null) && ter.Owner.Name == "Emmanuel")
+                if (!(ter.OwnerName is null) && ter.OwnerName == "Emmanuel")
                 {
                     from = ter.Location;
                 }
-                if (!(ter.Owner.Name is null) && ter.Owner.Name != "Emmanuel")
+                if (!(ter.OwnerName is null) && ter.OwnerName != "Emmanuel")
                 {
                     to = ter.Location;
                 }
@@ -108,7 +108,7 @@ namespace Emmanuel_Client.Controllers
             foreach(var ter in deployArmyRequest.Board)
             {
                 rInt = r.Next(0, 3);
-                if ((ter.Owner is null || ter.Owner.Name == "Emmanuel" ) && ter.Armies < rInt)
+                if ((ter.OwnerName is null || ter.OwnerName == "Emmanuel" ) && ter.Armies < rInt)
                 {
                     location = ter.Location;
                     break;
