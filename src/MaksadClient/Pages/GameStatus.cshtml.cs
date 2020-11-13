@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Risk.Shared;
 
-namespace Risk.SampleClient.Pages
+namespace MaksadClient.Pages
 {
     public class GameStatusModel : PageModel
     {

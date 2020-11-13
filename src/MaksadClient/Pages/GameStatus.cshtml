@@ -1,16 +1,16 @@
 ﻿@page "/GameStatus"
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
-@model Risk.SampleClient.Pages.GameStatusModel
+@model MaksadClient.Pages.GameStatusModel
 
 @{
-    int playerCount=1;
+    int playerCount = 1;
 }
 <head>
     <meta http-equiv="refresh" content="1">
 </head>
 <h3>Game State: @Model.Status.GameState</h3>
 
-@if(@Model.Status.GameState == Risk.Shared.GameState.Joining)
+@if (@Model.Status.GameState == Risk.Shared.GameState.Joining)
 {
     <form method="post" asp-page-handler="StartGame">
         <input type="text" name="server" value="@Model.ServerName" />

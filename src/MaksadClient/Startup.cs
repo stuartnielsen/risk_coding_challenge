@@ -14,9 +14,10 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Risk.Shared;
 using System.Net.Http.Json;
+using Westwind.AspNetCore.LiveReload;
 
 
-namespace DJClient
+namespace MaksadClient
 {
     public class Startup
     {
@@ -32,6 +33,8 @@ namespace DJClient
         {
             services.AddControllers();
             services.AddHttpClient();
+            services.AddLiveReload();
+            services.AddRazorPages().AddRazorRuntimeCompilation();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -40,32 +43,34 @@ namespace DJClient
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseLiveReload();
             }
 
 
+            app.UseHttpsRedirection();
+            app.UseStaticFiles();
             app.UseRouting();
-
-            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapRazorPages();
             });
 
             var server = Configuration["ServerName"];
             var httpClient = httpClientFactory.CreateClient();
             var clientBaseAddress = app.ServerFeatures.Get<IServerAddressesFeature>().Addresses.First(a => a.Contains("http:"));
-            
+
             JoinServer(httpClient, server, clientBaseAddress);
 
         }
 
         private async Task JoinServer(HttpClient httpClient, string serverName, string clientBaseAddress)
         {
-            var joinRequest = new JoinRequest { CallbackBaseAddress = clientBaseAddress, Name = "DJ" };
-            
+            var joinRequest = new JoinRequest { CallbackBaseAddress = clientBaseAddress, Name = "Maksad" };
+
             var joinResponse = await httpClient.PostAsJsonAsync($"{serverName}/join", joinRequest);
-           
+
         }
     }
 }
