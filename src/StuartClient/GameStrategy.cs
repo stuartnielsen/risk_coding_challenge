@@ -11,7 +11,7 @@ namespace StuartClient
         public DeployArmyResponse DecideArmyWhereToPlacement(DeployArmyRequest deployRequest)
         {
             DeployArmyResponse deployResponse = new DeployArmyResponse();
-            List<Territory> myTerritories = new List<Territory>();
+            List<BoardTerritory> myTerritories = new List<BoardTerritory>();
             foreach (var territory in deployRequest.Board)
             {
                 if (territory.Armies == 0)
@@ -19,9 +19,9 @@ namespace StuartClient
                     deployResponse.DesiredLocation = territory.Location;
                     return deployResponse;
                 }
-                if (!(territory.Owner == null))
+                if (!(territory.OwnerName == null))
                 {
-                    if (territory.Owner.Name == "Stuart")
+                    if (territory.OwnerName == "Stuart")
                     {
                         myTerritories.Add(territory);
                         deployResponse.DesiredLocation = territory.Location;
@@ -50,12 +50,12 @@ namespace StuartClient
         {
             BeginAttackResponse beginAttack = new BeginAttackResponse();
             int max = 0;
-            IEnumerable<Territory> neighbors = new List<Territory>();
+            IEnumerable<BoardTerritory> neighbors = new List<BoardTerritory>();
             foreach (var territory in attackRequest.Board)
             {
-                if (!(territory.Owner == null))
+                if (!(territory.OwnerName == null))
                 {
-                    if (territory.Owner.Name == "Stuart")
+                    if (territory.OwnerName == "Stuart")
                     {
                         if (territory.Armies > max)
                             max = territory.Armies;
@@ -65,9 +65,9 @@ namespace StuartClient
             }
             foreach (var territory in attackRequest.Board)
             {
-                if (!(territory.Owner == null))
+                if (!(territory.OwnerName == null))
                 {
-                    if (territory.Owner.Name == "Stuart" && territory.Armies == max)
+                    if (territory.OwnerName == "Stuart" && territory.Armies == max)
                     {
                         beginAttack.From = territory.Location;
                         neighbors = GetNeighbors(territory, attackRequest.Board);
@@ -77,16 +77,16 @@ namespace StuartClient
 
             foreach (var neighbor in neighbors)
             {
-                if (!(neighbor.Owner == null))
+                if (!(neighbor.OwnerName == null))
                 {
-                    if (neighbor.Owner.Name != "Stuart" && neighbor.Armies < max)
+                    if (neighbor.OwnerName != "Stuart" && neighbor.Armies < max)
                         beginAttack.To = neighbor.Location;
                 }
             }
             return beginAttack;
         }
 
-        private IEnumerable<Territory> GetNeighbors(Territory territory, IEnumerable<Territory> territories)
+        private IEnumerable<BoardTerritory> GetNeighbors(BoardTerritory territory, IEnumerable<BoardTerritory> territories)
         {
             var l = territory.Location;
             var neighborLocations = new[] {

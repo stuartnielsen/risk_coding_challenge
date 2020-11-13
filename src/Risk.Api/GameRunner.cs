@@ -61,10 +61,11 @@ namespace Risk.Api
         private async Task<DeployArmyResponse> askForDeployLocationAsync(ApiPlayer currentPlayer, DeploymentStatus deploymentStatus)
         {
             var deployArmyRequest = new DeployArmyRequest {
-                Board = game.Board.Territories,
+                Board = game.Board.SerializableTerritories,
                 Status = deploymentStatus,
                 ArmiesRemaining = game.GetPlayerRemainingArmies(currentPlayer.Token)
             };
+            var json = System.Text.Json.JsonSerializer.Serialize(deployArmyRequest);
             var deployArmyResponse = (await currentPlayer.HttpClient.PostAsJsonAsync("/deployArmy", deployArmyRequest));
             deployArmyResponse.EnsureSuccessStatusCode();
             var r = await deployArmyResponse.Content.ReadFromJsonAsync<DeployArmyResponse>();
@@ -137,7 +138,7 @@ namespace Risk.Api
         private async Task<BeginAttackResponse> askForAttackLocationAsync(ApiPlayer player, BeginAttackStatus beginAttackStatus)
         {
             var beginAttackRequest = new BeginAttackRequest {
-                Board = game.Board.Territories,
+                Board = game.Board.SerializableTerritories,
                 Status = beginAttackStatus
             };
             return await (await player.HttpClient.PostAsJsonAsync("/beginAttack", beginAttackRequest))
@@ -170,7 +171,7 @@ namespace Risk.Api
         private async Task sendGameOverRequest(ApiPlayer player, TimeSpan gameDuration, List<(int score, ApiPlayer player)> scores)
         {
             var gameOverRequest = new GameOverRequest {
-                FinalBoard = game.Board.Territories.Select(b=>new BoardTerritory { OwnerName = b.Owner?.Name, Armies = b.Armies, Location = b.Location }),
+                FinalBoard = game.Board.SerializableTerritories,
                 GameDuration = gameDuration.ToString(),
                 WinnerName = scores.Last().player.Name,
                 FinalScores = scores.Select(s => $"{s.player.Name} ({s.score})")
@@ -211,7 +212,7 @@ namespace Risk.Api
             var continueAttackingRequest = new ContinueAttackRequest {
                 Board = game.Board.Territories,
                 AttackingTerritorry = attackingTerritory,
-                DefendingTerritorry = defendingTerritory                
+                DefendingTerritorry = defendingTerritory
             };
             var continueAttackingResponse = await (await currentPlayer.HttpClient.PostAsJsonAsync("/continueAttacking", continueAttackingRequest))
                 .EnsureSuccessStatusCode()
