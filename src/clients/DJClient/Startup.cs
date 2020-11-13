@@ -20,6 +20,7 @@ namespace DJClient
 {
     public class Startup
     {
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -32,6 +33,7 @@ namespace DJClient
         {
             services.AddControllers();
             services.AddHttpClient();
+            services.AddSingleton<IPlayer>(new ClientPlayer { Name="DJ"});
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -53,19 +55,27 @@ namespace DJClient
                 endpoints.MapControllers();
             });
 
+
             var server = Configuration["ServerName"];
             var httpClient = httpClientFactory.CreateClient();
             var clientBaseAddress = app.ServerFeatures.Get<IServerAddressesFeature>().Addresses.ToArray()[1];
+            var playerName = Configuration["PlayerName"];
+
+            var joinResponse = JoinServer(httpClient, server, clientBaseAddress, playerName);
+            //ToDo: Make this somehow accessible as a singelton
+            //var player = new ClientPlayer { Name = playerName, Token = joinResponse.Token };
+
             
-            JoinServer(httpClient, server, clientBaseAddress);
 
         }
 
-        private async Task JoinServer(HttpClient httpClient, string serverName, string clientBaseAddress)
+        private async Task JoinServer(HttpClient httpClient, string serverName, string clientBaseAddress, string playerName)
         {
-            var joinRequest = new JoinRequest { CallbackBaseAddress = clientBaseAddress, Name = "DJ" };
-            
-            var joinResponse = await httpClient.PostAsJsonAsync($"{serverName}/join", joinRequest);
+            var joinRequest = new JoinRequest { CallbackBaseAddress = clientBaseAddress,  Name = playerName};
+
+            var response = await httpClient.PostAsJsonAsync($"{serverName}/join", joinRequest);
+
+             //await response.Content.ReadFromJsonAsync<JoinResponse>();
            
         }
     }

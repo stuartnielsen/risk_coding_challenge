@@ -9,7 +9,7 @@ namespace Risk.Shared
     /// </summary>
     public class BeginAttackRequest
     {
-        public IEnumerable<Territory> Board { get; set; }
+        public IEnumerable<BoardTerritory> Board { get; set; }
         public BeginAttackStatus Status { get; set; }
     }
 
