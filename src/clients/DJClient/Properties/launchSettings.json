@@ -20,8 +20,8 @@
     "DJClient": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "weatherforecast",
-      "applicationUrl": "https://localhost:5003;http://localhost:5002",
+      "launchUrl": "areyouthere",
+      "applicationUrl": "http://144.17.48.18:5002",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

@@ -44,7 +44,7 @@ namespace DJClient
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
 
             app.UseRouting();
 
@@ -58,14 +58,10 @@ namespace DJClient
 
             var server = Configuration["ServerName"];
             var httpClient = httpClientFactory.CreateClient();
-            var clientBaseAddress = app.ServerFeatures.Get<IServerAddressesFeature>().Addresses.ToArray()[1];
+            //var clientBaseAddress = app.ServerFeatures.Get<IServerAddressesFeature>().Addresses.ToArray()[1];
             var playerName = Configuration["PlayerName"];
 
-            var joinResponse = JoinServer(httpClient, server, clientBaseAddress, playerName);
-            //ToDo: Make this somehow accessible as a singelton
-            //var player = new ClientPlayer { Name = playerName, Token = joinResponse.Token };
-
-            
+            JoinServer(httpClient, "http://144.17.48.37:5000", "http://144.17.48.18:5002", playerName).Wait();
 
         }
 
@@ -75,7 +71,8 @@ namespace DJClient
 
             var response = await httpClient.PostAsJsonAsync($"{serverName}/join", joinRequest);
 
-             //await response.Content.ReadFromJsonAsync<JoinResponse>();
+            var content = await response.Content.ReadAsStringAsync();
+
            
         }
     }
