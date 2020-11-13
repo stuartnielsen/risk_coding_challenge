@@ -9,12 +9,12 @@ using Risk.Shared;
 
 namespace Risk.HMClient.Controllers
 {
-    public class RiskClientController : Controller
+    public class ClientController : Controller
     {
         private readonly IHttpClientFactory httpClientFactory;
         private static string serverAdress;
 
-        public RiskClientController(IHttpClientFactory httpClientFactory)
+        public ClientController(IHttpClientFactory httpClientFactory)
         {
             this.httpClientFactory = httpClientFactory;
         }
