@@ -10,7 +10,7 @@ namespace DJClient.Test
     public class GamePlayerTests
     {
         private GamePlayer gamePlayer;
-        private IList<Territory> Board;
+        private IList<BoardTerritory> Board;
         private int playerArmyCount;
 
 
@@ -23,7 +23,7 @@ namespace DJClient.Test
             gamePlayer = new GamePlayer { Player = new ClientPlayer { Name = "Player" , Token = "PlayerToken"} };
             playerArmyCount = 5;
 
-            Board = new List<Territory>();
+            Board = new List<BoardTerritory>();
         }
 
         [Test]
@@ -32,10 +32,10 @@ namespace DJClient.Test
             //Fill board except for one space
             fillBoard();
             Board.Remove(Board.Last());
-            Board.Add(new Territory { 
-                Armies = 0, 
-                Location = new Location { Row = BOARD_ROWS - 1, Column = BOARD_COLS - 1}, 
-                Owner = null 
+            Board.Add(new BoardTerritory {
+                Armies = 0,
+                Location = new Location { Row = BOARD_ROWS - 1, Column = BOARD_COLS - 1},
+                OwnerName = null
             });
 
 
@@ -53,10 +53,10 @@ namespace DJClient.Test
         {
             fillBoard();
             Board.Remove(Board.Last());
-            Board.Add(new Territory {
+            Board.Add(new BoardTerritory {
                 Armies = 1,
                 Location = new Location { Row = BOARD_ROWS - 1, Column = BOARD_COLS - 1 },
-                Owner = gamePlayer.Player
+                OwnerName = gamePlayer.Player.Name
             });
 
             var deployRequest = new DeployArmyRequest { Board = Board, ArmiesRemaining = playerArmyCount, Status = DeploymentStatus.YourTurn };
@@ -75,8 +75,8 @@ namespace DJClient.Test
             var attackSource = new Location(0, 0);
             var attackTarget = new Location(0, 1);
 
-            Board.Add(new Territory { Armies = 1, Location = attackSource, Owner = gamePlayer.Player });
-            Board.Add(new Territory { Armies = 1, Location = attackTarget, Owner = new ClientPlayer { Name = "Enemy" } });
+            Board.Add(new BoardTerritory { Armies = 1, Location = attackSource, OwnerName = gamePlayer.Player.Name });
+            Board.Add(new BoardTerritory { Armies = 1, Location = attackTarget, OwnerName = "Enemy"});
 
             var continueAttackRequest  = new ContinueAttackRequest { Board = Board};
             var continueAttackResponse = gamePlayer.DecideContinueAttackResponse(continueAttackRequest);
@@ -92,8 +92,8 @@ namespace DJClient.Test
             var attackSource = new Location(0, 0);
             var attackTarget = new Location(0, 1);
 
-            Board.Add(new Territory { Armies = 2, Location = attackSource, Owner = gamePlayer.Player });
-            Board.Add(new Territory { Armies = 1, Location = attackTarget, Owner = new ClientPlayer { Name = "Enemy" } });
+            Board.Add(new BoardTerritory { Armies = 2, Location = attackSource, OwnerName = gamePlayer.Player.Name });
+            Board.Add(new BoardTerritory { Armies = 1, Location = attackTarget, OwnerName = "Enemy" });
 
             var continueAttackRequest = new ContinueAttackRequest { Board = Board };
             var continueAttackResponse = gamePlayer.DecideContinueAttackResponse(continueAttackRequest);
@@ -105,8 +105,8 @@ namespace DJClient.Test
         [Test]
         public void areAdjacentReturnsTrueIfArmiesAreAdjacent()
         {
-            Territory territory1 = new Territory { Location = new Location(0, 0) };
-            Territory territory2 = new Territory { Location = new Location(0, 1) };
+            BoardTerritory territory1 = new BoardTerritory { Location = new Location(0, 0) };
+            BoardTerritory territory2 = new BoardTerritory { Location = new Location(0, 1) };
 
             gamePlayer.areAdjacent(territory1, territory2).Should().BeTrue();
 
@@ -115,8 +115,8 @@ namespace DJClient.Test
         [Test]
         public void areAdjacentReturnsFalseIfArmiesAreNotAdjacent()
         {
-            Territory territory1 = new Territory { Location = new Location(0, 0) };
-            Territory territory2 = new Territory { Location = new Location(0, 2) };
+            BoardTerritory territory1 = new BoardTerritory { Location = new Location(0, 0) };
+            BoardTerritory territory2 = new BoardTerritory { Location = new Location(0, 2) };
 
             gamePlayer.areAdjacent(territory1, territory2).Should().BeFalse();
         }
@@ -124,8 +124,8 @@ namespace DJClient.Test
         [Test]
         public void DecideBeginAttackAttacksFirstNeighbor()
         {
-            var attackSource = new Territory { Armies = 1, Owner = gamePlayer.Player, Location = new Location(0, 0) };
-            var attackTarget = new Territory { Armies = 1, Owner = new ClientPlayer { Name = "Enemy"}, Location = new Location(0, 1) };
+            var attackSource = new BoardTerritory { Armies = 1, OwnerName = gamePlayer.Player.Name, Location = new Location(0, 0) };
+            var attackTarget = new BoardTerritory { Armies = 1, OwnerName = "Enemy", Location = new Location(0, 1) };
 
             Board.Add(attackSource);
             Board.Add(attackTarget);
@@ -143,9 +143,9 @@ namespace DJClient.Test
             {
                 for (int colIndex = 0; colIndex < BOARD_COLS; ++colIndex)
                 {
-                    Board.Add(new Territory {
+                    Board.Add(new BoardTerritory {
                         Armies = 1,
-                        Owner = new ClientPlayer { Name = "Opponent", Token = "" },
+                        OwnerName = "Opponent",
                         Location = new Location(rowIndex, colIndex)
                     });
 

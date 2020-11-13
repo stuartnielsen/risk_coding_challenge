@@ -210,7 +210,7 @@ namespace Risk.Api
         private async Task<ContinueAttackResponse> askContinueAttackingAsync(ApiPlayer currentPlayer, Territory attackingTerritory, Territory defendingTerritory)
         {
             var continueAttackingRequest = new ContinueAttackRequest {
-                Board = game.Board.Territories,
+                Board = game.Board.SerializableTerritories,
                 AttackingTerritorry = attackingTerritory,
                 DefendingTerritorry = defendingTerritory
             };
