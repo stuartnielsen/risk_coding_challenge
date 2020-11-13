@@ -92,7 +92,36 @@ namespace Rusty_Client.Controllers
         {
             return Ok(gameOverRequest);
         }
+     
 
-
+        private BeginAttackResponse createAttackResponse(BeginAttackRequest beginAttack)
+        {
+            var from = new Location();
+            var to = new Location();
+                foreach(var territory in beginAttack.Board)
+            {
+                if(!(territory.Owner.Name is null)&& territory.Owner.Name == "Rusty")
+                {
+                    from = territory.Location;
+                }
+                if(!(from is null && to is null))
+                {
+                    break;
+                }
+            }
+            return new BeginAttackResponse { From = from, To = to };
+        }
+        private DeployArmyResponse createDeployRequest(DeployArmyRequest deployArmyRequest)
+        {
+            var location = new Location();
+            foreach(var territory in deployArmyRequest.Board)
+            {
+                if(territory.Owner is null || territory.Owner.Name =="Rusty")
+                {
+                    location = territory.Location;
+                }
+            }
+            return new DeployArmyResponse { DesiredLocation = location };
+        }
     }
 }
