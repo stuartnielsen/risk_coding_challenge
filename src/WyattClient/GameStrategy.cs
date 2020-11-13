@@ -31,18 +31,18 @@ namespace WyattClient
                 }
                 
             }
-            foreach (var territory in deployArmyRequest.Board)
-            {
-                if(territory.Owner != null)
-                {
-                    if (territory.Owner.Name == "Wyatt" && territory.Armies == 3)
-                    {
-                        deployArmyResponse.DesiredLocation = territory.Location;
-                        return deployArmyResponse;
-                    }
-                }
+            //foreach (var territory in deployArmyRequest.Board)
+            //{
+            //    if(territory.Owner != null)
+            //    {
+            //        if (territory.Owner.Name == "Wyatt" && territory.Armies == 3)
+            //        {
+            //            deployArmyResponse.DesiredLocation = territory.Location;
+            //            return deployArmyResponse;
+            //        }
+            //    }
              
-            }
+            //}
             return deployArmyResponse;
         }
 
