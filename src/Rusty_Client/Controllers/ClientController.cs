@@ -70,22 +70,24 @@ namespace Rusty_Client.Controllers
         private DeployArmyResponse createDeployResponse(DeployArmyRequest deployArmyRequest)
         {
             DeployArmyResponse response = new DeployArmyResponse();
-            foreach(Territory space in deployArmyRequest.Board)
+            foreach(BoardTerritory space in deployArmyRequest.Board)
             {
-                if(space.Location.Row == space.Location.Column && (space.Owner.Name == null || space.Owner.Name=="Rusty"))
+                if((space.Location.Row == space.Location.Column) && (space.OwnerName == null || space.OwnerName=="Rusty"))
                 {
-                    if(space.Owner.Name=="Rusty" && space.Armies <= 3)
+                    if((space.OwnerName=="Rusty") && (space.Armies <= 3))
                     {
                         response.DesiredLocation = space.Location;
-                        continue;
+                        return response;
+                        
                     }
-                    else
+                    else if(space.OwnerName==null)
                     {
                         response.DesiredLocation = space.Location;
+                        return response;
                     }
                     
                 }
-                return response;
+                 //return response;
             }
             return null;
 
@@ -100,9 +102,9 @@ namespace Rusty_Client.Controllers
             BeginAttackResponse response = new BeginAttackResponse();
             var attackerLocation = new Location();
             //from is the attacker to is the defender
-            foreach(Territory space in beginAttackRequest.Board)
+            foreach(BoardTerritory space in beginAttackRequest.Board)
             {
-                if (space.Owner.Name == "Rusty")
+                if (space.OwnerName == "Rusty")
                 {
                     attackerLocation = space.Location;
                     //look at the next location to the right, left, up, down, up-right diagonal, 
@@ -111,7 +113,7 @@ namespace Rusty_Client.Controllers
                     {
                         for(int j=space.Location.Row-1;j<=(space.Location.Row+1); j++)
                         {
-                            if (space.Owner.Name != "Rusty")
+                            if (space.OwnerName != "Rusty")
                             {
                                 response.From = attackerLocation;
                                 response.To = space.Location;
