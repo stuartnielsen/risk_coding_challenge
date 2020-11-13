@@ -102,12 +102,20 @@ namespace Emmanuel_Client.Controllers
 
         private DeployArmyResponse createDeployResponse(DeployArmyRequest deployArmyRequest)
         {
-            var location = new Location();
+            Random r = new Random();
+            int rInt;
+            Location location = new Location();
             foreach(var ter in deployArmyRequest.Board)
             {
-                if (ter.Owner is null || ter.Owner.Name == "Emmanuel" )
+                rInt = r.Next(0, 3);
+                if ((ter.Owner is null || ter.Owner.Name == "Emmanuel" ) && ter.Armies < rInt)
                 {
                     location = ter.Location;
+                    break;
+                }
+                else
+                {
+                    continue;
                 }
             }
 
