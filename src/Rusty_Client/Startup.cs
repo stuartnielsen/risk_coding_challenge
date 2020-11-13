@@ -42,7 +42,7 @@ namespace Rusty_Client
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
 
             app.UseRouting();
 
@@ -54,10 +54,10 @@ namespace Rusty_Client
             });
 
             //var server = Configuration["ServerName"];
-            //var httpClient = httpClientFactory.CreateClient();
+            var httpClient = httpClientFactory.CreateClient();
             //var clientBaseAddress = app.ServerFeatures.Get<IServerAddressesFeature>().Addresses.ToArray()[1];
 
-            //JoinServer(httpClient, server, clientBaseAddress);
+            JoinServer(httpClient, "http://144.17.48.37:5000", "http://144.17.48.44:5012");
         }
 
         private async Task JoinServer (HttpClient httpClient, string serverName, string clientBaseAddress)
