@@ -20,7 +20,7 @@ namespace Risk.Api
             CreateHostBuilder(args).Build().Run();
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
         }
-
+         
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
