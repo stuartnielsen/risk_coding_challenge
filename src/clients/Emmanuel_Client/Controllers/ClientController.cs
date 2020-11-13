@@ -48,19 +48,70 @@ namespace Emmanuel_Client.Controllers
             }
         }
 
-        [HttpPost("joinServer")]
-        public async Task<IActionResult> JoinServerAsync_Post(string server)
-        {
-            await JoinServerAsync(server);
-            return RedirectToPage("/GameStatus", new { servername = server });
-        }
-
         [HttpPost("deployArmy")]
         public DeployArmyResponse DeployArmy([FromBody]DeployArmyRequest deployArmyRequest)
         {
-            DeployArmyResponse response = new DeployArmyResponse();
-            response.DesiredLocation = new Location(1, 1);
+            return createDeployResponse(deployArmyRequest);
+        }
+
+        [HttpPost("beginAttack")]
+        public BeginAttackResponse BeginAttack([FromBody] BeginAttackRequest beginAttackRequest)
+        {
+            return createAttackResponse(beginAttackRequest);
+        }
+
+        [HttpPost("continueAttack")]
+        public ContinueAttackResponse ContinueAttack([FromBody] ContinueAttackRequest continueAttackRequest)
+        {
+            ContinueAttackResponse response = new ContinueAttackResponse();
+            response.ContinueAttacking = true;
+
             return response;
+        }
+
+        [HttpPost("gameOver")]
+        public IActionResult GameOver([FromBody] GameOverRequest gameOverRequest)
+        {
+            return Ok(gameOverRequest);
+        }
+
+        private BeginAttackResponse createAttackResponse(BeginAttackRequest beginAttack)
+        {
+            var from = new Location();
+            var to = new Location();
+
+            //This logic will not grab a neighbour of the territory.
+            foreach (var ter in beginAttack.Board) {
+                if (!(ter.Owner.Name is null) && ter.Owner.Name == "Emmanuel")
+                {
+                    from = ter.Location;
+                }
+                if (!(ter.Owner.Name is null) && ter.Owner.Name != "Emmanuel")
+                {
+                    to = ter.Location;
+                }
+
+                if(!(from is null && to is null))
+                {
+                    break;
+                }
+            }
+
+            return new BeginAttackResponse { From = from, To = to };
+        }
+
+        private DeployArmyResponse createDeployResponse(DeployArmyRequest deployArmyRequest)
+        {
+            var location = new Location();
+            foreach(var ter in deployArmyRequest.Board)
+            {
+                if (ter.Owner is null || ter.Owner.Name == "Emmanuel" )
+                {
+                    location = ter.Location;
+                }
+            }
+
+            return new DeployArmyResponse { DesiredLocation = location };
         }
     }
 }
