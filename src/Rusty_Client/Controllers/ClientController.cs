@@ -158,17 +158,17 @@ namespace Rusty_Client.Controllers
         //    }
         //    return new BeginAttackResponse { From = from, To = to };
         //}
-        private DeployArmyResponse createDeployRequest(DeployArmyRequest deployArmyRequest)
-        {
-            var location = new Location();
-            foreach(var territory in deployArmyRequest.Board)
-            {
-                if(territory.Owner is null || territory.Owner.Name =="Rusty")
-                {
-                    location = territory.Location;
-                }
-            }
-            return new DeployArmyResponse { DesiredLocation = location };
-        }
+        //private DeployArmyResponse createDeployRequest(DeployArmyRequest deployArmyRequest)
+        //{
+        //    var location = new Location();
+        //    foreach(var territory in deployArmyRequest.Board)
+        //    {
+        //        if(territory.Owner is null || territory.Owner.Name =="Rusty")
+        //        {
+        //            location = territory.Location;
+        //        }
+        //    }
+        //    return new DeployArmyResponse { DesiredLocation = location };
+        //}
     }
 }
