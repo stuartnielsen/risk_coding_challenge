@@ -1,16 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Risk.Shared;
+using System.Net.Http;
+using System.Net.Http.Json;
 
-namespace Risk.TannerClient.Controllers
+namespace TannerClient.Controllers
 {
     public class ClientController : Controller
     {
         private readonly IHttpClientFactory httpClientFactory;
         private static string serverAdress;
+
+        int x = 0;
+        int y = 0;
+        int attempts = 0;
 
         public ClientController(IHttpClientFactory httpClientFactory)
         {
@@ -25,7 +31,7 @@ namespace Risk.TannerClient.Controllers
             string baseUrl = string.Format("{0}://{1}{2}", Request.Scheme, Request.Host, Request.PathBase);
             var joinRequest = new JoinRequest {
                 CallbackBaseAddress = baseUrl,
-                Name = "braindead client"
+                Name = "Tanner Client"
             };
             try
             {
@@ -56,16 +62,73 @@ namespace Risk.TannerClient.Controllers
         public DeployArmyResponse DeployArmy([FromBody] DeployArmyRequest deployArmyRequest)
         {
             DeployArmyResponse response = new DeployArmyResponse();
-            response.DesiredLocation = new Location(1, 1);
+            if (deployArmyRequest.Status == DeploymentStatus.PreviousAttemptFailed)
+            {
+                if(x < 5)
+                {
+                    response.DesiredLocation = new Location(x++, y);
+                    return response;
+                }
+                else if(y < 5)
+                {
+                    response.DesiredLocation = new Location(x, y++);
+                    return response;
+                }
+                else
+                {
+                    x = 0;
+                    y = 0;
+                }
+            }
+
+            response.DesiredLocation = new Location(x, y);
             return response;
+           
         }
 
         [HttpPost("beginAttack")]
         public BeginAttackResponse BeginAttack([FromBody] BeginAttackRequest beginAttackRequest)
         {
             BeginAttackResponse response = new BeginAttackResponse();
-            response.From = new Location(1, 1);
-            response.To = new Location(1, 2);
+            
+            if (beginAttackRequest.Status == BeginAttackStatus.PreviousAttackRequestFailed)
+            {
+                attempts++;
+                if (attempts == 1 && y < 5)
+                {
+                    response.From = new Location(x, y);
+                    response.To = new Location(x, y+1);
+                    return response;
+                }
+                else if (attempts == 2 && x < 5)
+                {
+                    response.From = new Location(x, y);
+                    response.To = new Location(x + 1, y);
+                    return response;
+                }
+                else if (attempts == 3 && x > 0)
+                {
+                    response.From = new Location(x, y);
+                    response.To = new Location(x - 1, y);
+                    return response;
+                }
+                else if (attempts == 4 && x < 5 && y < 5)
+                {
+                    response.From = new Location(x, y);
+                    response.To = new Location(x + 1, y + 1);
+                    return response;
+                }
+                else if (attempts == 5 && x > 0 && y > 0)
+                {
+                    response.From = new Location(x, y);
+                    response.To = new Location(x - 1, y - 1);
+                    return response;
+                }
+            }
+
+            attempts = 0;
+            response.From = new Location(x, y);
+            response.To = new Location(x, y - 1);
             return response;
         }
 
