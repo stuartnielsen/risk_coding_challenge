@@ -33,6 +33,7 @@ namespace Risk.Api
             services.AddControllers()
                 .AddJsonOptions(options =>
                     options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase);
+
             var players = new List<ApiPlayer>();
             services.AddSingleton(GameController.InitializeGame(
                 int.Parse(Configuration["height"] ?? "5"),
@@ -41,9 +42,11 @@ namespace Risk.Api
                 players));
             services.AddSingleton(players);
 
+            var joiningPlayers = new ConcurrentBag<ApiPlayer>();
+            services.AddSingleton(joiningPlayers);
+
             services.AddMemoryCache();
             services.AddHttpClient();
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -163,6 +163,12 @@ namespace Risk.Game
 
         public const int MAX_ATTACKER_DICE = 3;
         public const int MAX_DEFENDER_DICE = 2;
+
+        public void SetGameOver()
+        {
+            gameState = GameState.GameOver;
+        }
+
         public TryAttackResult TryAttack(string attackerToken, Territory attackingTerritory, Territory defendingTerritory, int seed = 0)
         {
             if (canAttack(attackerToken, attackingTerritory, defendingTerritory) is false)
@@ -202,7 +208,12 @@ namespace Risk.Game
                 else
                     attackingTerritory.Armies--;
             }
-
+            if(defendingTerritory.Armies < 1)
+            {
+                BattleWasWon(attackingTerritory, defendingTerritory);
+                return new TryAttackResult { CanContinue = false,
+                AttackInvalid = false};
+            }
             return new TryAttackResult { CanContinue = attackingTerritory.Armies > 1 };
         }
 
@@ -218,6 +229,12 @@ namespace Risk.Game
             return Board.Territories
                         .Where(t => t.Owner == player)
                         .Count();
+        }
+        public void BattleWasWon(Territory attackingTerritory, Territory defendingTerritory)
+        {
+            defendingTerritory.Owner = attackingTerritory.Owner;
+            defendingTerritory.Armies = attackingTerritory.Armies - 1;
+            attackingTerritory.Armies = attackingTerritory.Armies - defendingTerritory.Armies;
         }
     }
 }

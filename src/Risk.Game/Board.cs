@@ -16,6 +16,14 @@ namespace Risk.Game
 
         public IEnumerable<Territory> Territories { get; }
 
+        public IEnumerable<BoardTerritory> SerializableTerritories =>
+            Territories.Select(b => new BoardTerritory
+            {
+                OwnerName = b.Owner?.Name,
+                Armies = b.Armies,
+                Location = b.Location
+            });
+
         public Territory GetTerritory(int row, int col)
         {
             return Territories.Single(t => t.Location.Row == row && t.Location.Column == col);
