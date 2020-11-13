@@ -13,7 +13,7 @@ namespace WyattClient
             DeployArmyResponse deployArmyResponse = new DeployArmyResponse();
             foreach (var territory in deployArmyRequest.Board)
             {   
-                if(territory.Owner == null)
+                if(territory.OwnerName == null)
                 {
                     deployArmyResponse.DesiredLocation = territory.Location;
                     return deployArmyResponse;
@@ -21,9 +21,9 @@ namespace WyattClient
             }
             foreach (var territory in deployArmyRequest.Board)
             {
-                if(territory.Owner != null)
+                if(territory.OwnerName != null)
                 {
-                    if (territory.Owner.Name == "Wyatt" && territory.Armies < 3)
+                    if (territory.OwnerName == "Wyatt" && territory.Armies < 3)
                     {
                         deployArmyResponse.DesiredLocation = territory.Location;
                         return deployArmyResponse;
@@ -48,17 +48,17 @@ namespace WyattClient
 
         public BeginAttackResponse WhenToAttack(BeginAttackRequest beginAttackRequest)
         {
-            var neighbors = GetNeighbors(beginAttackRequest.Board.ElementAt(1), beginAttackRequest.Board);
+            IEnumerable<BoardTerritory> neighbors = new List<BoardTerritory>();
             BeginAttackResponse beginAttackResponse = new BeginAttackResponse();
             foreach(var territory in beginAttackRequest.Board)
             {
-                if(territory.Owner != null)
+                if(territory.OwnerName != null)
                 {
-                    if (territory.Owner.Name == "Wyatt" && territory.Armies >= 3)
+                    if (territory.OwnerName == "Wyatt" && territory.Armies >= 3)
                     {
                         foreach (var neighbor in neighbors)
                         {
-                            if (neighbor.Owner.Name != "Wyatt")
+                            if (neighbor.OwnerName != "Wyatt")
                             {
                                 beginAttackResponse.From = territory.Location;
                                 beginAttackResponse.To = neighbor.Location;
@@ -85,7 +85,7 @@ namespace WyattClient
             return continueAttackResponse;
         }
 
-        private IEnumerable<Territory> GetNeighbors(Territory territory, IEnumerable<Territory> territories)
+        private IEnumerable<BoardTerritory> GetNeighbors(BoardTerritory territory, IEnumerable<BoardTerritory> territories)
         {
             var l = territory.Location;
             var neighborLocations = new[] {
