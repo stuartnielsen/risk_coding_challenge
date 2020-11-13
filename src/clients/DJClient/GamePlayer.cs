@@ -10,6 +10,8 @@ namespace DJClient
     {
         public IPlayer Player{ get; set; }
 
+
+
         public DeployArmyResponse DeployArmy(DeployArmyRequest deployArmyRequest)
         {
             
@@ -21,7 +23,7 @@ namespace DJClient
                 }
             }
 
-            foreach(Territory territory in deployArmyRequest.Board)
+            foreach (Territory territory in deployArmyRequest.Board)
             {
                 if (territory.Owner.Token == Player.Token)
                 {
