@@ -85,10 +85,16 @@ namespace Emmanuel_Client.Controllers
                 if (!(ter.OwnerName is null) && ter.OwnerName == "Emmanuel")
                 {
                     from = ter.Location;
-                }
-                if (!(ter.OwnerName is null) && ter.OwnerName != "Emmanuel")
-                {
-                    to = ter.Location;
+                    for(int i = ter.Location.Column -1; i <= ter.Location.Column + 1; i++)
+                    {
+                        for(int j = ter.Location.Row - 1; i <= ter.Location.Row + 1; i++)
+                        {
+                            if (!(ter.OwnerName is null) && ter.OwnerName != "Emmanuel")
+                            {
+
+                            }
+                        }
+                    }
                 }
 
                 if(!(from is null && to is null))
