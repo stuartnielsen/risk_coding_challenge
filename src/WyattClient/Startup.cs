@@ -45,7 +45,7 @@ namespace WyattClient
                 app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             app.UseRouting();
@@ -60,16 +60,20 @@ namespace WyattClient
             var server = Configuration["ServerName"];
             var httpClient = httpClientFactory.CreateClient();
             var addresses = app.ServerFeatures.Get<IServerAddressesFeature>().Addresses;
-            var clientBaseAddress = addresses.ToArray()[1];
+            var clientBaseAddress = addresses.First();
 
-            JoinServer(httpClient, server, clientBaseAddress);
+            JoinServer(httpClientFactory.CreateClient(),
+                Configuration["GameServer"],
+                Configuration["ClientCallbackAddress"],
+                Configuration["userName"]
+                );
         }
 
-        private async Task JoinServer(HttpClient httpClient, string serverName, string clientBaseAddress)
+        private async void JoinServer(HttpClient httpClient, string serverName, string clientBaseAddress, string userName)
         {
-            var joinRequest = new JoinRequest { CallbackBaseAddress = clientBaseAddress, Name = "Wyatt" };
+            var joinRequest = new JoinRequest { CallbackBaseAddress = clientBaseAddress, Name = userName };
 
-            var joinResponse = await httpClient.PostAsJsonAsync($"{serverName}/join", joinRequest);
+            var joinResponse =  await httpClient.PostAsJsonAsync($"{serverName}/join", joinRequest);
 
         }
     }

@@ -8,19 +8,27 @@
     }
   },
   "profiles": {
-    "IIS Express": {
-      "commandName": "IISExpress",
-      "launchBrowser": true,
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
-    },
     "WyattClient": {
       "commandName": "Project",
       "launchBrowser": true,
-      "applicationUrl": "https://localhost:5071;http://localhost:5070",
+      "applicationUrl": "http://localhost:5070",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "userName": "Wyatt",
+        "GameServer": "http://localhost:5000",
+        "ClientCallbackAddress": "http://localhost:5000"
+      }
+    },
+    "ServerClient": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "applicationUrl": "http://0.0.0.0:5070",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "userName": "Wyatt",
+        "GameServer": "http://144.17.48.37:5000",
+        "ClientCallbackAddress": "http://144.17.48.52:5070"
+
       }
     }
   }
