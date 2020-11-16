@@ -17,13 +17,28 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "DJClient": {
+    "LocalGame": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "weatherforecast",
-      "applicationUrl": "https://localhost:5433;http://localhost:5432",
+      "launchUrl": "http://localhost:5432/areyouthere",
+      "applicationUrl": "http://localhost:5432",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ServerName": "http://localhost:5000",
+        "PlayerName": "DJ",
+        "ClientCallbackAddress": "http://localhost:5432"
+      }
+    },
+    "RemoteGame/Jonathan'sOffice": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "http://localhost:5432/areyouthere",
+      "applicationUrl": "http://0.0.0.0:5432",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ServerName": "http://144.17.10.32:5000",
+        "PlayerName": "DJ",
+        "ClientCallbackAddress": "http://144.17.24.31:5432"
       }
     }
   }
