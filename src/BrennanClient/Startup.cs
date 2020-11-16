@@ -39,7 +39,7 @@ namespace BrennanClient
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
 
             app.UseRouting();
 
@@ -52,9 +52,9 @@ namespace BrennanClient
 
             var server = Configuration["ServerName"];
             var httpClient = httpClientFactory.CreateClient();
-            var clientBaseAddress = app.ServerFeatures.Get<IServerAddressesFeature>().Addresses.ToArray()[1];
+            //var clientBaseAddress = app.ServerFeatures.Get<IServerAddressesFeature>().Addresses.ToArray()[1];
 
-            JoinServer(httpClient, server, "http:144.17.48.99");
+            JoinServer(httpClient, server, "http://144.17.48.99:5030");
         }
 
         private async Task JoinServer(HttpClient httpClient, string serverName, string clientBaseAddress)
