@@ -5,12 +5,12 @@
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "",
-      "applicationUrl": "http://localhost:5004",
+      "applicationUrl": "http://0.0.0.0:5004",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "GameServer": "http://144.17.48.37:5000",
         "ClientCallbackAddress": "http://144.17.48.37:5004",
-        "ClientName": "SampleClient1"
+        "PlayerName": "SampleClient1"
       }
     }
   }
