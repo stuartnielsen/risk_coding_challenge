@@ -31,7 +31,8 @@ namespace Emmanuel_Client.Controllers
         {
             serverAddress = server;
             var client = clientFactory.CreateClient();
-            string baseUrl = string.Format("{0}://{1}{2}", Request.Scheme, Request.Host, Request.PathBase);
+            //string baseUrl = string.Format("{0}://{1}{2}", Request.Scheme, Request.Host, Request.PathBase);
+            string baseUrl = "http://144.17.48.66:5009";
             var joinRequest = new JoinRequest {
                 CallbackBaseAddress = baseUrl,
                 Name = "Emmanuel"
@@ -81,17 +82,24 @@ namespace Emmanuel_Client.Controllers
             var to = new Location();
 
             //This logic will not grab a neighbour of the territory.
-            foreach (var ter in beginAttack.Board) {
+            foreach (var ter in beginAttack.Board)
+            {
                 if (!(ter.OwnerName is null) && ter.OwnerName == "Emmanuel")
                 {
                     from = ter.Location;
-                }
-                if (!(ter.OwnerName is null) && ter.OwnerName != "Emmanuel")
-                {
-                    to = ter.Location;
+                    for (int i = ter.Location.Column - 1; i <= ter.Location.Column + 1; i++)
+                    {
+                        for (int j = ter.Location.Row - 1; i <= ter.Location.Row + 1; i++)
+                        {
+                            if (!(ter.OwnerName is null) && ter.OwnerName != "Emmanuel")
+                            {
+
+                            }
+                        }
+                    }
                 }
 
-                if(!(from is null && to is null))
+                if (!(from is null && to is null))
                 {
                     break;
                 }
