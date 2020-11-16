@@ -74,7 +74,7 @@ namespace Rusty_Client.Controllers
             {
                 if((space.Location.Row == space.Location.Column) && (space.OwnerName == null || space.OwnerName=="Rusty"))
                 {
-                    if((space.OwnerName=="Rusty") && (space.Armies <= 3))
+                    if((space.OwnerName=="Rusty") && (space.Armies < 3))
                     {
                         response.DesiredLocation = space.Location;
                         return response;
