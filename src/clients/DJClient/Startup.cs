@@ -14,7 +14,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Risk.Shared;
 using System.Net.Http.Json;
-
+using System.Net;
+using System.Net.Sockets;
 
 namespace DJClient
 {
@@ -44,7 +45,6 @@ namespace DJClient
                 app.UseDeveloperExceptionPage();
             }
 
-            //app.UseHttpsRedirection();
 
             app.UseRouting();
 
@@ -58,11 +58,33 @@ namespace DJClient
 
             var server = Configuration["ServerName"];
             var httpClient = httpClientFactory.CreateClient();
-            //var clientBaseAddress = app.ServerFeatures.Get<IServerAddressesFeature>().Addresses.ToArray()[1];
+            //var clientBaseAddress = app.ServerFeatures.Get<IServerAddressesFeature>().Addresses.First();
+            var clientBaseAddress = Configuration["ClientCallbackAddress"];
+
+
             var playerName = Configuration["PlayerName"];
 
-            JoinServer(httpClient, "http://144.17.48.37:5000", "http://144.17.48.18:5002", playerName).Wait();
+            var joinResponse = JoinServer(httpClient, server, clientBaseAddress, playerName);
+            //ToDo: Make this somehow accessible as a singelton
+            //var player = new ClientPlayer { Name = playerName, Token = joinResponse.Token };
 
+            
+
+        }
+
+        private string getLocalIPAddress()
+        {
+            var host = Dns.GetHostEntry(Dns.GetHostName());
+
+
+            foreach (var ip in host.AddressList)
+            {
+                if (ip.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    return ip.ToString();
+                }
+            }
+            throw new Exception("No network adapters with an IPv4 address in the system!");
         }
 
         private async Task JoinServer(HttpClient httpClient, string serverName, string clientBaseAddress, string playerName)
