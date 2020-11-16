@@ -12,7 +12,7 @@ namespace TannerClient.Controllers
     public class ClientController : Controller
     {
         private readonly IHttpClientFactory httpClientFactory;
-        private static string serverAdress;
+        //private static string serverAdress;
         private GamePlayer gamePlayer;
 
         public ClientController(IHttpClientFactory httpClientFactory, IPlayer player)
@@ -21,7 +21,7 @@ namespace TannerClient.Controllers
             gamePlayer = new GamePlayer { Player = player };
         }
 
-        [HttpGet("joinServer/{*server}")]
+        /*[HttpGet("joinServer/{*server}")]
         public async Task<IActionResult> JoinAsync(string server)
         {
             serverAdress = server;
@@ -49,7 +49,7 @@ namespace TannerClient.Controllers
             await JoinAsync(server);
             return RedirectToPage("/GameStatus", new { servername = server });
         }
-
+        */
         [HttpGet("[action]")]
         public string AreYouThere()
         {
