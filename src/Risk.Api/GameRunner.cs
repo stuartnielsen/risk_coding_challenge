@@ -98,8 +98,8 @@ namespace Risk.Api
                             logger.LogInformation($"Asking {currentPlayer.Name} where they want to attack...");
 
                             var beginAttackResponse = await askForAttackLocationAsync(currentPlayer, BeginAttackStatus.PreviousAttackRequestFailed);
-                            attackingTerritory = new Territory(beginAttackResponse.From);
-                            defendingTerritory = new Territory(beginAttackResponse.To);
+                            attackingTerritory = game.Board.GetTerritory(beginAttackResponse.From);
+                            defendingTerritory = game.Board.GetTerritory(beginAttackResponse.To);
 
                             logger.LogInformation($"{currentPlayer.Name} wants to attack from {attackingTerritory} to {defendingTerritory}");
 
