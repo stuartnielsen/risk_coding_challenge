@@ -4,25 +4,27 @@
     "LocalGame": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "http://localhost:5010/areyouthere",
+      "launchUrl": "http://localhost:5010/gamestatus",
       "applicationUrl": "http://localhost:5010",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "ServerName": "http://localhost:5000",
         "PlayerName": "Maksad",
-        "ClientCallbackAddress": "http://localhost:5010"
+        "ClientCallbackAddress": "http://localhost:5010",
+        "secretCode": "BazookaJoe"
       }
     },
     "RemoteGame/Lab": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "http://localhost:5432/areyouthere",
+      "launchUrl": "http://localhost:5432/gamestatus",
       "applicationUrl": "http://0.0.0.0:5432",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "ServerName": "http://144.17.10.32:5000",
-        "PlayerName": "DJ",
-        "ClientCallbackAddress": "http://144.17.24.31:5432"
+        "ServerName": "http://144.17.48.37:5000",
+        "PlayerName": "Maksad",
+        "ClientCallbackAddress": "http://144.17.24.31:5432",
+        "secretCode": "BazookaJoe"
       }
     }
   }

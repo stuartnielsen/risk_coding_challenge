@@ -34,6 +34,7 @@ namespace Maksad_Client
         {
             services.AddControllers();
             services.AddHttpClient();
+            services.AddRazorPages();
             //services.AddSingleton<IPlayer>(new ClientPlayer { Name = "DJ" });
         }
 
@@ -53,6 +54,7 @@ namespace Maksad_Client
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapRazorPages();
             });
 
 

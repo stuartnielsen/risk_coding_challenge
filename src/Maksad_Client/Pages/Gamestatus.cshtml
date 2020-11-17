@@ -10,8 +10,7 @@
 @if (@Model.Status.GameState == Risk.Shared.GameState.Joining)
 {
     <form method="post" asp-page-handler="StartGame">
-        <input type="text" name="server" value="@Model.ServerName" />
-        <input type="text" name="secretCode" value="BazookaJoe" />
+   
         <button type="submit">Start Game</button>
     </form>
 }

@@ -7,6 +7,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Configuration;
 using Risk.Shared;
 
 namespace Maksad_Client.Pages
@@ -14,14 +15,15 @@ namespace Maksad_Client.Pages
     public class GameStatusModel : PageModel
     {
         private readonly IHttpClientFactory httpClientFactory;
+        private readonly IConfiguration config;
+        
 
-        public GameStatusModel(IHttpClientFactory httpClientFactory)
+        public GameStatusModel(IHttpClientFactory httpClientFactory, IConfiguration config)
         {
             this.httpClientFactory = httpClientFactory;
+            this.config = config;
         }
 
-        [BindProperty(SupportsGet = true)]
-        public string ServerName { get; set; }
 
         public async Task OnGetAsync()
         {
@@ -31,16 +33,16 @@ namespace Maksad_Client.Pages
 
         private async Task refreshStatus(HttpClient client)
         {
-            Status = await client.GetFromJsonAsync<GameStatus>($"{ServerName}/status");
+            Status = await client.GetFromJsonAsync<GameStatus>($"{config["serverName"]}/status");
         }
 
         public GameStatus Status { get; set; }
 
-        public async Task OnPostStartGameAsync(string server, string secretCode)
+        public async Task OnPostStartGameAsync()
         {
             var client = httpClientFactory.CreateClient();
-            await client.PostAsJsonAsync($"{server}/startgame", new StartGameRequest { SecretCode = secretCode });
-            ServerName = server;
+            await client.PostAsJsonAsync($"{config["serverName"]}/startgame", new StartGameRequest { SecretCode = config["secretCode"]});
+            
             await refreshStatus(client);
         }
     }
