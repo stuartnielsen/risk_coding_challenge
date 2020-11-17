@@ -1,27 +1,21 @@
 ﻿{
-  "iisSettings": {
-    "windowsAuthentication": false,
-    "anonymousAuthentication": true,
-    "iisExpress": {
-      "applicationUrl": "http://localhost:54925",
-      "sslPort": 44340
+  "Brennan-Local": {
+    "commandName": "Project",
+    "launchBrowser": true,
+    "launchUrl":  "weatherforcast",
+    "applicationUrl": "http://localhoast:5030",
+    "environmentVariables": {
+      "ASPNETCORE_ENVIRONMENT": "Development",
+      "GameServer": "http://localhoast:5030"
     }
   },
-  "profiles": {
-    "IIS Express": {
-      "commandName": "IISExpress",
-      "launchBrowser": true,
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
-    },
-    "BrennanClient": {
-      "commandName": "Project",
-      "launchBrowser": true,
-      "applicationUrl": "http://144.17.48.99:5030",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      } 
+  "BrennanClient": {
+    "commandName": "Project",
+    "launchBrowser": true,
+    "applicationUrl": "http://144.17.48.99:5030",
+    "environmentVariables": {
+      "ASPNETCORE_ENVIRONMENT": "Development",
+      "GameServer": "http://144.17.48.99:5030"
     }
   }
 }
