@@ -22,6 +22,7 @@
     "ServerClient": {
       "commandName": "Project",
       "launchBrowser": true,
+      "launchUrl": "http://localhost:5070",
       "applicationUrl": "http://0.0.0.0:5070",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
