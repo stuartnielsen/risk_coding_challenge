@@ -1,0 +1,28 @@
+﻿{
+  "profiles": {
+    "BrennanLocal": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "areyouthere",
+      "applicationUrl": "http://localhost:5030",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "userName": "Brennan",
+        "GameServer": "http://localhost:5000",
+        "ClientCallbackAddress": "http://localhost:5030"
+      }
+    },
+    "BrennanLab": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "http://localhost:5030/areyouthere",
+      "applicationUrl": "http://0.0.0.0:5030",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "userName": "Brennan",
+        "GameServer": "http://144.17.48.37:5000",
+        "ClientCallbackAddress": "http://144.17.48.37:5030"
+      }
+    }
+  }
+}

@@ -14,7 +14,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Risk.Shared;
 using System.Net.Http.Json;
-
+using System.Net;
+using System.Net.Sockets;
 
 namespace DJClient
 {
@@ -44,7 +45,6 @@ namespace DJClient
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseHttpsRedirection();
 
             app.UseRouting();
 
@@ -58,16 +58,18 @@ namespace DJClient
 
             var server = Configuration["ServerName"];
             var httpClient = httpClientFactory.CreateClient();
-            var clientBaseAddress = app.ServerFeatures.Get<IServerAddressesFeature>().Addresses.ToArray()[1];
+            //var clientBaseAddress = app.ServerFeatures.Get<IServerAddressesFeature>().Addresses.First();
+            var clientBaseAddress = Configuration["ClientCallbackAddress"];
+
+
             var playerName = Configuration["PlayerName"];
 
             var joinResponse = JoinServer(httpClient, server, clientBaseAddress, playerName);
-            //ToDo: Make this somehow accessible as a singelton
-            //var player = new ClientPlayer { Name = playerName, Token = joinResponse.Token };
 
             
 
         }
+     
 
         private async Task JoinServer(HttpClient httpClient, string serverName, string clientBaseAddress, string playerName)
         {

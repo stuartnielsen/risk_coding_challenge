@@ -13,14 +13,12 @@ namespace TannerClient.Controllers
     {
         private readonly IHttpClientFactory httpClientFactory;
         private static string serverAdress;
+        private GamePlayer gamePlayer;
 
-        int x = 0;
-        int y = 0;
-        int attempts = 0;
-
-        public ClientController(IHttpClientFactory httpClientFactory)
+        public ClientController(IHttpClientFactory httpClientFactory, IPlayer player)
         {
             this.httpClientFactory = httpClientFactory;
+            gamePlayer = new GamePlayer { Player = player };
         }
 
         [HttpGet("joinServer/{*server}")]
@@ -61,84 +59,19 @@ namespace TannerClient.Controllers
         [HttpPost("deployArmy")]
         public DeployArmyResponse DeployArmy([FromBody] DeployArmyRequest deployArmyRequest)
         {
-            DeployArmyResponse response = new DeployArmyResponse();
-            if (deployArmyRequest.Status == DeploymentStatus.PreviousAttemptFailed)
-            {
-                if(x < 5)
-                {
-                    response.DesiredLocation = new Location(x++, y);
-                    return response;
-                }
-                else if(y < 5)
-                {
-                    response.DesiredLocation = new Location(x, y++);
-                    return response;
-                }
-                else
-                {
-                    x = 0;
-                    y = 0;
-                }
-            }
-
-            response.DesiredLocation = new Location(x, y);
-            return response;
-           
+            return gamePlayer.DeployArmy(deployArmyRequest);
         }
 
         [HttpPost("beginAttack")]
         public BeginAttackResponse BeginAttack([FromBody] BeginAttackRequest beginAttackRequest)
         {
-            BeginAttackResponse response = new BeginAttackResponse();
-            
-            if (beginAttackRequest.Status == BeginAttackStatus.PreviousAttackRequestFailed)
-            {
-                attempts++;
-                if (attempts == 1 && y < 5)
-                {
-                    response.From = new Location(x, y);
-                    response.To = new Location(x, y+1);
-                    return response;
-                }
-                else if (attempts == 2 && x < 5)
-                {
-                    response.From = new Location(x, y);
-                    response.To = new Location(x + 1, y);
-                    return response;
-                }
-                else if (attempts == 3 && x > 0)
-                {
-                    response.From = new Location(x, y);
-                    response.To = new Location(x - 1, y);
-                    return response;
-                }
-                else if (attempts == 4 && x < 5 && y < 5)
-                {
-                    response.From = new Location(x, y);
-                    response.To = new Location(x + 1, y + 1);
-                    return response;
-                }
-                else if (attempts == 5 && x > 0 && y > 0)
-                {
-                    response.From = new Location(x, y);
-                    response.To = new Location(x - 1, y - 1);
-                    return response;
-                }
-            }
-
-            attempts = 0;
-            response.From = new Location(x, y);
-            response.To = new Location(x, y - 1);
-            return response;
+            return gamePlayer.DecideBeginAttack(beginAttackRequest);
         }
 
         [HttpPost("continueAttack")]
         public ContinueAttackResponse ContinueAttack([FromBody] ContinueAttackRequest continueAttackRequest)
         {
-            ContinueAttackResponse response = new ContinueAttackResponse();
-            response.ContinueAttacking = true;
-
-            return response;
+            return gamePlayer.DecideContinueAttackResponse(continueAttackRequest);
         }
 
         [HttpPost("gameOver")]

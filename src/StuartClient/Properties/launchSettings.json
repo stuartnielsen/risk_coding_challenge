@@ -1,12 +1,5 @@
-﻿{
-  "iisSettings": {
-    "windowsAuthentication": false,
-    "anonymousAuthentication": true,
-    "iisExpress": {
-      "applicationUrl": "http://localhost:62807",
-      "sslPort": 44368
-    }
-  },
+{
+ 
   "profiles": {
     "IIS Express": {
       "commandName": "IISExpress",
@@ -18,10 +11,32 @@
     "StuartClient": {
       "commandName": "Project",
       "launchBrowser": true,
-      "applicationUrl": "https://144.17.48.52:5081;http://144.17.48.52:5080",
       "environmentVariables": {
+        "userName": "Stuart",
+        "ClientCallbackAddress": "http://localhost:5080",
+        "GameServer": "http://localhost:5000",
         "ASPNETCORE_ENVIRONMENT": "Development"
-      }
+      },
+      "applicationUrl": "http://localhost:5080"
+    },
+    "GameServer": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "http://localhost:5080",
+      "environmentVariables": {
+        "userName": "Stuart",
+        "ClientCallbackAddress": "http://144.17.48.37:5080",
+        "GameServer": "http://144.17.48.37:5000",
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "http://0.0.0.0:5080"
+    },
+    "Docker": {
+      "commandName": "Docker",
+      "launchBrowser": true,
+      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
+      "publishAllPorts": true,
+      "useSSL": true
     }
   }
 }
