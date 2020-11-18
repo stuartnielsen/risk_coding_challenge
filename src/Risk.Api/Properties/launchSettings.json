@@ -1,13 +1,5 @@
 ﻿{
   "$schema": "http://json.schemastore.org/launchsettings.json",
-  "iisSettings": {
-    "windowsAuthentication": false,
-    "anonymousAuthentication": true,
-    "iisExpress": {
-      "applicationUrl": "http://localhost:39808",
-      "sslPort": 44368
-    }
-  },
   "profiles": {
     "Risk.Api": {
       "commandName": "Project",
@@ -17,29 +9,8 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
-    },
-    "BrennanClient": {
-      "commandName": "Project",
-      "launchBrowser": true,
-      "applicationUrl": "http://localhost:5080",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "userName": "Stuart",
-        "GameServer": "http://localhost:5000",
-        "ClientCallbackAddress": "http://localhost:5030" //144.17.155.155
-      }
-    },
-    "GameServer": {
-      "commandName": "Project",
-      "launchBrowser": true,
-      "launchUrl": "http://localhost:5080",
-      "applicationUrl": "http://0.0.0.0:5080",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "userName": "Brennan",
-        "GameServer": "http://144.17.48.37:5000",
-        "ClientCallbackAddress": "http://144.17.48.37:5030"
-      }
     }
-  }
+   
+      
+   
 }

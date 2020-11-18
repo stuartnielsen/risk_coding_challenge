@@ -63,15 +63,15 @@ namespace StuartClient
             var server = Configuration["ServerName"];
             var httpClient = httpClientFactory.CreateClient();
             var addresses = app.ServerFeatures.Get<IServerAddressesFeature>().Addresses;
-            var clientBaseAddress = addresses.ToArray()[1];
-            JoinServer(httpClient, server, clientBaseAddress);
+            var clientBaseAddress = addresses.First();
+            JoinServer(httpClient, Configuration["GameServer"], Configuration["ClientCallbackAddress"], Configuration["userName"]);
         }
 
 
 
-        private async void JoinServer(HttpClient httpClient, string serverName, string clientBaseAddress)
+        private async void JoinServer(HttpClient httpClient, string serverName, string clientBaseAddress, string name)
         {
-            var joinRequest = new JoinRequest { CallbackBaseAddress = clientBaseAddress, Name = "Stuart" };
+            var joinRequest = new JoinRequest { CallbackBaseAddress = clientBaseAddress, Name = name };
             var joinResponse = await httpClient.PostAsJsonAsync($"{serverName}/join", joinRequest);
         }
  }   

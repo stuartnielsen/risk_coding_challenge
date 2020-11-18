@@ -1,24 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Risk.Shared;
-using System.Net.Http;
-using System.Net.Http.Json;
 
-namespace TannerClient.Controllers
+namespace Justin_Client
 {
-    public class ClientController : Controller
+    public class RiskClientController : Controller
     {
         private readonly IHttpClientFactory httpClientFactory;
         private static string serverAdress;
-        private GamePlayer gamePlayer;
 
-        public ClientController(IHttpClientFactory httpClientFactory, IPlayer player)
+        public RiskClientController(IHttpClientFactory httpClientFactory)
         {
             this.httpClientFactory = httpClientFactory;
-            gamePlayer = new GamePlayer { Player = player };
         }
 
         [HttpGet("joinServer/{*server}")]
@@ -29,7 +27,7 @@ namespace TannerClient.Controllers
             string baseUrl = string.Format("{0}://{1}{2}", Request.Scheme, Request.Host, Request.PathBase);
             var joinRequest = new JoinRequest {
                 CallbackBaseAddress = baseUrl,
-                Name = "Tanner Client"
+                Name = "Justin's Client"
             };
             try
             {
@@ -59,19 +57,27 @@ namespace TannerClient.Controllers
         [HttpPost("deployArmy")]
         public DeployArmyResponse DeployArmy([FromBody] DeployArmyRequest deployArmyRequest)
         {
-            return gamePlayer.DeployArmy(deployArmyRequest);
+            DeployArmyResponse response = new DeployArmyResponse();
+            response.DesiredLocation = new Location(1, 1);
+            return response;
         }
 
         [HttpPost("beginAttack")]
         public BeginAttackResponse BeginAttack([FromBody] BeginAttackRequest beginAttackRequest)
         {
-            return gamePlayer.DecideBeginAttack(beginAttackRequest);
+            BeginAttackResponse response = new BeginAttackResponse();
+            response.From = new Location(1, 1);
+            response.To = new Location(1, 2);
+            return response;
         }
 
         [HttpPost("continueAttack")]
         public ContinueAttackResponse ContinueAttack([FromBody] ContinueAttackRequest continueAttackRequest)
         {
-            return gamePlayer.DecideContinueAttackResponse(continueAttackRequest);
+            ContinueAttackResponse response = new ContinueAttackResponse();
+            response.ContinueAttacking = true;
+
+            return response;
         }
 
         [HttpPost("gameOver")]
@@ -79,5 +85,6 @@ namespace TannerClient.Controllers
         {
             return Ok(gameOverRequest);
         }
+
     }
 }
