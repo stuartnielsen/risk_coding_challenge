@@ -1,0 +1,29 @@
+﻿{
+  "$schema": "http://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "Emmanuel_Client_LabServer": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "http://localhost:5010/areyouthere",
+      "applicationUrl": "http://0.0.0.0:5010",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "GameServer": "http://144.17.48.37:5000",
+        "ClientCallbackAddress": "http://144.17.48.66:5010",
+        "ClientName": "Emmanuel"
+      },
+      "Emmanuel_Client_Local": {
+        "commandName": "Project",
+        "launchBrowser": true,
+        "launchUrl": "http://localhost:5010/areyouthere",
+        "applicationUrl": "http://localhost:5010",
+        "environmentVariables": {
+          "ASPNETCORE_ENVIRONMENT": "Development",
+          "GameServer": "http://localhost:5000",
+          "ClientCallbackAddress": "http://localhost:5010",
+          "ClientName": "Emmanuel"
+        }
+      }
+    }
+  }
+}
