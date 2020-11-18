@@ -58,7 +58,7 @@ namespace Maksad_Client
             });
 
 
-            var server = Configuration["ServerName"];
+            var server = Configuration["GameServer"];
             var httpClient = httpClientFactory.CreateClient();
             //var clientBaseAddress = app.ServerFeatures.Get<IServerAddressesFeature>().Addresses.First();
             var clientBaseAddress = Configuration["ClientCallbackAddress"];
