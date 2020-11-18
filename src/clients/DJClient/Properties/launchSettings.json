@@ -1,5 +1,4 @@
-﻿{
-  "$schema": "http://json.schemastore.org/launchsettings.json",
+{
   "iisSettings": {
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
@@ -8,6 +7,7 @@
       "sslPort": 44358
     }
   },
+  "$schema": "http://json.schemastore.org/launchsettings.json",
   "profiles": {
     "IIS Express": {
       "commandName": "IISExpress",
@@ -21,25 +21,32 @@
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "http://localhost:5432/areyouthere",
-      "applicationUrl": "http://localhost:5432",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "ServerName": "http://localhost:5000",
         "PlayerName": "DJ",
-        "ClientCallbackAddress": "http://localhost:5432"
-      }
+        "ServerName": "http://localhost:5000",
+        "ClientCallbackAddress": "http://localhost:5432",
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "http://localhost:5432"
     },
     "RemoteGame/Jonathan'sOffice": {
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "http://localhost:5432/areyouthere",
-      "applicationUrl": "http://0.0.0.0:5432",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "ServerName": "http://144.17.10.32:5000",
         "PlayerName": "DJ",
-        "ClientCallbackAddress": "http://144.17.24.31:5432"
-      }
+        "ServerName": "http://144.17.10.32:5000",
+        "ClientCallbackAddress": "http://144.17.24.31:5432",
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "http://0.0.0.0:5432"
+    },
+    "Docker": {
+      "commandName": "Docker",
+      "launchBrowser": true,
+      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/weatherforecast",
+      "publishAllPorts": true,
+      "useSSL": true
     }
   }
 }

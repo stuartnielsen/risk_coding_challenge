@@ -6,17 +6,18 @@ EXPOSE 80
 
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
 WORKDIR /src
-COPY ["clients/Justins_Client/Justin_Client/Justin_Client.csproj", "clients/Justins_Client/Justin_Client/"]
+COPY ["Risk.Api/Risk.Api.csproj", "Risk.Api/"]
 COPY ["Risk.Shared/Risk.Shared.csproj", "Risk.Shared/"]
-RUN dotnet restore "clients/Justins_Client/Justin_Client/Justin_Client.csproj"
+COPY ["Risk.Game/Risk.Game.csproj", "Risk.Game/"]
+RUN dotnet restore "Risk.Api/Risk.Api.csproj"
 COPY . .
-WORKDIR "/src/clients/Justins_Client/Justin_Client"
-RUN dotnet build "Justin_Client.csproj" -c Release -o /app/build
+WORKDIR "/src/Risk.Api"
+RUN dotnet build "Risk.Api.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "Justin_Client.csproj" -c Release -o /app/publish
+RUN dotnet publish "Risk.Api.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "Justin_Client.dll"]
+ENTRYPOINT ["dotnet", "Risk.Api.dll"]

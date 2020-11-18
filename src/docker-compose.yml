@@ -1,0 +1,104 @@
+version: '3.4'
+
+services:
+  risk.api:
+    hostname: risk.api
+    image: ${DOCKER_REGISTRY-}riskapi
+    build:
+      context: .
+      dockerfile: Risk.Api/Dockerfile
+    ports:
+    - "5000:80"
+    networks:
+      risknet:
+
+  risk.sampleclient:
+    hostname: risk.sampleclient
+    image: ${DOCKER_REGISTRY-}risksampleclient
+    build:
+      context: .
+      dockerfile: Risk.SampleClient/Dockerfile
+    ports:
+    - "5005:80"
+    environment:
+    - GameServer=http://risk.api
+    - ClientCallbackAddress=http://risk.sampleclient
+    - PlayerName=SampleClient
+    networks:
+      risknet:
+
+
+  djclient:
+    hostname: djclient
+    image: ${DOCKER_REGISTRY-}djclient
+    build:
+      context: .
+      dockerfile: clients/DJClient/Dockerfile
+    ports:
+    - "5010:80"
+    environment:
+    - ServerName=http://risk.api
+    - ClientCallbackAddress=http://djclient
+    - PlayerName=DJ
+    networks:
+      risknet:
+
+
+  justin_client:
+    hostname: justin_client
+    image: ${DOCKER_REGISTRY-}justinclient
+    build:
+      context: .
+      dockerfile: clients/Justins_Client/Justin_Client/Dockerfile
+    ports:
+    - "5015:80"
+    environment:
+    - GameServer=http://risk.api
+    - ClientCallbackAddress=http://justin_client
+    - PlayerName=Justin
+    networks:
+      risknet:
+
+#
+#  kaydonsclient:
+#    image: ${DOCKER_REGISTRY-}kaydonsclient
+#    build:
+#      context: .
+#      dockerfile: Kaydon'sClient/Dockerfile
+#    networks:
+#      risknet:
+#
+
+  stuartclient:
+    hostname: stuartclient
+    image: ${DOCKER_REGISTRY-}stuartclient
+    build:
+      context: .
+      dockerfile: StuartClient/Dockerfile
+    ports:
+    - "5020:80"
+    environment:
+    - GameServer=http://risk.api
+    - ClientCallbackAddress=http://stuartclient
+    - userName=Stuart
+    networks:
+      risknet:
+
+
+  tannerclient:
+    hostname: tannerclient
+    image: ${DOCKER_REGISTRY-}tannerclient
+    build:
+      context: .
+      dockerfile: TannerClient/Dockerfile
+    ports:
+    - "5025:80"
+    environment:
+    - GameServer=http://risk.api
+    - ClientCallbackAddress=http://tannerclient
+    - PlayerName=tanner
+    networks:
+      risknet:
+
+networks:
+  risknet:
