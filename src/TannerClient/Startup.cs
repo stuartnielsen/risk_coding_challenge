@@ -1,19 +1,18 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Json;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Risk.Shared;
+using Microsoft.Extensions.Logging;
 
-namespace BrennanClient
+namespace TannerClient
 {
     public class Startup
     {
@@ -29,17 +28,19 @@ namespace BrennanClient
         {
             services.AddControllers();
             services.AddHttpClient();
+            services.AddRazorPages();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHttpClientFactory httpClientFactory)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
 
-            //app.UseHttpsRedirection();
+            app.UseHttpsRedirection();
 
             app.UseRouting();
 
@@ -48,21 +49,8 @@ namespace BrennanClient
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapRazorPages();
             });
-
-            var server = Configuration["ServerName"];
-            var httpClient = httpClientFactory.CreateClient();
-            var addresses = app.ServerFeatures.Get<IServerAddressesFeature>().Addresses;
-            var clientBaseAddress = addresses.First();
-            JoinServer(httpClient, Configuration["GameServer"], Configuration["ClientCallbackAddress"], Configuration["userName"]);
-        }
-
-        private async Task JoinServer(HttpClient httpClient, string serverName, string clientBaseAddress, string userName)
-        {
-            var joinRequest = new JoinRequest { CallbackBaseAddress = clientBaseAddress, Name = userName };
-
-            var joinResponse = await httpClient.PostAsJsonAsync($"{serverName}/join", joinRequest);
-
         }
     }
 }

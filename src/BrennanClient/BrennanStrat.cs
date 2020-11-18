@@ -14,14 +14,14 @@ namespace BrennanClient
             List<BoardTerritory> myTerritories = new List<BoardTerritory>();
             foreach (var territory in deployRequest.Board)
             {
-                if (territory.Armies == 0)
+                if (territory.OwnerName is null)
                 {
                     deployResponse.DesiredLocation = territory.Location;
                     return deployResponse;
                 }
-                if (!(territory.OwnerName == null))
+                if (territory.OwnerName != null)
                 {
-                    if (territory.OwnerName == "Stuart")
+                    if (territory.OwnerName == "Brennan")
                     {
                         myTerritories.Add(territory);
                         deployResponse.DesiredLocation = territory.Location;
@@ -55,7 +55,7 @@ namespace BrennanClient
             {
                 if (!(territory.OwnerName == null))
                 {
-                    if (territory.OwnerName == "Stuart")
+                    if (territory.OwnerName == "Brennan")
                     {
                         if (territory.Armies > max)
                             max = territory.Armies;
