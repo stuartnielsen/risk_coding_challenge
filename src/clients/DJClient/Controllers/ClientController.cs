@@ -15,6 +15,8 @@ namespace DJClient.Controllers
         private readonly IHttpClientFactory clientFactory;
         private GamePlayer gamePlayer;
 
+        private GameOverRequest gameOver;
+
         public ClientController(IHttpClientFactory clientFactory, IPlayer player)
         {
             this.clientFactory = clientFactory;
@@ -50,7 +52,14 @@ namespace DJClient.Controllers
         [HttpPost("gameOver")]
         public IActionResult GameOver([FromBody] GameOverRequest gameOverRequest)
         {
+            gameOver = gameOverRequest;
             return Ok(gameOverRequest);
+        }
+
+        [HttpGet("winner")]
+        public GameOverRequest Winner()
+        {
+            return gameOver;
         }
     }
 }

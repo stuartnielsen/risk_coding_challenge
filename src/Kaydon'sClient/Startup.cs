@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -10,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Risk.Shared;
 
 namespace Kaydon_sClient
 {
@@ -29,7 +32,7 @@ namespace Kaydon_sClient
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHttpClientFactory clientFactory)
         {
             if (env.IsDevelopment())
             {
@@ -46,6 +49,19 @@ namespace Kaydon_sClient
             {
                 endpoints.MapControllers();
             });
+
+            JoinServer(clientFactory.CreateClient(),
+                Configuration["GameServer"],
+                Configuration["ClientCallbackAddress"],
+                Configuration["PlayerName"]
+            );
+        }
+
+        private async void JoinServer(HttpClient httpClient, string serverName, string clientBaseAddress, string playerName)
+        {
+            await Task.Delay(TimeSpan.FromSeconds(5));
+            var joinRequest = new JoinRequest { CallbackBaseAddress = clientBaseAddress, Name = playerName };
+            var response = await httpClient.PostAsJsonAsync($"{serverName}/join", joinRequest);
         }
     }
 }

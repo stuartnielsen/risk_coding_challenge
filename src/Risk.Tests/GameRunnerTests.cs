@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using Risk.Api;
@@ -24,6 +25,8 @@ namespace Risk.Tests
             var httpClientMock = new Mock<HttpClient>();
             //httpClientMock.Setup()
 
+            var loggerMock = new Mock<ILogger<GameRunner>>();
+
             players = new List<ApiPlayer>();
             game = new Game.Game(new GameStartOptions { Height = 2, Width = 2, StartingArmiesPerPlayer = 1, Players = players });
             game.StartJoining();
@@ -35,7 +38,7 @@ namespace Risk.Tests
             players.Add(new ApiPlayer("player2", player2Token, null));
 
             game.StartGame();
-            gameRunner = new GameRunner(game, players, new List<ApiPlayer>());
+            gameRunner = new GameRunner(game, players, new List<ApiPlayer>(), loggerMock.Object);
         }
 
         [Test]
