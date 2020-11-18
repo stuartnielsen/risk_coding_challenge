@@ -66,9 +66,10 @@ namespace StuartClient
 
         private async void JoinServer(HttpClient httpClient, string serverName, string clientBaseAddress, string name)
         {
+            await Task.Delay(TimeSpan.FromSeconds(5));
             var joinRequest = new JoinRequest { CallbackBaseAddress = clientBaseAddress, Name = name };
             var joinResponse = await httpClient.PostAsJsonAsync($"{serverName}/join", joinRequest);
         }
- }   
+ }
 }
 

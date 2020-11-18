@@ -62,6 +62,7 @@ namespace TannerClient
 
         private async void JoinServer(HttpClient httpClient, string serverName, string clientBaseAddress, string playerName)
         {
+            await Task.Delay(TimeSpan.FromSeconds(5));
             var joinRequest = new JoinRequest { CallbackBaseAddress = clientBaseAddress, Name = playerName };
             var response = await httpClient.PostAsJsonAsync($"{serverName}/join", joinRequest);
         }

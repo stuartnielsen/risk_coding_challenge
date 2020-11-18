@@ -56,10 +56,9 @@ namespace BrennanClient
 
         private async Task JoinServer(HttpClient httpClient, string serverName, string clientBaseAddress, string userName)
         {
+            await Task.Delay(TimeSpan.FromSeconds(5));
             var joinRequest = new JoinRequest { CallbackBaseAddress = clientBaseAddress, Name = userName };
-
             var joinResponse = await httpClient.PostAsJsonAsync($"{serverName}/join", joinRequest);
-
         }
     }
 }
