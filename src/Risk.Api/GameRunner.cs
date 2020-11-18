@@ -42,8 +42,9 @@ namespace Risk.Api
         {
             while (game.Board.Territories.Sum(t => t.Armies) < game.StartingArmies * players.Count())
             {
-                foreach (var currentPlayer in players)
+                for (int playerIndex = 0; playerIndex < players.Count(); ++playerIndex)
                 {
+                    var currentPlayer = players[playerIndex];
                     var deployArmyResponse = await askForDeployLocationAsync(currentPlayer, DeploymentStatus.YourTurn);
 
                     var failedTries = 0;
@@ -54,8 +55,12 @@ namespace Risk.Api
                         if (failedTries == MaxFailedTries)
                         {
                             BootPlayerFromGame(currentPlayer);
+                            playerIndex--;
                         }
-                        deployArmyResponse = await askForDeployLocationAsync(currentPlayer, DeploymentStatus.PreviousAttemptFailed);
+                        else
+                        {
+                            deployArmyResponse = await askForDeployLocationAsync(currentPlayer, DeploymentStatus.PreviousAttemptFailed);
+                        }
                     }
                 }
             }
@@ -111,6 +116,7 @@ namespace Risk.Api
                                 failedTries++;
                                 if (failedTries == MaxFailedTries)
                                 {
+                                    BootPlayerFromGame(currentPlayer);
                                     RemovePlayerFromBoard(currentPlayer.Token);
                                     RemovePlayerFromGame(currentPlayer.Token);
                                     i--;
@@ -142,6 +148,7 @@ namespace Risk.Api
 
                 if(someonePlayedThisRound is false)
                 {
+                    logger.LogInformation("Game Over");
                     game.SetGameOver();
                     return;
                 }

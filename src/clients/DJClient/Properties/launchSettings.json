@@ -20,25 +20,25 @@
     "LocalGame": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "http://localhost:5432/areyouthere",
-      "applicationUrl": "http://localhost:5432",
+      "launchUrl": "http://localhost:5002/areyouthere",
+      "applicationUrl": "http://localhost:5002",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "ServerName": "http://localhost:5000",
         "PlayerName": "DJ",
-        "ClientCallbackAddress": "http://localhost:5432"
+        "ClientCallbackAddress": "http://localhost:5002"
       }
     },
     "RemoteGame/Jonathan'sOffice": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "http://localhost:5432/areyouthere",
-      "applicationUrl": "http://0.0.0.0:5432",
+      "launchUrl": "http://localhost:5002/areyouthere",
+      "applicationUrl": "http://0.0.0.0:5002",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "ServerName": "http://144.17.10.32:5000",
         "PlayerName": "DJ",
-        "ClientCallbackAddress": "http://144.17.24.31:5432"
+        "ClientCallbackAddress": "http://144.17.24.31:5002"
       }
     }
   }

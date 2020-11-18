@@ -65,27 +65,11 @@ namespace DJClient
             var playerName = Configuration["PlayerName"];
 
             var joinResponse = JoinServer(httpClient, server, clientBaseAddress, playerName);
-            //ToDo: Make this somehow accessible as a singelton
-            //var player = new ClientPlayer { Name = playerName, Token = joinResponse.Token };
 
             
 
         }
-
-        private string getLocalIPAddress()
-        {
-            var host = Dns.GetHostEntry(Dns.GetHostName());
-
-
-            foreach (var ip in host.AddressList)
-            {
-                if (ip.AddressFamily == AddressFamily.InterNetwork)
-                {
-                    return ip.ToString();
-                }
-            }
-            throw new Exception("No network adapters with an IPv4 address in the system!");
-        }
+     
 
         private async Task JoinServer(HttpClient httpClient, string serverName, string clientBaseAddress, string playerName)
         {
