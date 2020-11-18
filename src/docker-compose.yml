@@ -158,7 +158,7 @@ services:
 #    - risk.api
 
   emmanuel_client:
-    hostname: emmanuel
+    hostname: emmanuel_client
     image: ${DOCKER_REGISTRY-}emmanuelclient
     build:
       context: .
@@ -167,8 +167,25 @@ services:
     - "5045:80"
     environment:
     - GameServer=http://risk.api
-    - ClientCallbackAddress=http://emmanuel
+    - ClientCallbackAddress=http://emmanuel_client
     - PlayerName=Emmanuel
+    networks:
+      risknet:
+    depends_on:
+    - risk.api
+
+  hmclient:
+    hostname: hmclient
+    image: ${DOCKER_REGISTRY-}hmclient
+    build:
+      context: .
+      dockerfile: HMClient/Dockerfile
+    ports:
+    - "5050:80"
+    environment:
+    - GameServer=http://risk.api
+    - ClientCallbackAddress=http://hmclient
+    - PlayerName=Hector
     networks:
       risknet:
     depends_on:
@@ -176,5 +193,6 @@ services:
 
 networks:
   risknet:
+
 
 
