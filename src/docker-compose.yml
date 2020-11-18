@@ -132,7 +132,7 @@ services:
     - "5035:80"
     environment:
     - GameServer=http://risk.api
-    - ClientCallbackAddress=http://wyattclient
+    - ClientCallbackAddress=http://brennanclient
     - PlayerName=Brennan
     networks:
       risknet:
@@ -158,7 +158,7 @@ services:
 #    - risk.api
 
   emmanuel_client:
-    hostname: emmanuelclient
+    hostname: emmanuel
     image: ${DOCKER_REGISTRY-}emmanuelclient
     build:
       context: .
@@ -167,7 +167,7 @@ services:
     - "5045:80"
     environment:
     - GameServer=http://risk.api
-    - ClientCallbackAddress=http://emmanuelclient
+    - ClientCallbackAddress=http://emmanuel
     - PlayerName=Emmanuel
     networks:
       risknet:
