@@ -3,11 +3,11 @@
 FROM mcr.microsoft.com/dotnet/core/aspnet:3.1-buster-slim AS base
 WORKDIR /app
 EXPOSE 80
+EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
 WORKDIR /src
 COPY ["clients/Justins_Client/Justin_Client/Justin_Client.csproj", "clients/Justins_Client/Justin_Client/"]
-COPY ["Risk.Shared/Risk.Shared.csproj", "Risk.Shared/"]
 RUN dotnet restore "clients/Justins_Client/Justin_Client/Justin_Client.csproj"
 COPY . .
 WORKDIR "/src/clients/Justins_Client/Justin_Client"

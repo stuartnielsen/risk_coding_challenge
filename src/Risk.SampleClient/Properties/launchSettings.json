@@ -1,4 +1,4 @@
-﻿{
+{
   "$schema": "http://json.schemastore.org/launchsettings.json",
   "profiles": {
     "Risk.SampleClient": {
@@ -7,7 +7,8 @@
       "launchUrl": "",
       "applicationUrl": "http://localhost:5004",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
+        "PlayerName": "SampleClient1",
+        "ClientCallbackAddress": "http://144.17.48.37:5004",
         "GameServer": "http://144.17.48.37:5000",
         "ClientCallbackAddress": "http://144.17.48.37:5004",
         "PlayerName": "SampleClient1"
@@ -23,7 +24,14 @@
         "GameServer": "http://localhost:5000",
         "ClientCallbackAddress": "http://localhost:5004",
         "PlayerName": "SampleClient1"
-      }
+      },
+      "applicationUrl": "http://0.0.0.0:5004"
+    },
+    "Docker": {
+      "commandName": "Docker",
+      "launchBrowser": true,
+      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
+      "publishAllPorts": true
     }
 
   }

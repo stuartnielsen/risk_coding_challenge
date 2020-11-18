@@ -7,6 +7,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Configuration;
 using Risk.Shared;
 
 namespace Risk.SampleClient.Pages
@@ -14,10 +15,12 @@ namespace Risk.SampleClient.Pages
     public class GameStatusModel : PageModel
     {
         private readonly IHttpClientFactory httpClientFactory;
+        private readonly IConfiguration configuration;
 
-        public GameStatusModel(IHttpClientFactory httpClientFactory)
+        public GameStatusModel(IHttpClientFactory httpClientFactory, IConfiguration configuration)
         {
             this.httpClientFactory = httpClientFactory;
+            this.configuration = configuration;
         }
 
         [BindProperty(SupportsGet = true)]
@@ -31,7 +34,7 @@ namespace Risk.SampleClient.Pages
 
         private async Task refreshStatus(HttpClient client)
         {
-            Status = await client.GetFromJsonAsync<GameStatus>($"{ServerName}/status");
+            Status = await client.GetFromJsonAsync<GameStatus>($"{ServerName ?? configuration["GameServer"]}/status");
         }
 
         public GameStatus Status { get; set; }

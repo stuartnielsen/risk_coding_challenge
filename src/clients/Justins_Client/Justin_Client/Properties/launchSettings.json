@@ -11,8 +11,7 @@
         "GameServer": "http://localhost:5000 "
         "ClientCallbackAddress": "http://localhost:5012",
         "ClientName": "Justin"
-      },
-      "applicationUrl": "https://localhost:2000;http://localhost:2001"
+      }
     },
     "Justin_Server": {
       "commandName": "Project",
@@ -24,8 +23,7 @@
         "GameServer": "http://144.17.48.37:5000",
         "ClientCallbackAddress": "http://144.17.48.212:5012",
         "ClientName": "Justin"
-      },
-      "useSSL": true
+      }
     }
   }
 }

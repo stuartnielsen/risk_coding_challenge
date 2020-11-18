@@ -1,4 +1,4 @@
-﻿{
+{
   "iisSettings": {
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
@@ -18,26 +18,32 @@
     "StuartClient": {
       "commandName": "Project",
       "launchBrowser": true,
-      "applicationUrl": "http://localhost:5080",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
         "userName": "Stuart",
+        "ClientCallbackAddress": "http://localhost:5080",
         "GameServer": "http://localhost:5000",
-        "ClientCallbackAddress": "http://localhost:5080" //144.17.155.155
-      }
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "http://localhost:5080"
     },
     "GameServer": {
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "http://localhost:5080",
-      "applicationUrl": "http://0.0.0.0:5080",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
         "userName": "Stuart",
+        "ClientCallbackAddress": "http://144.17.48.37:5080",
         "GameServer": "http://144.17.48.37:5000",
-        "ClientCallbackAddress": "http://144.17.48.37:5080"
-      }
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "http://0.0.0.0:5080"
+    },
+    "Docker": {
+      "commandName": "Docker",
+      "launchBrowser": true,
+      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
+      "publishAllPorts": true,
+      "useSSL": true
     }
   }
-
 }
