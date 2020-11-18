@@ -5,12 +5,12 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Risk.SampleClient.Controllers;
+using Maksad_Client.Controllers;
 using System.Net.Http.Json;
 using Risk.Shared;
 using Microsoft.Extensions.Configuration;
 
-namespace Risk.SampleClient.Pages
+namespace Maksad_Client.Pages
 {
     public class IndexModel : PageModel
     {
