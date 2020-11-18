@@ -10,7 +10,7 @@ namespace Maksad_Client.Controllers
     public class ClientController : Controller
     {
         private readonly IHttpClientFactory clientFactory;
-        private static string serverName = "http://localhost:5000";
+        //private static string serverName = "http://localhost:5000";
 
         public ClientController(IHttpClientFactory clientFactory)
         {
