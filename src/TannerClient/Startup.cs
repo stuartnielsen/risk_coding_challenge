@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
@@ -12,11 +11,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Risk.Api.Controllers;
-using Risk.Game;
-using Risk.Shared;
 
-namespace Risk.Api
+namespace TannerClient
 {
     public class Startup
     {
@@ -30,23 +26,10 @@ namespace Risk.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers()
-                .AddJsonOptions(options =>
-                    options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase);
-
-            var players = new List<ApiPlayer>();
-            services.AddSingleton(GameController.InitializeGame(
-                int.Parse(Configuration["height"] ?? "5"),
-                int.Parse(Configuration["width"] ?? "5"),
-                int.Parse(Configuration["startingArmies"] ?? "5"),
-                players));
-            services.AddSingleton(players);
-
-            var joiningPlayers = new ConcurrentBag<ApiPlayer>();
-            services.AddSingleton(joiningPlayers);
-
-            services.AddMemoryCache();
+            services.AddControllers();
             services.AddHttpClient();
+            services.AddRazorPages();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -57,7 +40,7 @@ namespace Risk.Api
                 app.UseDeveloperExceptionPage();
             }
 
-            //app.UseHttpsRedirection();
+            app.UseHttpsRedirection();
 
             app.UseRouting();
 
@@ -66,6 +49,7 @@ namespace Risk.Api
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapRazorPages();
             });
         }
     }
