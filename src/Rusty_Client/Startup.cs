@@ -42,8 +42,6 @@ namespace Rusty_Client
                 app.UseDeveloperExceptionPage();
             }
 
-            //app.UseHttpsRedirection();
-
             app.UseRouting();
 
             app.UseAuthorization();
@@ -57,18 +55,12 @@ namespace Rusty_Client
                 Configuration["GameServer"],
                 Configuration[ "ClientCallbackAddress"],
                 Configuration["playerName"]
-                
                 );
-
-            //var server = Configuration["ServerName"];
-            //var httpClient = httpClientFactory.CreateClient(); ////
-            //var clientBaseAddress = app.ServerFeatures.Get<IServerAddressesFeature>().Addresses.ToArray()[1];
-
-            //JoinServer(httpClient, "http://144.17.48.37:5000", "http://144.17.48.44:5012");////
         }
 
         private async void JoinServer (HttpClient httpClient, string serverName, string clientBaseAddress,string name)
         {
+            await Task.Delay(TimeSpan.FromSeconds(5));
             var joinRequest = new JoinRequest { CallbackBaseAddress = clientBaseAddress, Name = name };
             var joinResponse = await httpClient.PostAsJsonAsync($"{serverName}/join", joinRequest);
         }
