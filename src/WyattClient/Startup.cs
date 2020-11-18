@@ -65,7 +65,7 @@ namespace WyattClient
             JoinServer(httpClientFactory.CreateClient(),
                 Configuration["GameServer"],
                 Configuration["ClientCallbackAddress"],
-                Configuration["userName"]
+                Configuration["PlayerName"]
                 );
         }
 

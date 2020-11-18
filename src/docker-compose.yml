@@ -26,6 +26,8 @@ services:
     - PlayerName=SampleClient
     networks:
       risknet:
+    depends_on:
+    - risk.api
 
 
   djclient:
@@ -42,6 +44,8 @@ services:
     - PlayerName=DJ
     networks:
       risknet:
+    depends_on:
+    - risk.api
 
 
   justin_client:
@@ -58,6 +62,8 @@ services:
     - PlayerName=Justin
     networks:
       risknet:
+    depends_on:
+    - risk.api
 
 #
 #  kaydonsclient:
@@ -83,6 +89,8 @@ services:
     - userName=Stuart
     networks:
       risknet:
+    depends_on:
+    - risk.api
 
 
   tannerclient:
@@ -99,6 +107,43 @@ services:
     - PlayerName=tanner
     networks:
       risknet:
+    depends_on:
+    - risk.api
+
+  wyattclient:
+    hostname: wyattclient
+    image: ${DOCKER_REGISTRY-}wyattclient
+    build:
+      context: .
+      dockerfile: WyattClient/Dockerfile
+    ports:
+    - "5030:80"
+    environment:
+    - GameServer=http://risk.api
+    - ClientCallbackAddress=http://wyattclient
+    - PlayerName=Wyatt
+    networks:
+      risknet:
+    depends_on:
+    - risk.api
+
+  brennanclient:
+    hostname: brennanclient
+    image: ${DOCKER_REGISTRY-}brennanclient
+    build:
+      context: .
+      dockerfile: BrennanClient/Dockerfile
+    ports:
+    - "5035:80"
+    environment:
+    - GameServer=http://risk.api
+    - ClientCallbackAddress=http://wyattclient
+    - PlayerName=Brennan
+    networks:
+      risknet:
+    depends_on:
+    - risk.api
 
 networks:
   risknet:
+

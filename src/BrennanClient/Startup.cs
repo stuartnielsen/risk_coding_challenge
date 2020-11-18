@@ -50,11 +50,8 @@ namespace BrennanClient
                 endpoints.MapControllers();
             });
 
-            var server = Configuration["ServerName"];
             var httpClient = httpClientFactory.CreateClient();
-            var addresses = app.ServerFeatures.Get<IServerAddressesFeature>().Addresses;
-            var clientBaseAddress = addresses.First();
-            JoinServer(httpClient, Configuration["GameServer"], Configuration["ClientCallbackAddress"], Configuration["userName"]);
+            JoinServer(httpClient, Configuration["GameServer"], Configuration["ClientCallbackAddress"], Configuration["PlayerName"]);
         }
 
         private async Task JoinServer(HttpClient httpClient, string serverName, string clientBaseAddress, string userName)
