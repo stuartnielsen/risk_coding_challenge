@@ -72,3 +72,10 @@ services:
     ports:
       - "80"
 
+
+  emmanuel_client:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - "80"
+

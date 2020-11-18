@@ -140,18 +140,35 @@ services:
     - risk.api
 
 
-  kaydonsclient:
-    hostname: kaydonclient
-    image: ${DOCKER_REGISTRY-}kaydonsclient
+#  kaydonsclient:
+#    hostname: kaydonclient
+#    image: ${DOCKER_REGISTRY-}kaydonsclient
+#    build:
+#      context: .
+#      dockerfile: Kaydon'sClient/Dockerfile
+#    ports:
+#    - "5040:80"
+#    environment:
+#    - GameServer=http://risk.api
+#    - ClientCallbackAddress=http://kaydonsclient
+#    - PlayerName=Kaydon
+#    networks:
+#      risknet:
+#    depends_on:
+#    - risk.api
+
+  emmanuel_client:
+    hostname: emmanuelclient
+    image: ${DOCKER_REGISTRY-}emmanuelclient
     build:
       context: .
-      dockerfile: Kaydon'sClient/Dockerfile
+      dockerfile: clients/Emmanuel_Client/Dockerfile
     ports:
-    - "5040:80"
+    - "5045:80"
     environment:
     - GameServer=http://risk.api
-    - ClientCallbackAddress=http://kaydonsclient
-    - PlayerName=Kaydon
+    - ClientCallbackAddress=http://emmanuelclient
+    - PlayerName=Emmanuel
     networks:
       risknet:
     depends_on:
@@ -159,4 +176,5 @@ services:
 
 networks:
   risknet:
+
 
