@@ -18,34 +18,6 @@ namespace Maksad_Client.Controllers
 
         }
 
-        /*[HttpGet("joinServer/{*server}")]
-        public async Task<IActionResult> JoinAsync(string server)
-        {
-            serverAdress = server;
-            var client = httpClientFactory.CreateClient();
-            string baseUrl = string.Format("{0}://{1}{2}", Request.Scheme, Request.Host, Request.PathBase);
-            var joinRequest = new JoinRequest {
-                CallbackBaseAddress = baseUrl,
-                Name = "Maksad"
-            };
-            try
-            {
-                var joinResponse = await client.PostAsJsonAsync($"{server}/join", joinRequest);
-                var content = await joinResponse.Content.ReadAsStringAsync();
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex);
-            }
-        }
-
-        [HttpPost("joinServer")]
-        public async Task<IActionResult> JoinAsync_Post(string server)
-        {
-            await JoinAsync(server);
-            return RedirectToPage("/GameStatus", new { servername = server });
-        }*/
 
         [HttpGet("AreYouThere")]
         public string AreYouThere()
@@ -64,9 +36,9 @@ namespace Maksad_Client.Controllers
             DeployArmyResponse response = new DeployArmyResponse();
             foreach (BoardTerritory space in deployArmyRequest.Board)
             {
-                if (space.Location.Row == space.Location.Column && (space.OwnerName == null || space.OwnerName == "Rusty"))
+                if ((space.OwnerName == null || space.OwnerName == "Maksad"))
                 {
-                    if (space.OwnerName == "Rusty" && space.Armies <= 3)
+                    if (space.OwnerName == "Maksad" && space.Armies < 3)
                     {
                         response.DesiredLocation = space.Location;
                         continue;
@@ -80,10 +52,8 @@ namespace Maksad_Client.Controllers
                 return response;
             }
             return null;
-
-
-
         }
+
         [HttpPost("beginAttack")]
         public BeginAttackResponse BeginAttack([FromBody] BeginAttackRequest beginAttackRequest)
         {
@@ -96,7 +66,7 @@ namespace Maksad_Client.Controllers
             //from is the attacker to is the defender
             foreach (BoardTerritory space in beginAttackRequest.Board)
             {
-                if (space.OwnerName == "Rusty")
+                if (space.OwnerName == "Maksad")
                 {
                     attackerLocation = space.Location;
                     //look at the next location to the right, left, up, down, up-right diagonal, 
@@ -105,7 +75,7 @@ namespace Maksad_Client.Controllers
                     {
                         for (int j = space.Location.Row - 1; j <= (space.Location.Row + 1); j++)
                         {
-                            if (space.OwnerName != "Rusty")
+                            if (space.OwnerName != "Maksad")
                             {
                                 response.From = attackerLocation;
                                 response.To = space.Location;

@@ -58,17 +58,55 @@ namespace Risk.SampleClient.Controllers
         public DeployArmyResponse DeployArmy([FromBody]DeployArmyRequest deployArmyRequest)
         {
             DeployArmyResponse response = new DeployArmyResponse();
-            response.DesiredLocation = new Location(1,1);
-            return response;
+            foreach (BoardTerritory space in deployArmyRequest.Board)
+            {
+                if ((space.OwnerName == null || space.OwnerName == "SampleClient1"))
+                {
+                    if (space.OwnerName == "SampleClient1" && space.Armies < 3)
+                    {
+                        response.DesiredLocation = space.Location;
+                        continue;
+                    }
+                    else
+                    {
+                        response.DesiredLocation = space.Location;
+                    }
+
+                }
+                return response;
+            }
+            return null;
         }
 
         [HttpPost("beginAttack")]
         public BeginAttackResponse BeginAttack([FromBody]BeginAttackRequest beginAttackRequest)
         {
             BeginAttackResponse response = new BeginAttackResponse();
-            response.From = new Location(1, 1);
-            response.To = new Location(1, 2);
-            return response;
+            var attackerLocation = new Location();
+            //from is the attacker to is the defender
+            foreach (BoardTerritory space in beginAttackRequest.Board)
+            {
+                if (space.OwnerName == "SampleClient1")
+                {
+                    attackerLocation = space.Location;
+                    //look at the next location to the right, left, up, down, up-right diagonal, 
+                    //down-right diagonal, up-left diagonal, down-left diagonal
+                    for (int i = space.Location.Column - 1; i <= (space.Location.Column + 1); i++)
+                    {
+                        for (int j = space.Location.Row - 1; j <= (space.Location.Row + 1); j++)
+                        {
+                            if (space.OwnerName != "SampleClient1")
+                            {
+                                response.From = attackerLocation;
+                                response.To = space.Location;
+                                return response;
+                            }
+                        }
+                    }
+
+                }
+            }
+            return null;
         }
 
         [HttpPost("continueAttack")]
