@@ -38,8 +38,14 @@ namespace BrennanClient
             {
                 app.UseDeveloperExceptionPage();
             }
-
+            else
+            {
+                app.UseExceptionHandler("/Home/Error");
+                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                app.UseHsts();
+            }
             app.UseHttpsRedirection();
+            app.UseStaticFiles();
 
             app.UseRouting();
 
@@ -49,17 +55,21 @@ namespace BrennanClient
             {
                 endpoints.MapControllers();
             });
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
 
             var server = Configuration["ServerName"];
             var httpClient = httpClientFactory.CreateClient();
-            var clientBaseAddress = app.ServerFeatures.Get<IServerAddressesFeature>().Addresses.ToArray()[1];
-
-            JoinServer(httpClient, server, clientBaseAddress);
+            var addresses = app.ServerFeatures.Get<IServerAddressesFeature>().Addresses;
+            var clientBaseAddress = addresses.First();
+            JoinServer(httpClient, Configuration["GameServer"], Configuration["ClientCallbackAddress"], Configuration["userName"]);
         }
 
-        private async Task JoinServer(HttpClient httpClient, string serverName, string clientBaseAddress)
+        private async Task JoinServer(HttpClient httpClient, string serverName, string clientBaseAddress, string userName)
         {
-            var joinRequest = new JoinRequest { CallbackBaseAddress = clientBaseAddress, Name = "Brennan" };
+            var joinRequest = new JoinRequest { CallbackBaseAddress = clientBaseAddress, Name = userName };
 
             var joinResponse = await httpClient.PostAsJsonAsync($"{serverName}/join", joinRequest);
 

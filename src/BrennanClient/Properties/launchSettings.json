@@ -8,19 +8,27 @@
     }
   },
   "profiles": {
-    "IIS Express": {
-      "commandName": "IISExpress",
+    "GameServer": {
+      "commandName": "Project",
       "launchBrowser": true,
+      "launchUrl": "http://localhost:5080",
+      "applicationUrl": "http://0.0.0.0:5030",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "userName": "Brennan",
+        "GameServer": "http://144.17.115.95:5000",
+        "ClientCallbackAddress": "http://144.17.48.37:5030"
       }
     },
     "BrennanClient": {
       "commandName": "Project",
       "launchBrowser": true,
-      "applicationUrl": "https://localhost:5030;http://localhost:5031",
+      "applicationUrl": "http://localhost:5030",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "userName": "Brennan",
+        "GameServer": "http://localhost:5000",
+        "ClientCallbackAddress": "http://localhost:5030" 
       }
     }
   }
