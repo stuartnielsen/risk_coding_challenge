@@ -34,8 +34,8 @@ namespace Risk.Api
         public async Task StartGameAsync()
         {
             await deployArmiesAsync();
-            await doBattle();
-            await reportWinner();
+            //await doBattle();
+            //await reportWinner();
         }
 
         private async Task deployArmiesAsync()

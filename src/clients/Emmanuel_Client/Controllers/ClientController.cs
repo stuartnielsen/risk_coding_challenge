@@ -110,23 +110,36 @@ namespace Emmanuel_Client.Controllers
 
         private DeployArmyResponse createDeployResponse(DeployArmyRequest deployArmyRequest)
         {
-            Random r = new Random();
-            int rInt;
             Location location = new Location();
+            int ownedTerritories = 0;
+            int placedArmies = 0;
+            int totalArmies = 0;
             foreach(var ter in deployArmyRequest.Board)
             {
-                rInt = r.Next(0, 3);
-                if ((ter.OwnerName is null || ter.OwnerName == "Emmanuel" ) && ter.Armies < rInt)
+                if(ter.OwnerName is null)
                 {
                     location = ter.Location;
-                    break;
+                    return new DeployArmyResponse { DesiredLocation = location };
                 }
-                else
+                if (ter.OwnerName == "Emmanuel")
                 {
-                    continue;
+                    location = ter.Location;
+                    ownedTerritories++;
+                    placedArmies += ter.Armies;
                 }
             }
 
+            totalArmies = deployArmyRequest.ArmiesRemaining + placedArmies;
+
+            foreach (var ter in deployArmyRequest.Board)
+            {
+                if (ter.OwnerName == "Emmanuel" && ter.Armies < (totalArmies/ownedTerritories) + 1)
+                {
+                    location = ter.Location;
+                    return new DeployArmyResponse { DesiredLocation = location };
+                }
+            }
+            
             return new DeployArmyResponse { DesiredLocation = location };
         }
     }

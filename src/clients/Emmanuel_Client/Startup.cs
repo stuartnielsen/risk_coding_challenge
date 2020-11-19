@@ -62,7 +62,7 @@ namespace Emmanuel_Client
 
         private async Task JoinServer(HttpClient httpClient, string serverName, string clientBaseAddress, string clientName)
         {
-            await Task.Delay(TimeSpan.FromSeconds(10));
+            await Task.Delay(TimeSpan.FromSeconds(5));
             var joinRequest = new JoinRequest { Name = clientName, CallbackBaseAddress = clientBaseAddress };
             var joinResponse = await httpClient.PostAsJsonAsync($"{serverName}/join", joinRequest);
         }
