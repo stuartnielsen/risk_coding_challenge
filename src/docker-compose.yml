@@ -34,22 +34,22 @@ services:
     - risk.api
 
 
-  djclient:
-    hostname: djclient
-    image: ${DOCKER_REGISTRY-}djclient
-    build:
-      context: .
-      dockerfile: clients/DJClient/Dockerfile
-    ports:
-    - "5010:80"
-    environment:
-    - ServerName=http://risk.api
-    - ClientCallbackAddress=http://djclient
-    - PlayerName=DJ
-    networks:
-      risknet:
-    depends_on:
-    - risk.api
+  #djclient:
+  #  hostname: djclient
+  #  image: ${DOCKER_REGISTRY-}djclient
+  #  build:
+  #    context: .
+  #    dockerfile: clients/DJClient/Dockerfile
+  #  ports:
+  #  - "5010:80"
+  #  environment:
+  #  - ServerName=http://risk.api
+  #  - ClientCallbackAddress=http://djclient
+  #  - PlayerName=DJ
+  #  networks:
+  #    risknet:
+  #  depends_on:
+  #  - risk.api
 
 
 #  justin_client:
@@ -105,39 +105,39 @@ services:
 #    depends_on:
 #    - risk.api
 
-  wyattclient:
-    hostname: wyattclient
-    image: ${DOCKER_REGISTRY-}wyattclient
-    build:
-      context: .
-      dockerfile: WyattClient/Dockerfile
-    ports:
-    - "5030:80"
-    environment:
-    - GameServer=http://risk.api
-    - ClientCallbackAddress=http://wyattclient
-    - PlayerName=Wyatt
-    networks:
-      risknet:
-    depends_on:
-    - risk.api
+  #wyattclient:
+  #  hostname: wyattclient
+  #  image: ${DOCKER_REGISTRY-}wyattclient
+  #  build:
+  #    context: .
+  #    dockerfile: WyattClient/Dockerfile
+  #  ports:
+  #  - "5030:80"
+  #  environment:
+  #  - GameServer=http://risk.api
+  #  - ClientCallbackAddress=http://wyattclient
+  #  - PlayerName=Wyatt
+  #  networks:
+  #    risknet:
+  #  depends_on:
+  #  - risk.api
 
-  brennanclient:
-    hostname: brennanclient
-    image: ${DOCKER_REGISTRY-}brennanclient
-    build:
-      context: .
-      dockerfile: BrennanClient/Dockerfile
-    ports:
-    - "5035:80"
-    environment:
-    - GameServer=http://risk.api
-    - ClientCallbackAddress=http://brennanclient
-    - PlayerName=Brennan
-    networks:
-      risknet:
-    depends_on:
-    - risk.api
+  #brennanclient:
+  #  hostname: brennanclient
+  #  image: ${DOCKER_REGISTRY-}brennanclient
+  #  build:
+  #    context: .
+  #    dockerfile: BrennanClient/Dockerfile
+  #  ports:
+  #  - "5035:80"
+  #  environment:
+  #  - GameServer=http://risk.api
+  #  - ClientCallbackAddress=http://brennanclient
+  #  - PlayerName=Brennan
+  #  networks:
+  #    risknet:
+  #  depends_on:
+  #  - risk.api
 
 
 #  kaydonsclient:
