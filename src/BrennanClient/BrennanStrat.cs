@@ -67,7 +67,7 @@ namespace BrennanClient
             {
                 if (!(territory.OwnerName == null))
                 {
-                    if (territory.OwnerName == "Stuart" && territory.Armies == max)
+                    if (territory.OwnerName == "Brennan" && territory.Armies == max)
                     {
                         beginAttack.From = territory.Location;
                         neighbors = GetNeighbors(territory, attackRequest.Board);
@@ -79,7 +79,7 @@ namespace BrennanClient
             {
                 if (!(neighbor.OwnerName == null))
                 {
-                    if (neighbor.OwnerName != "Stuart" && neighbor.Armies < max)
+                    if (neighbor.OwnerName != "Brennan" && neighbor.Armies < max)
                         beginAttack.To = neighbor.Location;
                 }
             }
