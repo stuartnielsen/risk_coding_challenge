@@ -66,11 +66,11 @@ services:
  #     - "80"
  #
  #
- # brennanclient:
- #   environment:
- #     - ASPNETCORE_ENVIRONMENT=Development
- #   ports:
- #     - "80"
+  brennanclient:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - "80"
 
 
 #  emmanuel_client:

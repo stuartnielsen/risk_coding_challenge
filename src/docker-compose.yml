@@ -122,22 +122,22 @@ services:
   #  depends_on:
   #  - risk.api
 
-  #brennanclient:
-  #  hostname: brennanclient
-  #  image: ${DOCKER_REGISTRY-}brennanclient
-  #  build:
-  #    context: .
-  #    dockerfile: BrennanClient/Dockerfile
-  #  ports:
-  #  - "5035:80"
-  #  environment:
-  #  - GameServer=http://risk.api
-  #  - ClientCallbackAddress=http://brennanclient
-  #  - PlayerName=Brennan
-  #  networks:
-  #    risknet:
-  #  depends_on:
-  #  - risk.api
+  brennanclient:
+    hostname: brennanclient
+    image: ${DOCKER_REGISTRY-}brennanclient
+    build:
+      context: .
+      dockerfile: BrennanClient/Dockerfile
+    ports:
+    - "5035:80"
+    environment:
+    - GameServer=http://risk.api
+    - ClientCallbackAddress=http://brennanclient
+    - PlayerName=Brennan
+    networks:
+      risknet:
+    depends_on:
+    - risk.api
 
 
 #  kaydonsclient:
