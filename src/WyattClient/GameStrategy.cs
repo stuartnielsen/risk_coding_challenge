@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Risk.Shared;
 
+
+
 namespace WyattClient
 {
     public class GameStrategy
@@ -12,8 +14,8 @@ namespace WyattClient
         {
             DeployArmyResponse deployArmyResponse = new DeployArmyResponse();
             foreach (var territory in deployArmyRequest.Board)
-            {   
-                if(territory.OwnerName == null)
+            {
+                if (territory.OwnerName == null)
                 {
                     deployArmyResponse.DesiredLocation = territory.Location;
                     return deployArmyResponse;
@@ -21,7 +23,7 @@ namespace WyattClient
             }
             foreach (var territory in deployArmyRequest.Board)
             {
-                if(territory.OwnerName != null)
+                if (territory.OwnerName != null)
                 {
                     if (territory.OwnerName == "Wyatt" && territory.Armies < 3)
                     {
@@ -29,36 +31,54 @@ namespace WyattClient
                         return deployArmyResponse;
                     }
                 }
-                
+
             }
-            //foreach (var territory in deployArmyRequest.Board)
-            //{
-            //    if(territory.Owner != null)
-            //    {
-            //        if (territory.Owner.Name == "Wyatt" && territory.Armies == 3)
-            //        {
-            //            deployArmyResponse.DesiredLocation = territory.Location;
-            //            return deployArmyResponse;
-            //        }
-            //    }
-             
-            //}
+            foreach (var territory in deployArmyRequest.Board)
+            {
+                if (territory.OwnerName != null)
+                {
+                    if (territory.OwnerName == "Wyatt" && territory.Armies == 3)
+                    {
+                        deployArmyResponse.DesiredLocation = territory.Location;
+                        return deployArmyResponse;
+                    }
+                }
+
+
+
+            }
+            foreach (var territory in deployArmyRequest.Board)
+            {
+                if (territory.OwnerName != null)
+                {
+                    if (territory.OwnerName == "Wyatt" && territory.Armies == 4)
+                    {
+                        deployArmyResponse.DesiredLocation = territory.Location;
+                        return deployArmyResponse;
+                    }
+                }
+
+
+
+            }
             return deployArmyResponse;
         }
+
+
 
         public BeginAttackResponse WhenToAttack(BeginAttackRequest beginAttackRequest)
         {
             IEnumerable<BoardTerritory> neighbors = new List<BoardTerritory>();
             BeginAttackResponse beginAttackResponse = new BeginAttackResponse();
-            foreach(var territory in beginAttackRequest.Board)
+            foreach (var territory in beginAttackRequest.Board)
             {
-                if(territory.OwnerName != null)
+                if (territory.OwnerName != null)
                 {
                     if (territory.OwnerName == "Wyatt" && territory.Armies >= 3)
                     {
                         foreach (var neighbor in neighbors)
                         {
-                            if (neighbor.OwnerName != "Wyatt")
+                            if (neighbor.OwnerName != "Wyatt" && neighbor.Armies > 2)
                             {
                                 beginAttackResponse.From = territory.Location;
                                 beginAttackResponse.To = neighbor.Location;
@@ -66,17 +86,21 @@ namespace WyattClient
                             }
                         }
 
+
+
                     }
                 }
-               
+
             }
             return beginAttackResponse;
         }
 
+
+
         public ContinueAttackResponse WhenToContinueAttack(ContinueAttackRequest continueAttackRequest)
         {
             ContinueAttackResponse continueAttackResponse = new ContinueAttackResponse();
-            if(continueAttackRequest.AttackingTerritorry.Armies > continueAttackRequest.DefendingTerritorry.Armies + 1)
+            if (continueAttackRequest.AttackingTerritorry.Armies > continueAttackRequest.DefendingTerritorry.Armies + 1)
             {
                 continueAttackResponse.ContinueAttacking = true;
                 return continueAttackResponse;
@@ -84,6 +108,8 @@ namespace WyattClient
             continueAttackResponse.ContinueAttacking = false;
             return continueAttackResponse;
         }
+
+
 
         private IEnumerable<BoardTerritory> GetNeighbors(BoardTerritory territory, IEnumerable<BoardTerritory> territories)
         {
@@ -102,5 +128,3 @@ namespace WyattClient
         }
     }
 }
-
-

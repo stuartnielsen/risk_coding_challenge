@@ -58,8 +58,12 @@ namespace Risk.Game
 
             if (GetPlayerRemainingArmies(playerToken) < 1)
                 return false;
-
-            var territory = Board.GetTerritory(desiredLocation);
+            Territory territory;
+            try
+            {
+                territory = Board.GetTerritory(desiredLocation);
+            }
+            catch { return false; }
 
             if (territory.Owner == null)
             {
@@ -208,11 +212,13 @@ namespace Risk.Game
                 else
                     attackingTerritory.Armies--;
             }
-            if(defendingTerritory.Armies < 1)
+            if (defendingTerritory.Armies < 1)
             {
                 BattleWasWon(attackingTerritory, defendingTerritory);
-                return new TryAttackResult { CanContinue = false,
-                AttackInvalid = false};
+                return new TryAttackResult {
+                    CanContinue = false,
+                    AttackInvalid = false
+                };
             }
             return new TryAttackResult { CanContinue = attackingTerritory.Armies > 1 };
         }

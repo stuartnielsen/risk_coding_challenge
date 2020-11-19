@@ -8,8 +8,8 @@ services:
       context: .
       dockerfile: Risk.Api/Dockerfile
     environment:
-    - height=5
-    - width=5
+    - height=50
+    - width=50
     - startingArmies=50
     ports:
     - "5000:80"
@@ -105,22 +105,22 @@ services:
 #    depends_on:
 #    - risk.api
 
-  #wyattclient:
-  #  hostname: wyattclient
-  #  image: ${DOCKER_REGISTRY-}wyattclient
-  #  build:
-  #    context: .
-  #    dockerfile: WyattClient/Dockerfile
-  #  ports:
-  #  - "5030:80"
-  #  environment:
-  #  - GameServer=http://risk.api
-  #  - ClientCallbackAddress=http://wyattclient
-  #  - PlayerName=Wyatt
-  #  networks:
-  #    risknet:
-  #  depends_on:
-  #  - risk.api
+  wyattclient:
+    hostname: wyattclient
+    image: ${DOCKER_REGISTRY-}wyattclient
+    build:
+      context: .
+      dockerfile: WyattClient/Dockerfile
+    ports:
+    - "5030:80"
+    environment:
+    - GameServer=http://risk.api
+    - ClientCallbackAddress=http://wyattclient
+    - PlayerName=Wyatt
+    networks:
+      risknet:
+    depends_on:
+    - risk.api
 
   brennanclient:
     hostname: brennanclient
