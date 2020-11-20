@@ -9,6 +9,7 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Risk.Game;
 using Risk.Shared;
 
@@ -19,13 +20,15 @@ namespace Risk.Api
         private readonly Game.Game game;
         private readonly IList<ApiPlayer> players;
         private readonly IList<ApiPlayer> removedPlayers;
+        private readonly ILogger<GameRunner> logger;
         public const int MaxFailedTries = 5;
 
-        public GameRunner(Game.Game game, IList<ApiPlayer> players, IList<ApiPlayer> removedPlayers)
+        public GameRunner(Game.Game game, IList<ApiPlayer> players, IList<ApiPlayer> removedPlayers, ILogger<GameRunner> logger)
         {
             this.game = game;
             this.players = players;
             this.removedPlayers = removedPlayers;
+            this.logger = logger;
         }
 
         public async Task StartGameAsync()
@@ -39,8 +42,9 @@ namespace Risk.Api
         {
             while (game.Board.Territories.Sum(t => t.Armies) < game.StartingArmies * players.Count())
             {
-                foreach (var currentPlayer in players)
+                for (int playerIndex = 0; playerIndex < players.Count(); ++playerIndex)
                 {
+                    var currentPlayer = players[playerIndex];
                     var deployArmyResponse = await askForDeployLocationAsync(currentPlayer, DeploymentStatus.YourTurn);
 
                     var failedTries = 0;
@@ -51,8 +55,12 @@ namespace Risk.Api
                         if (failedTries == MaxFailedTries)
                         {
                             BootPlayerFromGame(currentPlayer);
+                            playerIndex--;
                         }
-                        deployArmyResponse = await askForDeployLocationAsync(currentPlayer, DeploymentStatus.PreviousAttemptFailed);
+                        else
+                        {
+                            deployArmyResponse = await askForDeployLocationAsync(currentPlayer, DeploymentStatus.PreviousAttemptFailed);
+                        }
                     }
                 }
             }
@@ -81,7 +89,8 @@ namespace Risk.Api
 
                 for(int i = 0; i < players.Count; i++)
                 {
-                    if (game.PlayerCanAttack(players[i]))
+                    var currentPlayer = players[i];
+                    if (game.PlayerCanAttack(currentPlayer))
                     {
                         someonePlayedThisRound = true;
                         var failedTries = 0;
@@ -91,40 +100,55 @@ namespace Risk.Api
                         Territory defendingTerritory;
                         do
                         {
-                            var beginAttackResponse = await askForAttackLocationAsync(players[i], BeginAttackStatus.PreviousAttackRequestFailed);
-                            attackingTerritory = new Territory(beginAttackResponse.From);
-                            defendingTerritory = new Territory(beginAttackResponse.To);
-                            attackResult = game.TryAttack(players[i].Token, attackingTerritory, defendingTerritory);
+                            logger.LogInformation($"Asking {currentPlayer.Name} where they want to attack...");
+
+                            var beginAttackResponse = await askForAttackLocationAsync(currentPlayer, BeginAttackStatus.PreviousAttackRequestFailed);
+                            attackingTerritory = game.Board.GetTerritory(beginAttackResponse.From);
+                            defendingTerritory = game.Board.GetTerritory(beginAttackResponse.To);
+
+                            logger.LogInformation($"{currentPlayer.Name} wants to attack from {attackingTerritory} to {defendingTerritory}");
+
+                            attackResult = game.TryAttack(currentPlayer.Token, attackingTerritory, defendingTerritory);
 
                             if (attackResult.AttackInvalid)
                             {
+                                logger.LogError("Invalid attack request!");
                                 failedTries++;
                                 if (failedTries == MaxFailedTries)
                                 {
-                                    RemovePlayerFromBoard(players[i].Token);
-                                    RemovePlayerFromGame(players[i].Token);
+                                    BootPlayerFromGame(currentPlayer);
+                                    RemovePlayerFromBoard(currentPlayer.Token);
+                                    RemovePlayerFromGame(currentPlayer.Token);
                                     i--;
+                                    break;
                                 }
                             }
                         } while (attackResult.AttackInvalid);
 
                         while(attackResult.CanContinue)
                         {
-                            var continueResponse = await askContinueAttackingAsync(players[i], attackingTerritory, defendingTerritory);
+                            var continueResponse = await askContinueAttackingAsync(currentPlayer, attackingTerritory, defendingTerritory);
                             if (continueResponse.ContinueAttacking)
                             {
-                                attackResult = game.TryAttack(players[i].Token, attackingTerritory, defendingTerritory);
+                                logger.LogInformation("Keep attacking!");
+                                attackResult = game.TryAttack(currentPlayer.Token, attackingTerritory, defendingTerritory);
                             }
                             else
                             {
+                                logger.LogInformation("run away!");
                                 break;
                             }
                         }
+                    }
+                    else
+                    {
+                        logger.LogWarning($"{currentPlayer.Name} cannot attack.");
                     }
                 }
 
                 if(someonePlayedThisRound is false)
                 {
+                    logger.LogInformation("Game Over");
                     game.SetGameOver();
                     return;
                 }

@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Risk.Shared;
 
 namespace Risk.Api.Controllers
@@ -24,14 +25,18 @@ namespace Risk.Api.Controllers
         private readonly IHttpClientFactory clientFactory;
         private readonly IConfiguration config;
         private readonly List<ApiPlayer> players;
+        private readonly ConcurrentBag<ApiPlayer> joiningPlayers;
+        private readonly ILogger<GameRunner> logger;
         private readonly List<ApiPlayer> removedPlayers = new List<ApiPlayer>();
 
-        public GameController(Game.Game game, IMemoryCache memoryCache, IHttpClientFactory client, IConfiguration config, List<ApiPlayer> players)
+        public GameController(Game.Game game, IMemoryCache memoryCache, IHttpClientFactory client, IConfiguration config, List<ApiPlayer> players, ConcurrentBag<ApiPlayer> joiningPlayers, ILogger<GameRunner> logger)
         {
             this.game = game;
             this.clientFactory = client;
             this.config = config;
             this.players = players;
+            this.joiningPlayers = joiningPlayers;
+            this.logger = logger;
             this.memoryCache = memoryCache;
         }
 
@@ -47,7 +52,7 @@ namespace Risk.Api.Controllers
                 );
                 newPlayer.HttpClient.BaseAddress = new Uri(joinRequest.CallbackBaseAddress);
 
-                players.Add(newPlayer);
+                joiningPlayers.Add(newPlayer);
                 return Ok(new JoinResponse {
                     Token = newPlayer.Token
                 });
@@ -69,6 +74,8 @@ namespace Risk.Api.Controllers
         public IActionResult GameStatus()
         {
             GameStatus gameStatus;
+            players.Clear();
+            players.AddRange(joiningPlayers);
 
             if (!memoryCache.TryGetValue("Status", out gameStatus))
             {
@@ -109,8 +116,10 @@ namespace Risk.Api.Controllers
             {
                 return BadRequest("Secret code doesn't match, unable to start game.");
             }
+            players.Clear();
+            players.AddRange(joiningPlayers);
             game.StartGame();
-            var gameRunner = new GameRunner(game, players, removedPlayers);
+            var gameRunner = new GameRunner(game, players, removedPlayers, logger);
             await gameRunner.StartGameAsync();
             return Ok();
         }

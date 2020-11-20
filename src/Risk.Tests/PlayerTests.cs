@@ -6,6 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Moq;
 using NUnit.Framework;
 using Risk.Api;
 using Risk.Api.Controllers;
@@ -16,11 +18,13 @@ namespace Risk.Tests
     public class PlayerTests
     {
         private List<ApiPlayer> players;
+        private ILogger<GameRunner> logger;
 
         [SetUp]
         public void SetUp()
         {
             players = new List<ApiPlayer>();
+            logger = new Mock<ILogger<GameRunner>>().Object;
         }
 
         [Test]
@@ -44,7 +48,8 @@ namespace Risk.Tests
             Guid.TryParse(playerToken, out var _).Should().BeTrue();
             game.StartGame();
 
-            var gameController = new GameController(game, null, null, null, players);
+            var playersBag = new ConcurrentBag<ApiPlayer>(players);
+            var gameController = new GameController(game, null, null, null, players, playersBag, logger);
 
             var response = await gameController.Join(new JoinRequest { Name = "Player2", CallbackBaseAddress = "" });
             Assert.IsInstanceOf<BadRequestObjectResult>(response);
