@@ -69,7 +69,7 @@ namespace BrennanClient.Controllers
             return strat.DecideWhereToAttack(beginAttackRequest);
         }
 
-        [HttpPost("continueAttack")]
+        [HttpPost("continueAttacking")]
         public ContinueAttackResponse ContinueAttack([FromBody] ContinueAttackRequest continueAttackRequest)
         {
             return strat.DecideToContinueAttack(continueAttackRequest);

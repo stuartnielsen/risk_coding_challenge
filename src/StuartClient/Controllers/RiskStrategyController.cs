@@ -70,7 +70,7 @@ namespace StuartClient.Controllers
             return gameStrategy.DecideWhereToAttack(beginAttackRequest);
         }
 
-        [HttpPost("continueAttack")]
+        [HttpPost("continueAttacking")]
         public ContinueAttackResponse ContinueAttack([FromBody] ContinueAttackRequest continueAttackRequest)
         {
             return gameStrategy.DecideToContinueAttack(continueAttackRequest);

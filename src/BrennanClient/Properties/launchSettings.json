@@ -18,7 +18,7 @@
       "launchUrl": "http://localhost:5030/areyouthere",
       "environmentVariables": {
         "userName": "Brennan",
-        "ClientCallbackAddress": "http://144.17.48.37:5030",
+        "ClientCallbackAddress": "http://144.17.48.99:5030",
         "GameServer": "http://144.17.48.37:5000",
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
