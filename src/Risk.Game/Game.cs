@@ -193,7 +193,7 @@ namespace Risk.Game
             int[] attackerDice = new int[MAX_ATTACKER_DICE];
             int[] defenderDice = new int[MAX_DEFENDER_DICE];
 
-            for (int i = 0; i < Math.Min(attackingTerritory.Armies, MAX_ATTACKER_DICE); i++)
+            for (int i = 0; i < Math.Min(attackingTerritory.Armies, MAX_ATTACKER_DICE) - 1; i++)
             {
                 attackerDice[i] = rand.Next(1, 7);
             }
@@ -205,7 +205,7 @@ namespace Risk.Game
             Array.Sort(defenderDice);
             Array.Reverse(attackerDice);
             Array.Reverse(defenderDice);
-            for (int i = 0; i <= defendingTerritory.Armies && i < defenderDice.Length; i++)
+            for (int i = 0; i <= defendingTerritory.Armies && i < defenderDice.Length && i < attackingTerritory.Armies - 1; i++)
             {
                 if (attackerDice[i] > defenderDice[i])
                     defendingTerritory.Armies--;

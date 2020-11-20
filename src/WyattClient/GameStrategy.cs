@@ -125,7 +125,14 @@ namespace WyattClient
             {
                 if (!(neighbor.OwnerName == null))
                 {
-                    if (neighbor.OwnerName != "Wyatt" && neighbor.Armies < myArmy)
+                    if (neighbor.OwnerName != "Wyatt")
+                        beginAttack.To = neighbor.Location;
+                    if (neighbor.OwnerName != "Wyatt" && neighbor.Armies == 0)
+                    {
+                        beginAttack.To = neighbor.Location;
+                        return beginAttack;
+                    }
+                    else if (neighbor.OwnerName != "Wyatt" && neighbor.Armies < myArmy)
                         beginAttack.To = neighbor.Location;
                 }
             }
