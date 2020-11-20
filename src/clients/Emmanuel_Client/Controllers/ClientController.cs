@@ -80,6 +80,7 @@ namespace Emmanuel_Client.Controllers
         {
             var from = new Location();
             var to = new Location();
+            var tempTer = new BoardTerritory();
 
             //This logic will not grab a neighbour of the territory.
             foreach (var ter in beginAttack.Board)
@@ -89,19 +90,26 @@ namespace Emmanuel_Client.Controllers
                     from = ter.Location;
                     for (int i = ter.Location.Column - 1; i <= ter.Location.Column + 1; i++)
                     {
-                        for (int j = ter.Location.Row - 1; i <= ter.Location.Row + 1; i++)
+                        if (i < 0)
                         {
-                            if (!(ter.OwnerName is null) && ter.OwnerName != "Emmanuel")
+                            continue;
+                        }
+                        for (int j = ter.Location.Row - 1; j <= ter.Location.Row + 1; j++)
+                        {
+                            if (j < 0)
                             {
-
+                                continue;
+                            }
+                            to.Column = i;
+                            to.Row = j;
+                            tempTer = beginAttack.Board.FirstOrDefault(r => r.Location == to);
+                            if (!(tempTer is null) && tempTer.OwnerName != "Emmanuel" && tempTer.Armies > 0)
+                            {
+                                to = tempTer.Location;
+                                return new BeginAttackResponse { From = from, To = to };
                             }
                         }
                     }
-                }
-
-                if (!(from is null && to is null))
-                {
-                    break;
                 }
             }
 
@@ -123,7 +131,6 @@ namespace Emmanuel_Client.Controllers
                 }
                 if (ter.OwnerName == "Emmanuel")
                 {
-                    location = ter.Location;
                     ownedTerritories++;
                     placedArmies += ter.Armies;
                 }

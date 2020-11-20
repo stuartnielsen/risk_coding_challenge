@@ -34,8 +34,8 @@ namespace Risk.Api
         public async Task StartGameAsync()
         {
             await deployArmiesAsync();
-            //await doBattle();
-            //await reportWinner();
+            await doBattle();
+            await reportWinner();
         }
 
         private async Task deployArmiesAsync()
@@ -117,8 +117,6 @@ namespace Risk.Api
                                 if (failedTries == MaxFailedTries)
                                 {
                                     BootPlayerFromGame(currentPlayer);
-                                    RemovePlayerFromBoard(currentPlayer.Token);
-                                    RemovePlayerFromGame(currentPlayer.Token);
                                     i--;
                                     break;
                                 }
@@ -256,9 +254,8 @@ namespace Risk.Api
         public void BootPlayerFromGame(ApiPlayer player)
         {
             RemovePlayerFromBoard(player.Token);
+            RemovePlayerFromGame(player.Token);
             players.Remove(player);
         }
-
-
     }
 }
