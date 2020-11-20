@@ -28,6 +28,7 @@ services:
     - GameServer=http://risk.api
     - ClientCallbackAddress=http://risk.sampleclient
     - PlayerName=SampleClient
+    - joinGame=yes
     networks:
       risknet:
     depends_on:
