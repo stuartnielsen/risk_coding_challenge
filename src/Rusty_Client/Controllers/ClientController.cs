@@ -144,7 +144,7 @@ namespace Rusty_Client.Controllers
             return null;
         }
 
-        [HttpPost("continueAttack")]
+        [HttpPost("continueAttacking")]
         public ContinueAttackResponse ContinueAttack([FromBody] ContinueAttackRequest continueAttackRequest)
         {
             ContinueAttackResponse response = new ContinueAttackResponse();
