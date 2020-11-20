@@ -64,8 +64,8 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
     ports:
       - "80"
- 
- 
+
+
   brennanclient:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
@@ -73,11 +73,11 @@ services:
       - "80"
 
 
-#  emmanuel_client:
-#    environment:
-#      - ASPNETCORE_ENVIRONMENT=Development
-#    ports:
-#      - "80"
+  emmanuel_client:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - "80"
 
 
 #  hmclient:
