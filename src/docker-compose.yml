@@ -208,21 +208,21 @@ services:
 #    depends_on:
 #    - risk.api
 
-#  maksad_client:
-#    image: ${DOCKER_REGISTRY-}maksadclient
-#    build:
-#      context: .
-#      dockerfile: Maksad_Client/Dockerfile
-#    ports:
-#    - "5060:80"
-#    environment:
-#    - GameServer=http://risk.api
-#    - ClientCallbackAddress=http://maksad_client
-#    - PlayerName=Maksad
-#    networks:
-#      risknet:
-#    depends_on:
-#    - risk.api
+  maksad_client:
+    image: ${DOCKER_REGISTRY-}maksadclient
+    build:
+      context: .
+      dockerfile: Maksad_Client/Dockerfile
+    ports:
+    - "5060:80"
+    environment:
+    - GameServer=http://risk.api
+    - ClientCallbackAddress=http://maksad_client
+    - PlayerName=Maksad
+    networks:
+      risknet:
+    depends_on:
+    - risk.api
 
 networks:
   risknet:

@@ -100,9 +100,9 @@ services:
 #    volumes:
 #      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
 #
-#  maksad_client:
-#    environment:
-#      - ASPNETCORE_ENVIRONMENT=Development
-#    ports:
-#      - "80"
+  maksad_client:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - "80"
 
