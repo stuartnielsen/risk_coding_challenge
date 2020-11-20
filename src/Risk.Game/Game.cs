@@ -58,8 +58,12 @@ namespace Risk.Game
 
             if (GetPlayerRemainingArmies(playerToken) < 1)
                 return false;
-
-            var territory = Board.GetTerritory(desiredLocation);
+            Territory territory;
+            try
+            {
+                territory = Board.GetTerritory(desiredLocation);
+            }
+            catch { return false; }
 
             if (territory.Owner == null)
             {
@@ -140,7 +144,7 @@ namespace Risk.Game
         {
             IDictionary<string, PlayerArmiesAndTerritories> playerInfo = new Dictionary<string, PlayerArmiesAndTerritories>();
 
-            foreach (var player in Players)
+            foreach (var player in Players.ToArray())
             {
                 int numPlacedArmies = GetNumPlacedArmies(player);
                 int numOwnedTerritories = Board.Territories.Where(t => t.Owner == player)
@@ -151,7 +155,17 @@ namespace Risk.Game
                 playerInfo.Add(player.Name, armiesAndTerritories);
             }
 
-            return new GameStatus(players.Select(p => p.Name), GameState, Board.AsBoardTerritoryList());
+            var playerStats = from p in players
+                              let territories = Board.Territories.Where(t => t.Owner == p)
+                              let armies = territories.Sum(t => t.Armies)
+                              let territoryCount = territories.Count()
+                              select new PlayerStats {
+                                  Name = p.Name,
+                                  Armies = armies,
+                                  Territories = territoryCount
+                              };
+
+            return new GameStatus(players.Select(p => p.Name), GameState, Board.AsBoardTerritoryList(), playerStats);
         }
 
         public int GetNumPlacedArmies(IPlayer player)
@@ -189,7 +203,7 @@ namespace Risk.Game
             int[] attackerDice = new int[MAX_ATTACKER_DICE];
             int[] defenderDice = new int[MAX_DEFENDER_DICE];
 
-            for (int i = 0; i < Math.Min(attackingTerritory.Armies, MAX_ATTACKER_DICE); i++)
+            for (int i = 0; i < Math.Min(attackingTerritory.Armies, MAX_ATTACKER_DICE) - 1; i++)
             {
                 attackerDice[i] = rand.Next(1, 7);
             }
@@ -201,27 +215,30 @@ namespace Risk.Game
             Array.Sort(defenderDice);
             Array.Reverse(attackerDice);
             Array.Reverse(defenderDice);
-            for (int i = 0; i <= defendingTerritory.Armies && i <= defenderDice.Length; i++)
+            for (int i = 0; i <= defendingTerritory.Armies && i < defenderDice.Length && i < attackingTerritory.Armies - 1; i++)
             {
                 if (attackerDice[i] > defenderDice[i])
                     defendingTerritory.Armies--;
                 else
                     attackingTerritory.Armies--;
             }
-            if(defendingTerritory.Armies < 1)
+            if (defendingTerritory.Armies < 1)
             {
                 BattleWasWon(attackingTerritory, defendingTerritory);
-                return new TryAttackResult { CanContinue = false,
-                AttackInvalid = false};
+                return new TryAttackResult {
+                    CanContinue = false,
+                    AttackInvalid = false
+                };
             }
-            return new TryAttackResult { CanContinue = attackingTerritory.Armies > 1 };
+            return new TryAttackResult { CanContinue = attackingTerritory.Armies > 1, AttackInvalid = false };
         }
 
         private bool canAttack(string attackerToken, Territory attackingTerritory, Territory defendingTerritory)
         {
             return AttackOwnershipValid(attackerToken, attackingTerritory.Location, defendingTerritory.Location)
                  && EnoughArmiesToAttack(attackingTerritory)
-                 && Board.GetNeighbors(attackingTerritory).ToList().Contains(defendingTerritory);
+                 && Board.AttackTargetLocationIsValid(attackingTerritory.Location, defendingTerritory.Location);
+                 //Board.GetNeighbors(attackingTerritory).ToList().Contains(defendingTerritory);
         }
 
         public int GetNumTerritories(IPlayer player)

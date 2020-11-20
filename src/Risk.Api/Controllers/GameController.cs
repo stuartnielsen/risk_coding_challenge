@@ -67,7 +67,7 @@ namespace Risk.Api.Controllers
         {
             //client.CreateClient().BaseAddress = new Uri(baseAddress);
             var response = await clientFactory.CreateClient().GetStringAsync($"{baseAddress}/areYouThere");
-            return response == "yes";
+            return response.ToLower() == "yes";
         }
 
         [HttpGet("status")]

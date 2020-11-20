@@ -1,17 +1,16 @@
 ﻿@page "/GameStatus"
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
-@model Risk.SampleClient.Pages.GameStatusModel
+@model Maksad_Client.Pages.GameStatusModel
 @{
-    int playerCount=1;
+    int playerCount = 1;
 }
 
 <h3>Game State: @Model.Status.GameState</h3>
 
-@if(@Model.Status.GameState == Risk.Shared.GameState.Joining)
+@if (@Model.Status.GameState == Risk.Shared.GameState.Joining)
 {
     <form method="post" asp-page-handler="StartGame">
-        <input type="text" name="server" value="@Model.ServerName" />
-        <input type="text" name="secretCode" value="BazookaJoe" />
+   
         <button type="submit">Start Game</button>
     </form>
 }
@@ -22,7 +21,7 @@
         <th># Armies</th>
         <th>Player Name</th>
     </tr>
-    @foreach(var territory in Model.Status.Board)
+    @foreach (var territory in Model.Status.Board)
     {
         <tr>
             <td>@territory.Location</td>
