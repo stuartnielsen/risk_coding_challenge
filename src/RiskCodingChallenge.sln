@@ -35,7 +35,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kaydon'sClient", "Kaydon'sC
 		{2A367AB4-1F99-4C54-A7BD-31E6E38F41E1} = {2A367AB4-1F99-4C54-A7BD-31E6E38F41E1}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HMClient", "HMClient\HMClient.csproj", "{C40661D2-82EC-4911-96D9-516888CF2A57}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HMClient", "HMClient\HMClient.csproj", "{C40661D2-82EC-4911-96D9-516888CF2A57}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

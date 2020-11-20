@@ -27,7 +27,7 @@ namespace Risk.HMClient.Controllers
             string baseUrl = string.Format("{0}://{1}{2}", Request.Scheme, Request.Host, Request.PathBase);
             var joinRequest = new JoinRequest {
                 CallbackBaseAddress = baseUrl,
-                Name = "braindead client"
+                Name = "HectoritoBonito"
             };
             try
             {
