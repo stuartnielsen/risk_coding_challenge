@@ -205,7 +205,7 @@ namespace Risk.Game
             Array.Sort(defenderDice);
             Array.Reverse(attackerDice);
             Array.Reverse(defenderDice);
-            for (int i = 0; i <= defendingTerritory.Armies && i <= defenderDice.Length; i++)
+            for (int i = 0; i <= defendingTerritory.Armies && i < defenderDice.Length; i++)
             {
                 if (attackerDice[i] > defenderDice[i])
                     defendingTerritory.Armies--;
@@ -220,14 +220,15 @@ namespace Risk.Game
                     AttackInvalid = false
                 };
             }
-            return new TryAttackResult { CanContinue = attackingTerritory.Armies > 1 };
+            return new TryAttackResult { CanContinue = attackingTerritory.Armies > 1, AttackInvalid = false };
         }
 
         private bool canAttack(string attackerToken, Territory attackingTerritory, Territory defendingTerritory)
         {
             return AttackOwnershipValid(attackerToken, attackingTerritory.Location, defendingTerritory.Location)
                  && EnoughArmiesToAttack(attackingTerritory)
-                 && Board.GetNeighbors(attackingTerritory).ToList().Contains(defendingTerritory);
+                 && Board.AttackTargetLocationIsValid(attackingTerritory.Location, defendingTerritory.Location);
+                 //Board.GetNeighbors(attackingTerritory).ToList().Contains(defendingTerritory);
         }
 
         public int GetNumTerritories(IPlayer player)

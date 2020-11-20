@@ -94,7 +94,7 @@ namespace Risk.Api
                     {
                         var failedTries = 0;
 
-                        TryAttackResult attackResult;
+                        TryAttackResult attackResult = new TryAttackResult {  AttackInvalid = false} ;
                         Territory attackingTerritory = null;
                         Territory defendingTerritory = null;
                         do
@@ -104,16 +104,16 @@ namespace Risk.Api
                             var beginAttackResponse = await askForAttackLocationAsync(currentPlayer, BeginAttackStatus.PreviousAttackRequestFailed);
                             try
                             {
-                                attackingTerritory = game.Board.GetTerritory(beginAttackResponse.From);
+                                attackingTerritory = game.Board.GetTerritory(beginAttackResponse.From); 
                                 defendingTerritory = game.Board.GetTerritory(beginAttackResponse.To);
 
                                 logger.LogInformation($"{currentPlayer.Name} wants to attack from {attackingTerritory} to {defendingTerritory}");
 
                                 attackResult = game.TryAttack(currentPlayer.Token, attackingTerritory, defendingTerritory);
                             }
-                            catch
+                            catch (Exception ex)
                             {
-                                attackResult = new TryAttackResult { AttackInvalid = true };
+                                attackResult = new TryAttackResult { AttackInvalid = true, Message=ex.Message };
                             }
                             if (attackResult.AttackInvalid)
                             {
