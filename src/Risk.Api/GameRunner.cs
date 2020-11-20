@@ -258,7 +258,5 @@ namespace Risk.Api
             RemovePlayerFromBoard(player.Token);
             RemovePlayerFromGame(player.Token);
         }
-
-
     }
 }

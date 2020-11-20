@@ -70,7 +70,6 @@ services:
 #    depends_on:
 #    - risk.api
 
-
   stuartclient:
     hostname: stuartclient
     image: ${DOCKER_REGISTRY-}stuartclient
@@ -140,7 +139,7 @@ services:
     depends_on:
     - risk.api
 
-
+  
 #  kaydonsclient:
 #    hostname: kaydonclient
 #    image: ${DOCKER_REGISTRY-}kaydonsclient
