@@ -144,7 +144,7 @@ namespace Risk.Game
         {
             IDictionary<string, PlayerArmiesAndTerritories> playerInfo = new Dictionary<string, PlayerArmiesAndTerritories>();
 
-            foreach (var player in Players)
+            foreach (var player in Players.ToArray())
             {
                 int numPlacedArmies = GetNumPlacedArmies(player);
                 int numOwnedTerritories = Board.Territories.Where(t => t.Owner == player)

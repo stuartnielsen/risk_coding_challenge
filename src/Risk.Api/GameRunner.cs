@@ -84,7 +84,7 @@ namespace Risk.Api
         private async Task doBattle()
         {
             game.StartTime = DateTime.Now;
-            while (players.Count > 1 && game.GameState == GameState.Attacking)
+            while (players.Count > 1 && game.GameState == GameState.Attacking && game.Players.Any(p=>game.PlayerCanAttack(p)))
             {
 
                 for (int i = 0; i < players.Count && players.Count > 1; i++)
@@ -104,7 +104,7 @@ namespace Risk.Api
                             var beginAttackResponse = await askForAttackLocationAsync(currentPlayer, BeginAttackStatus.PreviousAttackRequestFailed);
                             try
                             {
-                                attackingTerritory = game.Board.GetTerritory(beginAttackResponse.From); 
+                                attackingTerritory = game.Board.GetTerritory(beginAttackResponse.From);
                                 defendingTerritory = game.Board.GetTerritory(beginAttackResponse.To);
 
                                 logger.LogInformation($"{currentPlayer.Name} wants to attack from {attackingTerritory} to {defendingTerritory}");
