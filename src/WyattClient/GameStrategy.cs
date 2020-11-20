@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Risk.Shared;
 
+
+
 namespace WyattClient
 {
     public class GameStrategy
@@ -12,8 +14,8 @@ namespace WyattClient
         {
             DeployArmyResponse deployArmyResponse = new DeployArmyResponse();
             foreach (var territory in deployArmyRequest.Board)
-            {   
-                if(territory.OwnerName == null)
+            {
+                if (territory.OwnerName == null)
                 {
                     deployArmyResponse.DesiredLocation = territory.Location;
                     return deployArmyResponse;
@@ -21,7 +23,7 @@ namespace WyattClient
             }
             foreach (var territory in deployArmyRequest.Board)
             {
-                if(territory.OwnerName != null)
+                if (territory.OwnerName != null)
                 {
                     if (territory.OwnerName == "Wyatt" && territory.Armies < 3)
                     {
@@ -29,54 +31,113 @@ namespace WyattClient
                         return deployArmyResponse;
                     }
                 }
-                
+
             }
-            //foreach (var territory in deployArmyRequest.Board)
-            //{
-            //    if(territory.Owner != null)
-            //    {
-            //        if (territory.Owner.Name == "Wyatt" && territory.Armies == 3)
-            //        {
-            //            deployArmyResponse.DesiredLocation = territory.Location;
-            //            return deployArmyResponse;
-            //        }
-            //    }
-             
-            //}
+            foreach (var territory in deployArmyRequest.Board)
+            {
+                if (territory.OwnerName != null)
+                {
+                    if (territory.OwnerName == "Wyatt" && territory.Armies == 3)
+                    {
+                        deployArmyResponse.DesiredLocation = territory.Location;
+                        return deployArmyResponse;
+                    }
+                }
+
+
+
+            }
+            foreach (var territory in deployArmyRequest.Board)
+            {
+                if (territory.OwnerName != null)
+                {
+                    if (territory.OwnerName == "Wyatt" && territory.Armies == 4)
+                    {
+                        deployArmyResponse.DesiredLocation = territory.Location;
+                        return deployArmyResponse;
+                    }
+                }
+
+
+
+            }
+            foreach (var territory in deployArmyRequest.Board)
+            {
+                if (territory.OwnerName != null)
+                {
+                    if (territory.OwnerName == "Wyatt" && territory.Armies < 10)
+                    {
+                        deployArmyResponse.DesiredLocation = territory.Location;
+                        return deployArmyResponse;
+                    }
+                }
+
+
+
+            }
+            foreach (var territory in deployArmyRequest.Board)
+            {
+                if (territory.OwnerName != null)
+                {
+                    if (territory.OwnerName == "Wyatt")
+                    {
+                        deployArmyResponse.DesiredLocation = territory.Location;
+                        return deployArmyResponse;
+                    }
+                }
+
+
+
+            }
             return deployArmyResponse;
         }
 
         public BeginAttackResponse WhenToAttack(BeginAttackRequest beginAttackRequest)
         {
+            BeginAttackResponse beginAttack = new BeginAttackResponse();
+            int myArmy = 0;
             IEnumerable<BoardTerritory> neighbors = new List<BoardTerritory>();
-            BeginAttackResponse beginAttackResponse = new BeginAttackResponse();
-            foreach(var territory in beginAttackRequest.Board)
+            foreach (var territory in beginAttackRequest.Board)
             {
-                if(territory.OwnerName != null)
+                if (!(territory.OwnerName == null))
                 {
-                    if (territory.OwnerName == "Wyatt" && territory.Armies >= 3)
+                    if (territory.OwnerName == "Wyatt")
                     {
-                        foreach (var neighbor in neighbors)
-                        {
-                            if (neighbor.OwnerName != "Wyatt")
-                            {
-                                beginAttackResponse.From = territory.Location;
-                                beginAttackResponse.To = neighbor.Location;
-                                return beginAttackResponse;
-                            }
-                        }
+                        if (territory.Armies > myArmy)
+                            myArmy = territory.Armies;
+                    }
 
+                }
+            }
+            foreach (var territory in beginAttackRequest.Board)
+            {
+                if (!(territory.OwnerName == null))
+                {
+                    if (territory.OwnerName == "Wyatt" && territory.Armies == myArmy)
+                    {
+                        beginAttack.From = territory.Location;
+                        neighbors = GetNeighbors(territory, beginAttackRequest.Board);
                     }
                 }
-               
             }
-            return beginAttackResponse;
+
+            foreach (var neighbor in neighbors)
+            {
+                if (!(neighbor.OwnerName == null))
+                {
+                    if (neighbor.OwnerName != "Wyatt" && neighbor.Armies < myArmy)
+                        beginAttack.To = neighbor.Location;
+                }
+            }
+            return beginAttack;
         }
+
+
 
         public ContinueAttackResponse WhenToContinueAttack(ContinueAttackRequest continueAttackRequest)
         {
             ContinueAttackResponse continueAttackResponse = new ContinueAttackResponse();
-            if(continueAttackRequest.AttackingTerritorry.Armies > continueAttackRequest.DefendingTerritorry.Armies + 1)
+            if (continueAttackRequest.AttackingTerritorry.Armies > continueAttackRequest.DefendingTerritorry.Armies + 1)
             {
                 continueAttackResponse.ContinueAttacking = true;
                 return continueAttackResponse;
@@ -84,6 +145,8 @@ namespace WyattClient
             continueAttackResponse.ContinueAttacking = false;
             return continueAttackResponse;
         }
+
+
 
         private IEnumerable<BoardTerritory> GetNeighbors(BoardTerritory territory, IEnumerable<BoardTerritory> territories)
         {
@@ -102,5 +165,3 @@ namespace WyattClient
         }
     }
 }
-
-
