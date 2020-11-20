@@ -11,5 +11,6 @@ namespace Risk.Shared
     {
         public Location From { get; set; }
         public Location To { get; set; }
+        public bool WillAttack { get; set; }
     }
 }

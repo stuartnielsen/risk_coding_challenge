@@ -102,6 +102,11 @@ namespace Risk.Api
                             logger.LogInformation($"Asking {currentPlayer.Name} where they want to attack...");
 
                             var beginAttackResponse = await askForAttackLocationAsync(currentPlayer, BeginAttackStatus.PreviousAttackRequestFailed);
+                            if (beginAttackResponse.WillAttack == false)
+                            {
+                                attackResult = new TryAttackResult { AttackInvalid = false, CanContinue = false, Message = $"{currentPlayer.Name} decided to hold their ground" };
+                                break;
+                            }
                             try
                             {
                                 attackingTerritory = game.Board.GetTerritory(beginAttackResponse.From);
