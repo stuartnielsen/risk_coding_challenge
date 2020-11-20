@@ -30,7 +30,7 @@ namespace Kaydon_sClient.Controllers
             string baseUrl = string.Format("{0}://{1}{2}", Request.Scheme, Request.Host, Request.PathBase);
             var joinRequest = new JoinRequest {
                 CallbackBaseAddress = baseUrl,
-                Name = "braindead client"
+                Name = "Kaydon"
             };
             try
             {
@@ -101,7 +101,7 @@ namespace Kaydon_sClient.Controllers
             return response;
         }
 
-        [HttpPost("continueAttack")]
+        [HttpPost("continueAttacking")]
         public ContinueAttackResponse ContinueAttack([FromBody] ContinueAttackRequest continueAttackRequest)
         {
             ContinueAttackResponse response = new ContinueAttackResponse();
