@@ -186,7 +186,7 @@ namespace Risk.Api
 
             var scores = new List<(int, ApiPlayer)>();
 
-            foreach (var currentPlayer in players)
+            foreach (var currentPlayer in players.ToArray())
             {
                 var playerScore = 2 * game.GetNumTerritories(currentPlayer) + game.GetNumPlacedArmies(currentPlayer);
 
@@ -195,7 +195,7 @@ namespace Risk.Api
 
             scores.Sort();
 
-            foreach (var currentPlayer in players)
+            foreach (var currentPlayer in players.ToArray())
             {
                 await sendGameOverRequest(currentPlayer, gameDuration, scores);
             }
