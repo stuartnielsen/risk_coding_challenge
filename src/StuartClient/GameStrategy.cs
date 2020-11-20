@@ -48,7 +48,7 @@ namespace StuartClient
 
         public BeginAttackResponse DecideWhereToAttack(BeginAttackRequest attackRequest)
         {
-            BeginAttackResponse beginAttack = new BeginAttackResponse();
+            BeginAttackResponse beginAttack = new BeginAttackResponse { WillAttack = true };
             int max = 0;
             IEnumerable<BoardTerritory> neighbors = new List<BoardTerritory>();
             foreach (var territory in attackRequest.Board)
@@ -83,6 +83,8 @@ namespace StuartClient
                         beginAttack.To = neighbor.Location;
                 }
             }
+            if (beginAttack.To == null)
+                beginAttack.WillAttack = false;
             return beginAttack;
         }
 

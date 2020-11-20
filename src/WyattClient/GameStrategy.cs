@@ -94,7 +94,7 @@ namespace WyattClient
 
         public BeginAttackResponse WhenToAttack(BeginAttackRequest beginAttackRequest)
         {
-            BeginAttackResponse beginAttack = new BeginAttackResponse();
+            BeginAttackResponse beginAttack = new BeginAttackResponse { WillAttack = true};
             int myArmy = 0;
             IEnumerable<BoardTerritory> neighbors = new List<BoardTerritory>();
             foreach (var territory in beginAttackRequest.Board)
@@ -129,6 +129,8 @@ namespace WyattClient
                         beginAttack.To = neighbor.Location;
                 }
             }
+            if (beginAttack.To == null)
+                beginAttack.WillAttack = false;
             return beginAttack;
         }
 
