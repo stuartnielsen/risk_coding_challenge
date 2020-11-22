@@ -13,7 +13,7 @@ namespace BrennanClient
             DeployArmyResponse deployResponse = new DeployArmyResponse();
             IEnumerable<BoardTerritory> myTerritories = GetMyTerritories(deployRequest.Board);
             int maxRow = 0;
-            int maxCollumn = 0;
+            int maxCollumn = 0; 
             foreach(BoardTerritory bt in deployRequest.Board)
             {
                 if(bt.Location.Row > maxRow)
