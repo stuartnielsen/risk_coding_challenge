@@ -84,7 +84,7 @@ namespace Risk.Api
         private async Task doBattle()
         {
             game.StartTime = DateTime.Now;
-            while (players.Count > 1 && game.GameState == GameState.Attacking)
+            while (players.Count > 1 && game.GameState == GameState.Attacking && game.Players.Any(p=>game.PlayerCanAttack(p)))
             {
 
                 for (int i = 0; i < players.Count && players.Count > 1; i++)
@@ -94,7 +94,7 @@ namespace Risk.Api
                     {
                         var failedTries = 0;
 
-                        TryAttackResult attackResult;
+                        TryAttackResult attackResult = new TryAttackResult {  AttackInvalid = false} ;
                         Territory attackingTerritory = null;
                         Territory defendingTerritory = null;
                         do
@@ -111,9 +111,9 @@ namespace Risk.Api
 
                                 attackResult = game.TryAttack(currentPlayer.Token, attackingTerritory, defendingTerritory);
                             }
-                            catch
+                            catch (Exception ex)
                             {
-                                attackResult = new TryAttackResult { AttackInvalid = true };
+                                attackResult = new TryAttackResult { AttackInvalid = true, Message=ex.Message };
                             }
                             if (attackResult.AttackInvalid)
                             {
@@ -186,7 +186,7 @@ namespace Risk.Api
 
             var scores = new List<(int, ApiPlayer)>();
 
-            foreach (var currentPlayer in players)
+            foreach (var currentPlayer in players.ToArray())
             {
                 var playerScore = 2 * game.GetNumTerritories(currentPlayer) + game.GetNumPlacedArmies(currentPlayer);
 
@@ -195,7 +195,7 @@ namespace Risk.Api
 
             scores.Sort();
 
-            foreach (var currentPlayer in players)
+            foreach (var currentPlayer in players.ToArray())
             {
                 await sendGameOverRequest(currentPlayer, gameDuration, scores);
             }
@@ -258,7 +258,5 @@ namespace Risk.Api
             RemovePlayerFromBoard(player.Token);
             RemovePlayerFromGame(player.Token);
         }
-
-
     }
 }

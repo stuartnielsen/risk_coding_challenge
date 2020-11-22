@@ -93,7 +93,14 @@ namespace BrennanClient
             {
                 if (!(neighbor.OwnerName == null))
                 {
-                    if (neighbor.OwnerName != "Brennan" && neighbor.Armies < max)
+                    if (neighbor.OwnerName != "Brennan")
+                        beginAttack.To = neighbor.Location;
+                    if (neighbor.OwnerName != "Brennan" && neighbor.Armies == 0)
+                    {
+                        beginAttack.To = neighbor.Location;
+                        return beginAttack;
+                    }
+                    else if (neighbor.OwnerName != "Brennan" && neighbor.Armies < max)
                         beginAttack.To = neighbor.Location;
                 }
             }

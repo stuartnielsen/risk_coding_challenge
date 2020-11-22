@@ -3,6 +3,8 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
+using System.Collections.Generic;
 using Risk.Shared;
 
 namespace Maksad_Client.Controllers
@@ -33,52 +35,63 @@ namespace Maksad_Client.Controllers
 
         private DeployArmyResponse createDeployResponse(DeployArmyRequest deployArmyRequest)
         {
-            DeployArmyResponse response = new DeployArmyResponse();
+
+            Location attacklocation = new Location();
+
+            //DeployArmyResponse response = new DeployArmyResponse();
+
             foreach (BoardTerritory space in deployArmyRequest.Board)
             {
-                if ((space.OwnerName == null || space.OwnerName == "Maksad"))
+                if ((space.OwnerName == null || space.OwnerName == "Maksad") && space.Armies < 2)
                 {
-                    if (space.OwnerName == "Maksad" && space.Armies < 3)
-                    {
-                        response.DesiredLocation = space.Location;
-                        continue;
-                    }
-                    else
-                    {
-                        response.DesiredLocation = space.Location;
-                    }
-
+                    attacklocation = space.Location;
+                    break;
                 }
-                return response;
+                else
+                {
+                    continue;
+                }
+
             }
-            return null;
+            
+            return new DeployArmyResponse { DesiredLocation = attacklocation };
+
         }
 
         [HttpPost("beginAttack")]
         public BeginAttackResponse BeginAttack([FromBody] BeginAttackRequest beginAttackRequest)
         {
-            return createAttackResponse(beginAttackRequest); ;
+            return createAttackResponse(beginAttackRequest);
         }
         private BeginAttackResponse createAttackResponse(BeginAttackRequest beginAttackRequest)
         {
             BeginAttackResponse response = new BeginAttackResponse();
             var attackerLocation = new Location();
+            var neighbour = new BoardTerritory();
             //from is the attacker to is the defender
             foreach (BoardTerritory space in beginAttackRequest.Board)
             {
                 if (space.OwnerName == "Maksad")
                 {
-                    attackerLocation = space.Location;
-                    //look at the next location to the right, left, up, down, up-right diagonal, 
-                    //down-right diagonal, up-left diagonal, down-left diagonal
+                    attackerLocation = new Location(space.Location.Row, space.Location.Column);
+                    
+    
                     for (int i = space.Location.Column - 1; i <= (space.Location.Column + 1); i++)
                     {
                         for (int j = space.Location.Row - 1; j <= (space.Location.Row + 1); j++)
                         {
-                            if (space.OwnerName != "Maksad")
+                            if (j < 0)
+                            {
+                                continue;
+                            }
+                            
+ 
+                            neighbour = beginAttackRequest.Board.FirstOrDefault(t => t.Location == new Location(i,j));
+
+                            if (neighbour != null && neighbour.OwnerName != "Maksad" && neighbour.Armies >= 1)
                             {
                                 response.From = attackerLocation;
-                                response.To = space.Location;
+                                response.To = neighbour.Location;
                                 return response;
                             }
                         }
@@ -89,7 +102,7 @@ namespace Maksad_Client.Controllers
             return null;
         }
 
-        [HttpPost("continueAttack")]
+        [HttpPost("continueAttacking")]
         public ContinueAttackResponse ContinueAttack([FromBody] ContinueAttackRequest continueAttackRequest)
         {
             ContinueAttackResponse response = new ContinueAttackResponse();
