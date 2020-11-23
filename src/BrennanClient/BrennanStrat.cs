@@ -26,10 +26,10 @@ namespace BrennanClient
                 }
             }
             List<Location> cornerLocations = new List<Location>();
-            cornerLocations.Add(new Location(0, 0));
-            cornerLocations.Add(new Location(maxCollumn, 0));
-            cornerLocations.Add(new Location(0, maxRow));
             cornerLocations.Add(new Location(maxCollumn, maxRow));
+            cornerLocations.Add(new Location(0, maxRow));
+            cornerLocations.Add(new Location(maxCollumn, 0));
+            cornerLocations.Add(new Location(0, 0));
 
             IEnumerable<BoardTerritory> corners = deployRequest.Board.Where(t => cornerLocations.Contains(t.Location));
             foreach(BoardTerritory t in corners)
@@ -64,46 +64,30 @@ namespace BrennanClient
         public BeginAttackResponse DecideWhereToAttack(BeginAttackRequest attackRequest)
         {
             BeginAttackResponse beginAttack = new BeginAttackResponse();
-            int max = 0;
-            IEnumerable<BoardTerritory> neighbors = new List<BoardTerritory>();
-            foreach (var territory in attackRequest.Board)
+            IEnumerable<BoardTerritory> myTerritories = GetMyTerritories(attackRequest.Board);
+            BoardTerritory topDog = myTerritories.First();
+            
+            foreach(BoardTerritory t in myTerritories)
             {
-                if (!(territory.OwnerName == null))
+                if(t.Armies >= topDog.Armies)
                 {
-                    if (territory.OwnerName == "Brennan")
-                    {
-                        if (territory.Armies > max)
-                            max = territory.Armies;
-                    }
+                    topDog = t;
                 }
             }
-            foreach (var territory in attackRequest.Board)
-            {
-                if (!(territory.OwnerName == null))
-                {
-                    if (territory.OwnerName == "Brennan" && territory.Armies == max)
-                    {
-                        beginAttack.From = territory.Location;
-                        neighbors = GetNeighbors(territory, attackRequest.Board);
-                    }
-                }
-            }
+            beginAttack.From = topDog.Location;
 
-            foreach (var neighbor in neighbors)
+            IEnumerable<BoardTerritory> tDogNeighbors = GetNeighbors(topDog, attackRequest.Board);
+            BoardTerritory smallPup = new BoardTerritory();
+            smallPup.Armies = 99999;
+            foreach(BoardTerritory t in tDogNeighbors)
             {
-                if (!(neighbor.OwnerName == null))
+                if (!myTerritories.Contains(t) && t.Armies < smallPup.Armies)
                 {
-                    if (neighbor.OwnerName != "Brennan")
-                        beginAttack.To = neighbor.Location;
-                    if (neighbor.OwnerName != "Brennan" && neighbor.Armies == 0)
-                    {
-                        beginAttack.To = neighbor.Location;
-                        return beginAttack;
-                    }
-                    else if (neighbor.OwnerName != "Brennan" && neighbor.Armies < max)
-                        beginAttack.To = neighbor.Location;
+                    smallPup = t;
                 }
             }
+            beginAttack.To = smallPup.Location;
+
             return beginAttack;
         }
 
