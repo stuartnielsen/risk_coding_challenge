@@ -21,31 +21,28 @@ namespace Risk.SampleClient.Pages
         {
             this.httpClientFactory = httpClientFactory;
             this.configuration = configuration;
-            ServerName = "http://risk.api";
-        }
-
-        [BindProperty(SupportsGet = true)]
-        public string ServerName { get; set; }
-
-        public async Task OnGetAsync()
-        {
-            var client = httpClientFactory.CreateClient();
-            await refreshStatus(client);
-        }
-
-        private async Task refreshStatus(HttpClient client)
-        {
-            Status = await client.GetFromJsonAsync<GameStatus>($"{ServerName ?? configuration["GameServer"]}/status");
         }
 
         public GameStatus Status { get; set; }
+        public int MaxRow { get; private set; }
+        public int MaxCol { get; private set; }
 
-        public async Task OnPostStartGameAsync(string server, string secretCode)
+        public async Task OnGetAsync()
+        {
+            Status = await httpClientFactory
+                .CreateClient()
+                .GetFromJsonAsync<GameStatus>($"{configuration["GameServer"]}/status");
+            MaxRow = Status.Board.Max(t => t.Location.Row);
+            MaxCol = Status.Board.Max(t => t.Location.Column);
+        }
+
+        public async Task<IActionResult> OnPostStartGameAsync()
         {
             var client = httpClientFactory.CreateClient();
-            await client.PostAsJsonAsync($"{server}/startgame", new StartGameRequest { SecretCode = secretCode });
-            ServerName = server;
-            await refreshStatus(client);
+            Task.Run(()=>
+                client.PostAsJsonAsync($"{configuration["GameServer"]}/startgame", new StartGameRequest { SecretCode = configuration["secretCode"] })
+            );            
+            return new RedirectToPageResult("Index");
         }
     }
 }
