@@ -49,7 +49,7 @@ namespace Risk.Tests
             game.StartGame();
 
             var playersBag = new ConcurrentBag<ApiPlayer>(players);
-            var gameController = new GameController(game, null, null, null, players, playersBag, logger);
+            var gameController = new GameController(game, null, null, null, logger);
 
             var response = await gameController.Join(new JoinRequest { Name = "Player2", CallbackBaseAddress = "" });
             Assert.IsInstanceOf<BadRequestObjectResult>(response);

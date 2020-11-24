@@ -38,7 +38,7 @@ namespace Risk.Tests
             players.Add(new ApiPlayer("player2", player2Token, null));
 
             game.StartGame();
-            gameRunner = new GameRunner(game, players, new List<ApiPlayer>(), loggerMock.Object);
+            gameRunner = new GameRunner(game, loggerMock.Object);
         }
 
         [Test]

@@ -24,18 +24,14 @@ namespace Risk.Api.Controllers
         private IMemoryCache memoryCache;
         private readonly IHttpClientFactory clientFactory;
         private readonly IConfiguration config;
-        private readonly List<ApiPlayer> players;
-        private readonly ConcurrentBag<ApiPlayer> joiningPlayers;
         private readonly ILogger<GameRunner> logger;
         private readonly List<ApiPlayer> removedPlayers = new List<ApiPlayer>();
 
-        public GameController(Game.Game game, IMemoryCache memoryCache, IHttpClientFactory client, IConfiguration config, List<ApiPlayer> players, ConcurrentBag<ApiPlayer> joiningPlayers, ILogger<GameRunner> logger)
+        public GameController(Game.Game game, IMemoryCache memoryCache, IHttpClientFactory client, IConfiguration config, ILogger<GameRunner> logger)
         {
             this.game = game;
             this.clientFactory = client;
             this.config = config;
-            this.players = players;
-            this.joiningPlayers = joiningPlayers;
             this.logger = logger;
             this.memoryCache = memoryCache;
         }
@@ -51,30 +47,25 @@ namespace Risk.Api.Controllers
         public IActionResult GameStatus()
         {
             GameStatus gameStatus;
-            players.Clear();//HACK: Rather than handing a reference to a collection we manage, why not give them a Func<IEnumerable<IPlayer>>() so they can ask for a list of players whenever they want one?
-            players.AddRange(joiningPlayers);
 
             if (!memoryCache.TryGetValue("Status", out gameStatus))
             {
                 gameStatus = game.GetGameStatus();
 
                 MemoryCacheEntryOptions cacheEntryOptions = new MemoryCacheEntryOptions();
-
                 cacheEntryOptions.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(1);
-
                 memoryCache.Set("Status", gameStatus, cacheEntryOptions);
             }
 
             return Ok(gameStatus);
         }
 
-        public static Game.Game InitializeGame (int height, int width, int numOfArmies, IEnumerable<IPlayer> players)
+        public static Game.Game InitializeGame (int height, int width, int numOfArmies)
         {
             GameStartOptions startOptions = new GameStartOptions {
                 Height = height,
                 Width = width,
-                StartingArmiesPerPlayer = numOfArmies,
-                Players = players
+                StartingArmiesPerPlayer = numOfArmies
             };
             Game.Game newGame = new Game.Game(startOptions);
 
@@ -94,7 +85,8 @@ namespace Risk.Api.Controllers
                 );
                 newPlayer.HttpClient.BaseAddress = new Uri(joinRequest.CallbackBaseAddress);
 
-                joiningPlayers.Add(newPlayer);
+                game.AddPlayer(newPlayer);
+
                 return Ok(new JoinResponse {
                     Token = newPlayer.Token
                 });
@@ -116,10 +108,8 @@ namespace Risk.Api.Controllers
             {
                 return BadRequest("Secret code doesn't match, unable to start game.");
             }
-            players.Clear();
-            players.AddRange(joiningPlayers);
             game.StartGame();
-            var gameRunner = new GameRunner(game, players, removedPlayers, logger);
+            var gameRunner = new GameRunner(game, logger);
             await gameRunner.StartGameAsync();
             return Ok();
         }
