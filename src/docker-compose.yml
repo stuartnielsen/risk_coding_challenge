@@ -8,9 +8,9 @@ services:
       context: .
       dockerfile: Risk.Api/Dockerfile
     environment:
-    - height=10
-    - width=10
-    - startingArmies=300
+    - height=12
+    - width=8
+    - startingArmies=200
     - secretCode=banana
     ports:
     - "5000:80"

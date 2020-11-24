@@ -42,7 +42,7 @@
 }
 
 <div class="playerStats">
-    <table cellpadding="10px,2px">
+    <table cellpadding="2px, 10px">
         <thead>
             <td>Player Name</td>
             <td>Territories</td>
@@ -68,14 +68,16 @@
         <tr>
             @for (var col = 0; col <= Model.MaxCol; col++)
             {
-            <td class="cell">
-                @{
-                    var cell = Model.Status.Board.First(t => t.Location == new Location(row, col));
-                }
-                <div class="location">@cell.Location</div>
-                <div class="armies">@cell.Armies</div>
-                <div class="name">@cell.OwnerName</div>
-            </td>
+                var cell = Model.Status.Board.First(t => t.Location == new Location(row, col));
+                var style =  string.IsNullOrEmpty(cell.OwnerName)
+                    ? string.Empty
+                    : $"style=background-color:{Html.Raw(Model.ColorGenerator.GetColor(cell.OwnerName))}";
+                
+                <td class="cell" @style>
+                    <div class="location">@cell.Location</div>
+                    <div class="armies">@cell.Armies</div>
+                    <div class="name">@cell.OwnerName</div>
+                </td>
             }
         </tr>
         }

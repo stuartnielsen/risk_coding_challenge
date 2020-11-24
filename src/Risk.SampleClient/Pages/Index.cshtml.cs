@@ -17,15 +17,17 @@ namespace Risk.SampleClient.Pages
         private readonly IHttpClientFactory httpClientFactory;
         private readonly IConfiguration configuration;
 
-        public IndexModel(IHttpClientFactory httpClientFactory, IConfiguration configuration)
+        public IndexModel(IHttpClientFactory httpClientFactory, IConfiguration configuration, ColorGenerator colorGenerator)
         {
             this.httpClientFactory = httpClientFactory;
             this.configuration = configuration;
+            ColorGenerator = colorGenerator;
         }
 
         public GameStatus Status { get; set; }
         public int MaxRow { get; private set; }
         public int MaxCol { get; private set; }
+        public ColorGenerator ColorGenerator { get; }
 
         public async Task OnGetAsync()
         {
