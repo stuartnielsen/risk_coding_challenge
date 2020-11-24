@@ -155,15 +155,16 @@ namespace Risk.Game
                 playerInfo.Add(player.Name, armiesAndTerritories);
             }
 
-            var playerStats = from p in players
+            var playerStats = (from p in players
                               let territories = Board.Territories.Where(t => t.Owner == p)
                               let armies = territories.Sum(t => t.Armies)
                               let territoryCount = territories.Count()
                               select new PlayerStats {
                                   Name = p.Name,
                                   Armies = armies,
-                                  Territories = territoryCount
-                              };
+                                  Territories = territoryCount,
+                                  Score = armies + territoryCount * 2
+                              }).ToArray();
 
             return new GameStatus(players.Select(p => p.Name), GameState, Board.AsBoardTerritoryList(), playerStats);
         }

@@ -40,29 +40,6 @@ namespace Risk.Api.Controllers
             this.memoryCache = memoryCache;
         }
 
-        [HttpPost("[action]")]
-        public async Task<IActionResult> Join(JoinRequest joinRequest)
-        {
-            if (game.GameState == GameState.Joining && await ClientIsRepsonsive(joinRequest.CallbackBaseAddress))
-            {
-                var newPlayer = new ApiPlayer(
-                    name: joinRequest.Name,
-                    token: Guid.NewGuid().ToString(),
-                    httpClient: clientFactory.CreateClient()
-                );
-                newPlayer.HttpClient.BaseAddress = new Uri(joinRequest.CallbackBaseAddress);
-
-                joiningPlayers.Add(newPlayer);
-                return Ok(new JoinResponse {
-                    Token = newPlayer.Token
-                });
-            }
-            else
-            {
-                return BadRequest("Unable to join game");
-            }
-        }
-
         private async Task<bool> ClientIsRepsonsive(string baseAddress)
         {
             //client.CreateClient().BaseAddress = new Uri(baseAddress);
@@ -74,7 +51,7 @@ namespace Risk.Api.Controllers
         public IActionResult GameStatus()
         {
             GameStatus gameStatus;
-            players.Clear();
+            players.Clear();//HACK: Rather than handing a reference to a collection we manage, why not give them a Func<IEnumerable<IPlayer>>() so they can ask for a list of players whenever they want one?
             players.AddRange(joiningPlayers);
 
             if (!memoryCache.TryGetValue("Status", out gameStatus))
@@ -103,6 +80,29 @@ namespace Risk.Api.Controllers
 
             newGame.StartJoining();
             return newGame;
+        }
+
+        [HttpPost("[action]")]
+        public async Task<IActionResult> Join(JoinRequest joinRequest)
+        {
+            if (game.GameState == GameState.Joining && await ClientIsRepsonsive(joinRequest.CallbackBaseAddress))
+            {
+                var newPlayer = new ApiPlayer(
+                    name: joinRequest.Name,
+                    token: Guid.NewGuid().ToString(),
+                    httpClient: clientFactory.CreateClient()
+                );
+                newPlayer.HttpClient.BaseAddress = new Uri(joinRequest.CallbackBaseAddress);
+
+                joiningPlayers.Add(newPlayer);
+                return Ok(new JoinResponse {
+                    Token = newPlayer.Token
+                });
+            }
+            else
+            {
+                return BadRequest("Unable to join game");
+            }
         }
 
         [HttpPost("[action]")]

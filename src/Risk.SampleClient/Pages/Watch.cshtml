@@ -1,0 +1,74 @@
+﻿@page
+@using Risk.Shared
+@using System.Collections.Generic
+@model Risk.SampleClient.Pages.VisualizeModel
+@{
+}
+<meta http-equiv="refresh" content="1">
+<style>
+.grid-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr;
+  gap: 0px 0px;
+  grid-template-areas:
+    "gameState gameState playerStats playerStats playerStats"
+    ". . . . ."
+    ". . . . ."
+    ". . . . ."
+    "cell0-1 cell1-1 cell2-1 cell3-1 cell4-1"
+    "cell0-0 cell1-0 cell2-0 cell3-0 cell4-0";
+}
+
+.cell0-0 { grid-area: cell0-0; }
+
+.cell1-0 { grid-area: cell1-0; }
+
+.cell2-0 { grid-area: cell2-0; }
+
+.cell3-0 { grid-area: cell3-0; }
+
+.cell4-0 { grid-area: cell4-0; }
+
+.cell0-1 { grid-area: cell0-1; }
+
+.cell1-1 { grid-area: cell1-1; }
+
+.cell2-1 { grid-area: cell2-1; }
+
+.cell3-1 { grid-area: cell3-1; }
+
+.cell4-1 { grid-area: cell4-1; }
+
+.gameState { grid-area: gameState; }
+
+.playerStats { grid-area: playerStats; }
+
+</style>
+
+<div class="grid-container">
+  <div class="cell0-0">@Model.Status.Board.First(t=>t.Location == new Location(0, 0))</div>
+  <div class="cell1-0">@Model.Status.Board.First(t=>t.Location == new Location(1, 0))</div>
+  <div class="cell2-0">@Model.Status.Board.First(t=>t.Location == new Location(2, 0))</div>
+  <div class="cell3-0">@Model.Status.Board.First(t=>t.Location == new Location(3, 0))</div>
+  <div class="cell4-0">@Model.Status.Board.First(t=>t.Location == new Location(4, 0))</div>
+  <div class="cell0-1">@Model.Status.Board.First(t=>t.Location == new Location(0, 1))</div>
+  <div class="cell1-1">@Model.Status.Board.First(t=>t.Location == new Location(1, 1))</div>
+  <div class="cell2-1">@Model.Status.Board.First(t=>t.Location == new Location(2, 1))</div>
+  <div class="cell3-1">@Model.Status.Board.First(t=>t.Location == new Location(3, 1))</div>
+  <div class="cell4-1">@Model.Status.Board.First(t=>t.Location == new Location(4, 1))</div>
+  <div class="gameState">@Model.Status.GameState</div>
+  <div class="playerStats">
+      @if(Model.Status.PlayerStats != null)
+      {
+          <ul>
+              @foreach(var p in Model.Status.PlayerStats)
+              {
+                  <li>
+                      @p.Name | @p.Armies | @p.Territories | <strong>@p.Score</strong>
+                  </li>
+              }
+          </ul>
+      }
+  </div>
+</div>

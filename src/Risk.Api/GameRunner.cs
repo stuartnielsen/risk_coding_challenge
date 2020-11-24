@@ -184,7 +184,7 @@ namespace Risk.Api
             game.EndTime = DateTime.Now;
             TimeSpan gameDuration = game.EndTime - game.StartTime;
 
-            var scores = new List<(int, ApiPlayer)>();
+            var scores = new List<(int score, ApiPlayer player)>();
 
             foreach (var currentPlayer in players.ToArray())
             {
@@ -193,39 +193,26 @@ namespace Risk.Api
                 scores.Add((playerScore, currentPlayer));
             }
 
-            scores.Sort();
+            var orderedScores = scores.OrderByDescending(s => s.score);
 
-            foreach (var currentPlayer in players.ToArray())
-            {
-                await sendGameOverRequest(currentPlayer, gameDuration, scores);
-            }
-        }
-
-        private async Task sendGameOverRequest(ApiPlayer player, TimeSpan gameDuration, List<(int score, ApiPlayer player)> scores)
-        {
             var gameOverRequest = new GameOverRequest {
                 FinalBoard = game.Board.SerializableTerritories,
                 GameDuration = gameDuration.ToString(),
-                WinnerName = scores.Last().player.Name,
-                FinalScores = scores.Select(s => $"{s.player.Name} ({s.score})")
+                WinnerName = orderedScores.First().player.Name,
+                FinalScores = orderedScores.Select(s => $"{s.player.Name} ({s.score})")
             };
 
-            var response = await (player.HttpClient.PostAsJsonAsync("/gameOver", gameOverRequest));
+            foreach (var currentPlayer in players.ToArray())
+            {
+                var response = await (currentPlayer.HttpClient.PostAsJsonAsync("/gameOver", gameOverRequest));
+            }
         }
 
         public bool IsAllArmiesPlaced()
         {
+            int playersWithNoRemaining = game.Players.Count(p => game.GetPlayerRemainingArmies(p.Token) == 0);
 
-            int playersWithNoRemaining = game.Players.Where(p => game.GetPlayerRemainingArmies(p.Token) == 0).Count();
-
-            if (playersWithNoRemaining == game.Players.Count())
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return (playersWithNoRemaining == game.Players.Count());
         }
 
         public void RemovePlayerFromBoard(String token)
