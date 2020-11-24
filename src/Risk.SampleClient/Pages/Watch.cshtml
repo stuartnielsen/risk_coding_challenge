@@ -48,14 +48,13 @@
 
 <div class="grid-container">
     @{
-        var maxRow = Model.Status.Board.Max(t => t.Location.Row);
-        var maxCol = Model.Status.Board.Max(t => t.Location.Column);
+
     }
     <table border="1px" cellpadding="10px">
-        @for (var row = 0; row <= maxRow; row++)
+        @for (var row = 0; row <= Model.MaxRow; row++)
         {
         <tr>
-            @for (var col = 0; col <= maxCol; col++)
+            @for (var col = 0; col <= Model.MaxCol; col++)
             {
             <td class="cell">
                 @{

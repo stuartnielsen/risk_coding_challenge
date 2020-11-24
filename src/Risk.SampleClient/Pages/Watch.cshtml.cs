@@ -17,7 +17,9 @@ namespace Risk.SampleClient.Pages
         private readonly IHttpClientFactory httpClientFactory;
         private readonly IConfiguration configuration;
 
-        public GameStatus Status { get; set; }
+        public GameStatus Status { get; private set; }
+        public int MaxRow { get; private set; }
+        public int MaxCol { get; private set; }
 
         public VisualizeModel(IHttpClientFactory httpClientFactory, IConfiguration configuration)
         {
@@ -30,6 +32,8 @@ namespace Risk.SampleClient.Pages
             Status = await httpClientFactory
                 .CreateClient()
                 .GetFromJsonAsync<GameStatus>($"{configuration["GameServer"]}/status");
+            MaxRow = Status.Board.Max(t => t.Location.Row);
+            MaxCol = Status.Board.Max(t => t.Location.Column);
         }
     }
 }
