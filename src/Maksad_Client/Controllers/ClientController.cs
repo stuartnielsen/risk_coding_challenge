@@ -68,7 +68,9 @@ namespace Maksad_Client.Controllers
             BeginAttackResponse response = new BeginAttackResponse();
             var attackerLocation = new Location();
             var neighbour = new BoardTerritory();
-            //from is the attacker to is the defender
+           
+
+
             foreach (BoardTerritory space in beginAttackRequest.Board)
             {
                 if (space.OwnerName == "Maksad")
