@@ -12,38 +12,28 @@ using Risk.Shared;
 
 namespace Maksad_Client.Pages
 {
-    public class GameStatusModel : PageModel
+    public class VisualizeModel : PageModel
     {
         private readonly IHttpClientFactory httpClientFactory;
-        private readonly IConfiguration config;
-        
+        private readonly IConfiguration configuration;
 
-        public GameStatusModel(IHttpClientFactory httpClientFactory, IConfiguration config)
+        public GameStatus Status { get; private set; }
+        public int MaxRow { get; private set; }
+        public int MaxCol { get; private set; }
+
+        public VisualizeModel(IHttpClientFactory httpClientFactory, IConfiguration configuration)
         {
             this.httpClientFactory = httpClientFactory;
-            this.config = config;
+            this.configuration = configuration;
         }
 
-
-        public async Task OnGetAsync()
+        public async Task OnGet()
         {
-            var client = httpClientFactory.CreateClient();
-            await refreshStatus(client);
-        }
-
-        private async Task refreshStatus(HttpClient client)
-        {
-            Status = await client.GetFromJsonAsync<GameStatus>($"{config["serverName"]}/status");
-        }
-
-        public GameStatus Status { get; set; }
-
-        public async Task OnPostStartGameAsync()
-        {
-            var client = httpClientFactory.CreateClient();
-            await client.PostAsJsonAsync($"{config["serverName"]}/startgame", new StartGameRequest { SecretCode = config["secretCode"]});
-            
-            await refreshStatus(client);
+            Status = await httpClientFactory
+                .CreateClient()
+                .GetFromJsonAsync<GameStatus>($"{configuration["GameServer"]}/status");
+            MaxRow = Status.Board.Max(t => t.Location.Row);
+            MaxCol = Status.Board.Max(t => t.Location.Column);
         }
     }
 }
