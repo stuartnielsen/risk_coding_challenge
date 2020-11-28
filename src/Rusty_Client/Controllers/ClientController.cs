@@ -111,11 +111,12 @@ namespace Rusty_Client.Controllers
         {
             BeginAttackResponse response = new BeginAttackResponse();
             var attackerLocation = new Location();
-            var defender = new BoardTerritory() ;
+            var defenderLocation = new Location();
+            var temp = new BoardTerritory();
             //from is the attacker to is the defender
             foreach(BoardTerritory space in beginAttackRequest.Board)
             {
-                if (space.OwnerName == "Rusty")
+                if (space.OwnerName == "Rusty" && space.Armies>1)
                 {
                     attackerLocation = space.Location;
                     //look at the next location to the right, left, up, down, up-right diagonal, 
@@ -128,13 +129,12 @@ namespace Rusty_Client.Controllers
                             {
                                 continue;
                             }
-                            attackerLocation.Column = i;
-                            attackerLocation.Row = j;
-                            defender = beginAttackRequest.Board.FirstOrDefault(d => d.Location == attackerLocation);
-                            if((defender !=null)&&defender.OwnerName!="Rusty" && defender.Armies > 1)
+                            defenderLocation.Column = i;
+                            defenderLocation.Row = j;
+                            temp = beginAttackRequest.Board.FirstOrDefault(d => d.Location == defenderLocation);
+                            if((temp !=null)&&temp.OwnerName!="Rusty" && temp.Armies > 0)
                             {
-                                attackerLocation = defender.Location;
-                                return new BeginAttackResponse { From = attackerLocation, To = defender.Location };
+                                return new BeginAttackResponse { From = attackerLocation, To = defenderLocation };
                             }
                         }
                     }
