@@ -14,20 +14,18 @@ namespace Risk.Tests
         private Game.Game game;
         private string player1Token;
         private string player2Token;
-        private List<ApiPlayer> players;
 
         [SetUp]
         public void SetUp()
         {
-            players = new List<ApiPlayer>();
-            game = new Game.Game(new GameStartOptions { Height = 2, Width = 2, StartingArmiesPerPlayer = 5, Players = players });
+            game = new Game.Game(new GameStartOptions { Height = 2, Width = 2, StartingArmiesPerPlayer = 5 });
             game.StartJoining();
 
             player1Token = Guid.NewGuid().ToString();
             player2Token = Guid.NewGuid().ToString();
 
-            players.Add(new ApiPlayer("player1", player1Token, null));
-            players.Add(new ApiPlayer("player2", player2Token, null));
+            game.AddPlayer(new ApiPlayer("player1", player1Token, null));
+            game.AddPlayer(new ApiPlayer("player2", player2Token, null));
             game.StartGame();
         }
 
@@ -113,7 +111,7 @@ namespace Risk.Tests
         [Test]
         public void CannotPlaceArmyWhenNotInArmyDeploymentState()
         {
-            game = new Game.Game(new GameStartOptions { Height = 2, Width = 2, StartingArmiesPerPlayer = 5 , Players = players});
+            game = new Game.Game(new GameStartOptions { Height = 2, Width = 2, StartingArmiesPerPlayer = 5 });
             game.StartJoining();
 
             //game.StartGame(); don't start the game, gamestate stays 'joining'

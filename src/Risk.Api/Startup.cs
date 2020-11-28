@@ -34,16 +34,10 @@ namespace Risk.Api
                 .AddJsonOptions(options =>
                     options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase);
 
-            var players = new List<ApiPlayer>();
             services.AddSingleton(GameController.InitializeGame(
                 int.Parse(Configuration["height"] ?? "5"),
                 int.Parse(Configuration["width"] ?? "5"),
-                int.Parse(Configuration["startingArmies"] ?? "5"),
-                players));
-            services.AddSingleton(players);
-
-            var joiningPlayers = new ConcurrentBag<ApiPlayer>();
-            services.AddSingleton(joiningPlayers);
+                int.Parse(Configuration["startingArmies"] ?? "5")));
 
             services.AddMemoryCache();
             services.AddHttpClient();
