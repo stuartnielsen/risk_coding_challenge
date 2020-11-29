@@ -9,7 +9,7 @@ using Risk.Shared;
 
 namespace DJClient.Controllers
 {
-    
+
     public class ClientController : Controller
     {
         private readonly IHttpClientFactory clientFactory;
@@ -25,7 +25,7 @@ namespace DJClient.Controllers
 
         }
 
-        [HttpGet("AreYouThere")] 
+        [HttpGet("AreYouThere")]
         public string AreYouThere( )
         {
             return "yes";

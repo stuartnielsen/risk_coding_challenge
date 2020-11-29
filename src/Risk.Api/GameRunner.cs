@@ -18,16 +18,14 @@ namespace Risk.Api
     public class GameRunner
     {
         private readonly Game.Game game;
-        private readonly IList<ApiPlayer> players;
         private readonly IList<ApiPlayer> removedPlayers;
         private readonly ILogger<GameRunner> logger;
         public const int MaxFailedTries = 5;
 
-        public GameRunner(Game.Game game, IList<ApiPlayer> players, IList<ApiPlayer> removedPlayers, ILogger<GameRunner> logger)
+        public GameRunner(Game.Game game, ILogger<GameRunner> logger)
         {
             this.game = game;
-            this.players = players;
-            this.removedPlayers = removedPlayers;
+            this.removedPlayers = new List<ApiPlayer>();
             this.logger = logger;
         }
 
@@ -40,11 +38,11 @@ namespace Risk.Api
 
         private async Task deployArmiesAsync()
         {
-            while (game.Board.Territories.Sum(t => t.Armies) < game.StartingArmies * players.Count())
+            while (game.Board.Territories.Sum(t => t.Armies) < game.StartingArmies * game.Players.Count())
             {
-                for (int playerIndex = 0; playerIndex < players.Count(); ++playerIndex)
+                for (int playerIndex = 0; playerIndex < game.Players.Count(); ++playerIndex)
                 {
-                    var currentPlayer = players[playerIndex];
+                    var currentPlayer = game.Players.Skip(playerIndex).First() as ApiPlayer;
                     var deployArmyResponse = await askForDeployLocationAsync(currentPlayer, DeploymentStatus.YourTurn);
                     var failedTries = 0;
                     //check that this location exists and is available to be used (e.g. not occupied by another army)
@@ -84,12 +82,12 @@ namespace Risk.Api
         private async Task doBattle()
         {
             game.StartTime = DateTime.Now;
-            while (players.Count > 1 && game.GameState == GameState.Attacking && game.Players.Any(p=>game.PlayerCanAttack(p)))
+            while (game.Players.Count() > 1 && game.GameState == GameState.Attacking && game.Players.Any(p=>game.PlayerCanAttack(p)))
             {
 
-                for (int i = 0; i < players.Count && players.Count > 1; i++)
+                for (int i = 0; i < game.Players.Count() && game.Players.Count() > 1; i++)
                 {
-                    var currentPlayer = players[i];
+                    var currentPlayer = game.Players.Skip(i).First() as ApiPlayer;
                     if (game.PlayerCanAttack(currentPlayer))
                     {
                         var failedTries = 0;
@@ -157,15 +155,8 @@ namespace Risk.Api
 
         private void RemovePlayerFromGame(string token)
         {
-            for (int i = 0; i < players.Count(); i++)
-            {
-                var player = players.ElementAt(i);
-                if (player.Token == token)
-                {
-                    players.Remove(player);
-                    removedPlayers.Add(player);
-                }
-            }
+            var player = game.RemovePlayerByToken(token) as ApiPlayer;
+            removedPlayers.Add(player);
         }
 
         private async Task<BeginAttackResponse> askForAttackLocationAsync(ApiPlayer player, BeginAttackStatus beginAttackStatus)
@@ -184,48 +175,35 @@ namespace Risk.Api
             game.EndTime = DateTime.Now;
             TimeSpan gameDuration = game.EndTime - game.StartTime;
 
-            var scores = new List<(int, ApiPlayer)>();
+            var scores = new List<(int score, ApiPlayer player)>();
 
-            foreach (var currentPlayer in players)
+            foreach (ApiPlayer currentPlayer in game.Players)
             {
                 var playerScore = 2 * game.GetNumTerritories(currentPlayer) + game.GetNumPlacedArmies(currentPlayer);
 
                 scores.Add((playerScore, currentPlayer));
             }
 
-            scores.Sort();
+            var orderedScores = scores.OrderByDescending(s => s.score);
 
-            foreach (var currentPlayer in players)
-            {
-                await sendGameOverRequest(currentPlayer, gameDuration, scores);
-            }
-        }
-
-        private async Task sendGameOverRequest(ApiPlayer player, TimeSpan gameDuration, List<(int score, ApiPlayer player)> scores)
-        {
             var gameOverRequest = new GameOverRequest {
                 FinalBoard = game.Board.SerializableTerritories,
                 GameDuration = gameDuration.ToString(),
-                WinnerName = scores.Last().player.Name,
-                FinalScores = scores.Select(s => $"{s.player.Name} ({s.score})")
+                WinnerName = orderedScores.First().player.Name,
+                FinalScores = orderedScores.Select(s => $"{s.player.Name} ({s.score})")
             };
 
-            var response = await (player.HttpClient.PostAsJsonAsync("/gameOver", gameOverRequest));
+            foreach (ApiPlayer currentPlayer in game.Players)
+            {
+                var response = await (currentPlayer.HttpClient.PostAsJsonAsync("/gameOver", gameOverRequest));
+            }
         }
 
         public bool IsAllArmiesPlaced()
         {
+            int playersWithNoRemaining = game.Players.Count(p => game.GetPlayerRemainingArmies(p.Token) == 0);
 
-            int playersWithNoRemaining = game.Players.Where(p => game.GetPlayerRemainingArmies(p.Token) == 0).Count();
-
-            if (playersWithNoRemaining == game.Players.Count())
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return (playersWithNoRemaining == game.Players.Count());
         }
 
         public void RemovePlayerFromBoard(String token)

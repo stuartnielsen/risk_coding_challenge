@@ -20,7 +20,7 @@ namespace Risk.Tests
             int height = 2;
 
             players = new List<ApiPlayer>();
-            game = new Game.Game(new GameStartOptions { Height = height, Width = width, StartingArmiesPerPlayer = 5, Players = players });
+            game = new Game.Game(new GameStartOptions { Height = height, Width = width, StartingArmiesPerPlayer = 5 });
             game.StartJoining();
         }
 
@@ -28,7 +28,7 @@ namespace Risk.Tests
         public void GetGameStatusReturnsAllPlayersWhoveJoined()
         {
             var player1 = new ApiPlayer("player1", "token", null);
-            players.Add(player1);
+            game.AddPlayer(player1);
 
             var gameStatus = game.GetGameStatus();
 
@@ -47,7 +47,7 @@ namespace Risk.Tests
         public void GetGameStatusHasPlayersWithArmyAndTerritoryCount()
         {
             var player1 = new ApiPlayer("player1", "token", null);
-            players.Add(player1);
+            game.AddPlayer(player1);
 
             game.StartGame();
 

@@ -20,10 +20,10 @@ namespace Risk.Tests
         public void SetUp()
         {
             players = new List<ApiPlayer>();
-            game = new Game.Game(new GameStartOptions { Height = 2, Width = 2, StartingArmiesPerPlayer = 5, Players = players });
+            game = new Game.Game(new GameStartOptions { Height = 2, Width = 2, StartingArmiesPerPlayer = 5 });
             game.StartJoining();
-            players.Add(new ApiPlayer("player1", "", null));
-            players.Add(new ApiPlayer("player2", "", null));
+            game.AddPlayer(new ApiPlayer("player1", "", null));
+            game.AddPlayer(new ApiPlayer("player2", "", null));
         }
 
         [Test]
