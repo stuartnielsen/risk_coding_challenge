@@ -1,7 +1,7 @@
-﻿@page
+﻿@page "/watch"
 @using Risk.Shared
 @using System.Collections.Generic
-@model Risk.SampleClient.Pages.VisualizeModel
+@model WyattClient.Pages.VisualizeModel 
 @{
 }
 <meta http-equiv="refresh" content="1">
@@ -13,10 +13,10 @@
 }
 .name {
     font-size: 14pt;
-    color: blue
+    color: green
 }
 .armies {
-    color: red;
+    color: blue;
     font-weight: bold;
     width: 48%;
     float: right;
@@ -24,15 +24,15 @@
 }
 </style>
 
-<h2>@Model.Status.GameState</h2>
+<h2 style="color: red">@Model.Status.GameState</h2>
 
 <div class="playerStats">
     <table cellpadding="10px,2px">
         <thead>
-            <td>Player Name</td>
-            <td>Territories</td>
-            <td>Armies</td>
-            <td>Score</td>
+            <td style="font-weight: bold">Player Name</td>
+            <td style="font-weight: bold">Territories</td>
+            <td style="font-weight: bold">Armies</td>
+            <td style="font-weight: bold">Score</td>
         </tr>
         @foreach (var p in Model.Status.PlayerStats)
         {

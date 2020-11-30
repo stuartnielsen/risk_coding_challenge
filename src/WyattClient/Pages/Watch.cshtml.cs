@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Configuration;
 using Risk.Shared;
 
-namespace Risk.SampleClient.Pages
+namespace WyattClient.Pages
 {
     public class VisualizeModel : PageModel
     {

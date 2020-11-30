@@ -5,12 +5,12 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Risk.SampleClient.Controllers;
+using WyattClient.Controllers;
 using System.Net.Http.Json;
 using Risk.Shared;
 using Microsoft.Extensions.Configuration;
 
-namespace Risk.SampleClient.Pages
+namespace WyattClient.Pages
 {
     public class IndexModel : PageModel
     {
