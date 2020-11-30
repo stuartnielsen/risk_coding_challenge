@@ -53,28 +53,34 @@ namespace StuartClient
             IEnumerable<BoardTerritory> neighbors = new List<BoardTerritory>();
             IEnumerable<BoardTerritory> myTerritories = GetMyTerritories(attackRequest.Board);
 
-            foreach (var territory in attackRequest.Board)
-            {
-                if (!(territory.OwnerName == null))
-                {
-                    if (territory.OwnerName == "Stuart")
-                    {
-                        if (territory.Armies > max)
-                            max = territory.Armies;
-                    }
 
-                }
-            }
-            foreach (var territory in attackRequest.Board)
+            foreach (var territory in myTerritories)
             {
-                if (!(territory.OwnerName == null))
+                var myNeighbors = GetNeighbors(territory, attackRequest.Board);
+
+                foreach (var n in myNeighbors)
                 {
-                    if (territory.OwnerName == "Stuart" && territory.Armies == max)
+                    if (n.OwnerName != "Stuart")
+                    {
+                        beginAttack.To = n.Location;
+                        beginAttack.From = territory.Location;
+                    }
+                }
+                if (territory.Armies > max)
+                    max = territory.Armies;
+
+
+
+            }
+            foreach (var territory in myTerritories)
+            {
+                
+                    if ( territory.Armies == max)
                     {
                         beginAttack.From = territory.Location;
                         neighbors = GetNeighbors(territory, attackRequest.Board);
                     }
-                }
+                
             }
 
             foreach (var neighbor in neighbors)
