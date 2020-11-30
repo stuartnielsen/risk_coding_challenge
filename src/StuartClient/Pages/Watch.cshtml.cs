@@ -35,5 +35,7 @@ namespace StuartClient.Pages
             MaxRow = Status.Board.Max(t => t.Location.Row);
             MaxCol = Status.Board.Max(t => t.Location.Column);
         }
+        
     }
+
 }

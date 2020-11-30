@@ -1,12 +1,10 @@
 {
-  "$schema": "http://json.schemastore.org/launchsettings.json",
   "profiles": {
     "StuartClient": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "",
       "environmentVariables": {
-        "userName": "Stuart",
+        "userName": "Wyatt",
         "ClientCallbackAddress": "http://localhost:5000",
         "GameServer": "http://localhost:5000",
         "ASPNETCORE_ENVIRONMENT": "Development"
@@ -19,7 +17,7 @@
       "launchUrl": "http://localhost:5080/watch",
       "environmentVariables": {
         "userName": "Stuart",
-        "ClientCallbackAddress": "http://144.17.48.37:5080",
+        "ClientCallbackAddress": "http://144.17.48.52:5080",
         "GameServer": "http://144.17.48.37:5000",
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
