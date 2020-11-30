@@ -12,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Risk.Shared;
+using Westwind.AspNetCore.LiveReload;
 
 namespace StuartClient
 {
@@ -29,6 +30,8 @@ namespace StuartClient
         {
             services.AddControllers();
             services.AddHttpClient();
+            services.AddLiveReload();
+            services.AddRazorPages().AddRazorRuntimeCompilation();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -37,6 +40,7 @@ namespace StuartClient
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseLiveReload();
             }
             else
             {

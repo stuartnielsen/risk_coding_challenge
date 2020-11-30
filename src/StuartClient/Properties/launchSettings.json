@@ -1,11 +1,13 @@
 {
+  "$schema": "http://json.schemastore.org/launchsettings.json",
   "profiles": {
     "StuartClient": {
       "commandName": "Project",
       "launchBrowser": true,
+      "launchUrl": "",
       "environmentVariables": {
         "userName": "Stuart",
-        "ClientCallbackAddress": "http://localhost:5080",
+        "ClientCallbackAddress": "http://localhost:5000",
         "GameServer": "http://localhost:5000",
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
@@ -14,7 +16,7 @@
     "GameServer": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "http://localhost:5080",
+      "launchUrl": "http://localhost:5080/watch",
       "environmentVariables": {
         "userName": "Stuart",
         "ClientCallbackAddress": "http://144.17.48.37:5080",
@@ -27,8 +29,7 @@
       "commandName": "Docker",
       "launchBrowser": true,
       "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
-      "publishAllPorts": true,
-      "useSSL": true
+      "publishAllPorts": true
     }
   }
 }

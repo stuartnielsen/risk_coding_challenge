@@ -51,6 +51,8 @@ namespace StuartClient
             BeginAttackResponse beginAttack = new BeginAttackResponse();
             int max = 0;
             IEnumerable<BoardTerritory> neighbors = new List<BoardTerritory>();
+            IEnumerable<BoardTerritory> myTerritories = GetMyTerritories(attackRequest.Board);
+
             foreach (var territory in attackRequest.Board)
             {
                 if (!(territory.OwnerName == null))
@@ -93,6 +95,16 @@ namespace StuartClient
             return beginAttack;
         }
 
+        //public bool PlayerCanAttack(IPlayer player)
+        //{
+        //    foreach (var territory in Board.Territories.Where(t => t.Owner == player && EnoughArmiesToAttack(t)))
+        //    {
+        //        var neighbors = Board.GetNeighbors(territory);
+        //        return neighbors.Any(n => n.Owner != player);
+        //    }
+        //    return false;
+        //}
+
         private IEnumerable<BoardTerritory> GetNeighbors(BoardTerritory territory, IEnumerable<BoardTerritory> territories)
         {
             var l = territory.Location;
@@ -115,6 +127,18 @@ namespace StuartClient
             attackResponse.ContinueAttacking = (continueAttack.AttackingTerritorry.Armies > continueAttack.DefendingTerritorry.Armies);
             return attackResponse;
 
+        }
+        private IEnumerable<BoardTerritory> GetMyTerritories(IEnumerable<BoardTerritory> territories)
+        {
+            List<BoardTerritory> myTerritories = new List<BoardTerritory>();
+            foreach (BoardTerritory t in territories)
+            {
+                if (t.OwnerName != null && t.OwnerName == "Stuart")
+                {
+                    myTerritories.Add(t);
+                }
+            }
+            return myTerritories;
         }
     }
 }
