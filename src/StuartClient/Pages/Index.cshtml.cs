@@ -7,9 +7,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Net.Http.Json;
 using Risk.Shared;
+using StuartClient.Controllers;
 using Microsoft.Extensions.Configuration;
 
-namespace Risk.StuartClient.Pages
+namespace StuartClient.Pages
 {
     public class IndexModel : PageModel
     {

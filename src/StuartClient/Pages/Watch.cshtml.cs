@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Configuration;
 using Risk.Shared;
 
-namespace Risk.StuartClient.Pages
+namespace StuartClient.Pages
 {
     public class VisualizeModel : PageModel
     {
