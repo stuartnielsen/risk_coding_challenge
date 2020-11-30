@@ -79,7 +79,14 @@ namespace StuartClient
             {
                 if (!(neighbor.OwnerName == null))
                 {
-                    if (neighbor.OwnerName != "Stuart" && neighbor.Armies < max)
+                    if (neighbor.OwnerName != "Stuart")
+                        beginAttack.To = neighbor.Location;
+                    if (neighbor.OwnerName != "Stuart" && neighbor.Armies == 0)
+                    {
+                        beginAttack.To = neighbor.Location;
+                        return beginAttack;
+                    }
+                    else if (neighbor.OwnerName != "Stuart" && neighbor.Armies < max)
                         beginAttack.To = neighbor.Location;
                 }
             }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -34,6 +35,7 @@ namespace Risk.SampleClient
             services.AddHttpClient();
             services.AddLiveReload();
             services.AddRazorPages().AddRazorRuntimeCompilation();
+            services.AddSingleton<ColorGenerator>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

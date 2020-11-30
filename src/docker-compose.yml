@@ -8,9 +8,10 @@ services:
       context: .
       dockerfile: Risk.Api/Dockerfile
     environment:
-    - height=5
-    - width=5
-    - startingArmies=50
+    - height=12
+    - width=8
+    - startingArmies=200
+    - secretCode=banana
     ports:
     - "5000:80"
     networks:
@@ -28,6 +29,8 @@ services:
     - GameServer=http://risk.api
     - ClientCallbackAddress=http://risk.sampleclient
     - PlayerName=SampleClient
+    - joinGame=yes
+    - secretCode=banana
     networks:
       risknet:
     depends_on:
@@ -52,23 +55,22 @@ services:
     - risk.api
 
 
-  justin_client:
-    hostname: justin_client
-    image: ${DOCKER_REGISTRY-}justinclient
-    build:
-      context: .
-      dockerfile: clients/Justins_Client/Justin_Client/Dockerfile
-    ports:
-    - "5015:80"
-    environment:
-    - GameServer=http://risk.api
-    - ClientCallbackAddress=http://justin_client
-    - PlayerName=Justin
-    networks:
-      risknet:
-    depends_on:
-    - risk.api
-
+#  justin_client:
+#    hostname: justin_client
+#    image: ${DOCKER_REGISTRY-}justinclient
+#    build:
+#      context: .
+#      dockerfile: clients/Justins_Client/Justin_Client/Dockerfile
+#    ports:
+#    - "5015:80"
+#    environment:
+#    - GameServer=http://risk.api
+#    - ClientCallbackAddress=http://justin_client
+#    - PlayerName=Justin
+#    networks:
+#      risknet:
+#    depends_on:
+#    - risk.api
 
   stuartclient:
     hostname: stuartclient
@@ -88,22 +90,22 @@ services:
     - risk.api
 
 
-  tannerclient:
-    hostname: tannerclient
-    image: ${DOCKER_REGISTRY-}tannerclient
-    build:
-      context: .
-      dockerfile: TannerClient/Dockerfile
-    ports:
-    - "5025:80"
-    environment:
-    - GameServer=http://risk.api
-    - ClientCallbackAddress=http://tannerclient
-    - PlayerName=tanner
-    networks:
-      risknet:
-    depends_on:
-    - risk.api
+#  tannerclient:
+#    hostname: tannerclient
+#    image: ${DOCKER_REGISTRY-}tannerclient
+#    build:
+#      context: .
+#      dockerfile: TannerClient/Dockerfile
+#    ports:
+#    - "5025:80"
+#    environment:
+#    - GameServer=http://risk.api
+#    - ClientCallbackAddress=http://tannerclient
+#    - PlayerName=tanner
+#    networks:
+#      risknet:
+#    depends_on:
+#    - risk.api
 
   wyattclient:
     hostname: wyattclient
@@ -158,7 +160,7 @@ services:
 #    - risk.api
 
   emmanuel_client:
-    hostname: emmanuel
+    hostname: emmanuel_client
     image: ${DOCKER_REGISTRY-}emmanuelclient
     build:
       context: .
@@ -167,8 +169,58 @@ services:
     - "5045:80"
     environment:
     - GameServer=http://risk.api
-    - ClientCallbackAddress=http://emmanuel
+    - ClientCallbackAddress=http://emmanuel_client
     - PlayerName=Emmanuel
+    networks:
+      risknet:
+    depends_on:
+    - risk.api
+
+#  hmclient:
+#    hostname: hmclient
+#    image: ${DOCKER_REGISTRY-}hmclient
+#    build:
+#      context: .
+#      dockerfile: HMClient/Dockerfile
+#    ports:
+#    - "5050:80"
+#    environment:
+#    - GameServer=http://risk.api
+#    - ClientCallbackAddress=http://hmclient
+#    - PlayerName=Hector
+#    networks:
+#      risknet:
+#    depends_on:
+#    - risk.api
+
+  rusty_client:
+    hostname: rusty_client
+    image: ${DOCKER_REGISTRY-}rustyclient
+    build:
+      context: .
+      dockerfile: Rusty_Client/Dockerfile
+    ports:
+    - "5055:80"
+    environment:
+    - GameServer=http://risk.api
+    - ClientCallbackAddress=http://rusty_client
+    - PlayerName=Rusty
+    networks:
+      risknet:
+    depends_on:
+    - risk.api
+
+  maksad_client:
+    image: ${DOCKER_REGISTRY-}maksadclient
+    build:
+      context: .
+      dockerfile: Maksad_Client/Dockerfile
+    ports:
+    - "5060:80"
+    environment:
+    - GameServer=http://risk.api
+    - ClientCallbackAddress=http://maksad_client
+    - PlayerName=Maksad
     networks:
       risknet:
     depends_on:
@@ -176,5 +228,8 @@ services:
 
 networks:
   risknet:
+
+
+
 
 

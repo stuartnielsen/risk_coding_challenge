@@ -83,7 +83,7 @@ namespace WyattClient.Controllers
         }
 
 
-        [HttpPost("continueAttack")]
+        [HttpPost("continueAttacking")]
         public ContinueAttackResponse ContinueAttack([FromBody] ContinueAttackRequest continueAttackRequest)
         {
             return gameStrategy.WhenToContinueAttack(continueAttackRequest);

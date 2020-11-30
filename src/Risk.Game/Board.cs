@@ -31,7 +31,14 @@ namespace Risk.Game
 
         public Territory GetTerritory(Location location)
         {
-            return Territories.Single(t => t.Location == location);
+            try
+            {
+                return Territories.Single(t => t.Location == location);
+            }
+            catch (Exception ex)
+            {
+                throw new TerritoryNotFoundException($"{location} does not exist in the Board", ex);
+            }
         }
 
         public IEnumerable<Territory> GetNeighbors(Territory territory)

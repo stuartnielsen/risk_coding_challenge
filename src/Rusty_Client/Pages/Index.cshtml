@@ -1,0 +1,28 @@
+﻿@page
+@using Risk.Shared
+@namespace Risk.SampleClient.Pages
+@model Rusty_Client.Pages.IndexModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+}
+<h2>Game State: @Model.Status.GameState</h2>
+@if (Model.Status.GameState == Risk.Shared.GameState.Joining)
+{
+    <form method="post" asp-page-handler="StartGame">
+        <button type="submit">Battle!</button>
+    </form>
+}
+<table>
+@for(int i=0; i<=Model.rows; i++)
+{
+    <tr>
+        @for(int j=0 ; j <= Model.columns; j++)
+        {
+            var territory = Model.Status.Board.FirstOrDefault(t => t.Location == new Location(i, j));
+            <td>@territory.Location</td>
+            <td>@territory.OwnerName</td>
+            <td>@territory.Armies</td>
+        } 
+    </tr>
+}
+</table>

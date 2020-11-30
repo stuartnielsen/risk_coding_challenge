@@ -17,7 +17,6 @@ namespace Risk.Tests
         private string player1Token;
         private string player2Token;
         private GameRunner gameRunner;
-        private List<ApiPlayer> players;
 
         [SetUp]
         public void SetUp()
@@ -27,18 +26,17 @@ namespace Risk.Tests
 
             var loggerMock = new Mock<ILogger<GameRunner>>();
 
-            players = new List<ApiPlayer>();
-            game = new Game.Game(new GameStartOptions { Height = 2, Width = 2, StartingArmiesPerPlayer = 1, Players = players });
+            game = new Game.Game(new GameStartOptions { Height = 2, Width = 2, StartingArmiesPerPlayer = 1});
             game.StartJoining();
 
             player1Token = Guid.NewGuid().ToString();
             player2Token = Guid.NewGuid().ToString();
 
-            players.Add(new ApiPlayer("player1", player1Token, null));
-            players.Add(new ApiPlayer("player2", player2Token, null));
+            game.AddPlayer(new ApiPlayer("player1", player1Token, null));
+            game.AddPlayer(new ApiPlayer("player2", player2Token, null));
 
             game.StartGame();
-            gameRunner = new GameRunner(game, players, new List<ApiPlayer>(), loggerMock.Object);
+            gameRunner = new GameRunner(game, loggerMock.Object);
         }
 
         [Test]
@@ -89,7 +87,7 @@ namespace Risk.Tests
             bool isPlayerOnBoard = true;
             game.TryPlaceArmy(player1Token, new Location(0, 0));
             game.TryPlaceArmy(player2Token, new Location(1, 0));
-            gameRunner.BootPlayerFromGame(players[0]);
+            gameRunner.BootPlayerFromGame(game.GetPlayer(player1Token) as ApiPlayer);
 
             Assert.AreEqual(1, game.Players.Count());
 
@@ -102,6 +100,5 @@ namespace Risk.Tests
             }
             Assert.IsFalse(isPlayerOnBoard);
         }
-
     }
 }

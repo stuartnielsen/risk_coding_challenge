@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
 
-
 namespace Risk.Shared
 {
     public class GameStatus
@@ -21,7 +20,7 @@ namespace Risk.Shared
             PlayerStats = new Collection<PlayerStats>();
         }
 
-        public GameStatus(IEnumerable<string> players, GameState gameState, IEnumerable<BoardTerritory> board, IEnumerable<PlayerStats> playerStats)
+        public GameStatus(IEnumerable<string> players, GameState gameState, IEnumerable<BoardTerritory> board, IEnumerable<PlayerStats> playerStats )
         {
             Players = players;
             GameState = gameState;

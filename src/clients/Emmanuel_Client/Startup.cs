@@ -32,6 +32,7 @@ namespace Emmanuel_Client
         {
             services.AddControllers();
             services.AddHttpClient();
+            services.AddRazorPages();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -51,6 +52,7 @@ namespace Emmanuel_Client
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapRazorPages();
             });
 
             //var server = Configuration["ServerName"];
@@ -62,7 +64,7 @@ namespace Emmanuel_Client
 
         private async Task JoinServer(HttpClient httpClient, string serverName, string clientBaseAddress, string clientName)
         {
-            await Task.Delay(TimeSpan.FromSeconds(10));
+            await Task.Delay(TimeSpan.FromSeconds(5));
             var joinRequest = new JoinRequest { Name = clientName, CallbackBaseAddress = clientBaseAddress };
             var joinResponse = await httpClient.PostAsJsonAsync($"{serverName}/join", joinRequest);
         }

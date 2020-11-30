@@ -61,7 +61,7 @@ namespace Emmanuel_Client.Controllers
             return createAttackResponse(beginAttackRequest);
         }
 
-        [HttpPost("continueAttack")]
+        [HttpPost("continueAttacking")]
         public ContinueAttackResponse ContinueAttack([FromBody] ContinueAttackRequest continueAttackRequest)
         {
             ContinueAttackResponse response = new ContinueAttackResponse();
@@ -80,28 +80,36 @@ namespace Emmanuel_Client.Controllers
         {
             var from = new Location();
             var to = new Location();
+            var tempTer = new BoardTerritory();
 
             //This logic will not grab a neighbour of the territory.
             foreach (var ter in beginAttack.Board)
             {
-                if (!(ter.OwnerName is null) && ter.OwnerName == "Emmanuel")
+                if (!(ter.OwnerName is null) && ter.OwnerName == "Emmanuel" && ter.Armies > 1)
                 {
                     from = ter.Location;
                     for (int i = ter.Location.Column - 1; i <= ter.Location.Column + 1; i++)
                     {
-                        for (int j = ter.Location.Row - 1; i <= ter.Location.Row + 1; i++)
+                        if (i < 0)
                         {
-                            if (!(ter.OwnerName is null) && ter.OwnerName != "Emmanuel")
+                            continue;
+                        }
+                        for (int j = ter.Location.Row - 1; j <= ter.Location.Row + 1; j++)
+                        {
+                            if (j < 0)
                             {
-
+                                continue;
+                            }
+                            to.Column = i;
+                            to.Row = j;
+                            tempTer = beginAttack.Board.FirstOrDefault(r => r.Location == to);
+                            if (!(tempTer is null) && tempTer.OwnerName != "Emmanuel" && tempTer.Armies > 0)
+                            {
+                                to = tempTer.Location;
+                                return new BeginAttackResponse { From = from, To = to };
                             }
                         }
                     }
-                }
-
-                if (!(from is null && to is null))
-                {
-                    break;
                 }
             }
 
@@ -110,23 +118,35 @@ namespace Emmanuel_Client.Controllers
 
         private DeployArmyResponse createDeployResponse(DeployArmyRequest deployArmyRequest)
         {
-            Random r = new Random();
-            int rInt;
             Location location = new Location();
+            int ownedTerritories = 0;
+            int placedArmies = 0;
+            int totalArmies = 0;
             foreach(var ter in deployArmyRequest.Board)
             {
-                rInt = r.Next(0, 3);
-                if ((ter.OwnerName is null || ter.OwnerName == "Emmanuel" ) && ter.Armies < rInt)
+                if(ter.OwnerName is null)
                 {
                     location = ter.Location;
-                    break;
+                    return new DeployArmyResponse { DesiredLocation = location };
                 }
-                else
+                if (ter.OwnerName == "Emmanuel")
                 {
-                    continue;
+                    ownedTerritories++;
+                    placedArmies += ter.Armies;
                 }
             }
 
+            totalArmies = deployArmyRequest.ArmiesRemaining + placedArmies;
+
+            foreach (var ter in deployArmyRequest.Board)
+            {
+                if (ter.OwnerName == "Emmanuel" && ter.Armies < (totalArmies/ownedTerritories) + 1)
+                {
+                    location = ter.Location;
+                    return new DeployArmyResponse { DesiredLocation = location };
+                }
+            }
+            
             return new DeployArmyResponse { DesiredLocation = location };
         }
     }

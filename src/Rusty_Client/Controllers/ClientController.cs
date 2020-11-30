@@ -70,25 +70,35 @@ namespace Rusty_Client.Controllers
         private DeployArmyResponse createDeployResponse(DeployArmyRequest deployArmyRequest)
         {
             DeployArmyResponse response = new DeployArmyResponse();
+            int owned=0;
+            int placed = 0;
+            int totalArmies = 0;
             foreach(BoardTerritory space in deployArmyRequest.Board)
             {
-                if((space.Location.Row == space.Location.Column) && (space.OwnerName == null || space.OwnerName=="Rusty"))
+                if(space.OwnerName == null)
                 {
-                    if((space.OwnerName=="Rusty") && (space.Armies < 3))
-                    {
-                        response.DesiredLocation = space.Location;
-                        return response;
-                        
-                    }
-                    else if(space.OwnerName==null)
-                    {
-                        response.DesiredLocation = space.Location;
-                        return response;
-                    }
-                    
+                    response.DesiredLocation = space.Location;
+                    owned++;
+                    placed++;
+                    return response;   
                 }
-                 //return response;
+                if (space.OwnerName == "Rusty")
+                {
+                    owned++;
+                    placed += space.Armies;
+                }
             }
+            totalArmies = deployArmyRequest.ArmiesRemaining + placed;
+
+            foreach(BoardTerritory space in deployArmyRequest.Board)
+            {
+                if (space.OwnerName == "Rusty" && (space.Armies <(totalArmies/owned+1)))
+                {
+                    response.DesiredLocation = space.Location;
+                    return response;
+                }
+            }
+
             return null;
 
         }
@@ -101,10 +111,12 @@ namespace Rusty_Client.Controllers
         {
             BeginAttackResponse response = new BeginAttackResponse();
             var attackerLocation = new Location();
+            var defenderLocation = new Location();
+            var temp = new BoardTerritory();
             //from is the attacker to is the defender
             foreach(BoardTerritory space in beginAttackRequest.Board)
             {
-                if (space.OwnerName == "Rusty")
+                if (space.OwnerName == "Rusty" && space.Armies>1)
                 {
                     attackerLocation = space.Location;
                     //look at the next location to the right, left, up, down, up-right diagonal, 
@@ -113,11 +125,16 @@ namespace Rusty_Client.Controllers
                     {
                         for(int j=space.Location.Row-1;j<=(space.Location.Row+1); j++)
                         {
-                            if (space.OwnerName != "Rusty")
+                            if (j < 0)
                             {
-                                response.From = attackerLocation;
-                                response.To = space.Location;
-                                return response;
+                                continue;
+                            }
+                            defenderLocation.Column = i;
+                            defenderLocation.Row = j;
+                            temp = beginAttackRequest.Board.FirstOrDefault(d => d.Location == defenderLocation);
+                            if((temp !=null)&&temp.OwnerName!="Rusty" && temp.Armies > 0)
+                            {
+                                return new BeginAttackResponse { From = attackerLocation, To = defenderLocation };
                             }
                         }
                     }
@@ -127,7 +144,7 @@ namespace Rusty_Client.Controllers
             return null;
         }
 
-        [HttpPost("continueAttack")]
+        [HttpPost("continueAttacking")]
         public ContinueAttackResponse ContinueAttack([FromBody] ContinueAttackRequest continueAttackRequest)
         {
             ContinueAttackResponse response = new ContinueAttackResponse();
@@ -141,36 +158,5 @@ namespace Rusty_Client.Controllers
         {
             return Ok(gameOverRequest);
         }
-     
-
-        //private BeginAttackResponse createAttackResponse(BeginAttackRequest beginAttack)
-        //{
-        //    var from = new Location();
-        //    var to = new Location();
-        //        foreach(var territory in beginAttack.Board)
-        //    {
-        //        if(!(territory.Owner.Name is null)&& territory.Owner.Name == "Rusty")
-        //        {
-        //            from = territory.Location;
-        //        }
-        //        if(!(from is null && to is null))
-        //        {
-        //            break;
-        //        }
-        //    }
-        //    return new BeginAttackResponse { From = from, To = to };
-        //}
-        //private DeployArmyResponse createDeployRequest(DeployArmyRequest deployArmyRequest)
-        //{
-        //    var location = new Location();
-        //    foreach(var territory in deployArmyRequest.Board)
-        //    {
-        //        if(territory.Owner is null || territory.Owner.Name =="Rusty")
-        //        {
-        //            location = territory.Location;
-        //        }
-        //    }
-        //    return new DeployArmyResponse { DesiredLocation = location };
-        //}
     }
 }
