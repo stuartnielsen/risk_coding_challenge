@@ -24,6 +24,23 @@
         float: right;
         text-align: right;
     }
+
+    .theme {
+        background: url(https://loremflickr.com/420/420/dog);
+    }
+
+
+    td {
+        opacity: 0.5;
+    }
+
+    .table {
+        width: 320px;
+        height: 240px;
+        border: 1px solid #ccc;
+        background: url(https://loremflickr.com/420/420/dogs);
+    }
+
 </style>
 
 <h2>@Model.Status.GameState</h2>
@@ -48,17 +65,17 @@
     </table>
 </div>
 
-<div class="grid-container">
+<div>
     @{
 
     }
-    <table border="1px" cellpadding="10px">
+    <table border="2px" cellpadding="10px" class="table">
         @for (var row = 0; row <= Model.MaxRow; row++)
         {
             <tr>
                 @for (var col = 0; col <= Model.MaxCol; col++)
                 {
-                    <td class="cell">
+                    <td class="cell" >
                         @{
                             var cell = Model.Status.Board.First(t => t.Location == new Location(row, col));
                         }

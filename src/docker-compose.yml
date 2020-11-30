@@ -35,22 +35,22 @@ services:
     - risk.api
 
 
-#  djclient:
-#    hostname: djclient
-#    image: ${DOCKER_REGISTRY-}djclient
-#    build:
-#      context: .
-#      dockerfile: clients/DJClient/Dockerfile
-#    ports:
-#    - "5010:80"
-#    environment:
-#    - ServerName=http://risk.api
-#    - ClientCallbackAddress=http://djclient
-#    - PlayerName=DJ
-#    networks:
-#      risknet:
-#    depends_on:
-#    - risk.api
+  djclient:
+    hostname: djclient
+    image: ${DOCKER_REGISTRY-}djclient
+    build:
+      context: .
+      dockerfile: clients/DJClient/Dockerfile
+    ports:
+    - "5010:80"
+    environment:
+    - ServerName=http://risk.api
+    - ClientCallbackAddress=http://djclient
+    - PlayerName=DJ
+    networks:
+      risknet:
+    depends_on:
+    - risk.api
 
 
 #  justin_client:
@@ -70,22 +70,22 @@ services:
 #    depends_on:
 #    - risk.api
 
-#  stuartclient:
- #   hostname: stuartclient
- #   image: ${DOCKER_REGISTRY-}stuartclient
- #   build:
- #    context: .
- #    dockerfile: StuartClient/Dockerfile
- #  ports:
- #  - "5020:80"
- #  environment:
- #   - GameServer=http://risk.api
- #   - ClientCallbackAddress=http://stuartclient
- #   - userName=Stuart
- #   networks:
- #     risknet:
- #   depends_on:
- #   - risk.api
+ #stuartclient:
+ # hostname: stuartclient
+ # image: ${DOCKER_REGISTRY-}stuartclient
+ # build:
+ #  context: .
+ #  dockerfile: StuartClient/Dockerfile
+ #ports:
+ #- "5020:80"
+ #environment:
+ # - GameServer=http://risk.api
+ # - ClientCallbackAddress=http://stuartclient
+ # - userName=Stuart
+ # networks:
+ #   risknet:
+ # depends_on:
+ # - risk.api
 
 
 #  tannerclient:
