@@ -14,20 +14,18 @@ namespace Risk.Tests
         private Game.Game testgame;
         private string player1Token;
         private string player2Token;
-        private List<ApiPlayer> players;
         Territory territory1 = new Territory() { Location = new Location(0, 0) };
         Territory territory2 = new Territory() { Location = new Location(0, 1) };
 
         [SetUp]
         public void SetUp()
         {
-            players = new List<ApiPlayer>();
-            testgame = new Game.Game(new GameStartOptions { Height = 2, Width = 2, StartingArmiesPerPlayer = 5, Players = players });
+            testgame = new Game.Game(new GameStartOptions { Height = 2, Width = 2, StartingArmiesPerPlayer = 5 });
             testgame.StartJoining();
             player1Token = Guid.NewGuid().ToString();
             player2Token = Guid.NewGuid().ToString();
-            players.Add(new ApiPlayer("player1", player1Token, null));
-            players.Add(new ApiPlayer("player2", player2Token, null));
+            testgame.AddPlayer(new ApiPlayer("player1", player1Token, null));
+            testgame.AddPlayer(new ApiPlayer("player2", player2Token, null));
 
             testgame.StartGame();
 
@@ -81,7 +79,7 @@ namespace Risk.Tests
         [Test]
         public void PlayerHasAtLeastOnePlaceToAttack()
         {
-            var actual = testgame.PlayerCanAttack(players[1]);
+            var actual = testgame.PlayerCanAttack(testgame.GetPlayer(player2Token));
             actual.Should().BeTrue();
         }
         [Test]
@@ -94,7 +92,7 @@ namespace Risk.Tests
             testgame.BattleWasWon(territory1, territory2);
             territory1.Armies.Should().Be(1);
             territory2.Armies.Should().Be(4);
-            territory2.Owner.Name.Should().Be(players[0].Name);
+            territory2.Owner.Name.Should().Be(testgame.GetPlayer(player1Token).Name);
         }
     }
 }

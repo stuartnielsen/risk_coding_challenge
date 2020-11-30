@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using Risk.Api;
@@ -16,7 +17,6 @@ namespace Risk.Tests
         private string player1Token;
         private string player2Token;
         private GameRunner gameRunner;
-        private List<ApiPlayer> players;
 
         [SetUp]
         public void SetUp()
@@ -24,18 +24,19 @@ namespace Risk.Tests
             var httpClientMock = new Mock<HttpClient>();
             //httpClientMock.Setup()
 
-            players = new List<ApiPlayer>();
-            game = new Game.Game(new GameStartOptions { Height = 2, Width = 2, StartingArmiesPerPlayer = 1, Players = players });
+            var loggerMock = new Mock<ILogger<GameRunner>>();
+
+            game = new Game.Game(new GameStartOptions { Height = 2, Width = 2, StartingArmiesPerPlayer = 1});
             game.StartJoining();
 
             player1Token = Guid.NewGuid().ToString();
             player2Token = Guid.NewGuid().ToString();
 
-            players.Add(new ApiPlayer("player1", player1Token, null));
-            players.Add(new ApiPlayer("player2", player2Token, null));
+            game.AddPlayer(new ApiPlayer("player1", player1Token, null));
+            game.AddPlayer(new ApiPlayer("player2", player2Token, null));
 
             game.StartGame();
-            gameRunner = new GameRunner(game, players, new List<ApiPlayer>());
+            gameRunner = new GameRunner(game, loggerMock.Object);
         }
 
         [Test]
@@ -86,7 +87,7 @@ namespace Risk.Tests
             bool isPlayerOnBoard = true;
             game.TryPlaceArmy(player1Token, new Location(0, 0));
             game.TryPlaceArmy(player2Token, new Location(1, 0));
-            gameRunner.BootPlayerFromGame(players[0]);
+            gameRunner.BootPlayerFromGame(game.GetPlayer(player1Token) as ApiPlayer);
 
             Assert.AreEqual(1, game.Players.Count());
 
@@ -99,6 +100,5 @@ namespace Risk.Tests
             }
             Assert.IsFalse(isPlayerOnBoard);
         }
-
     }
 }

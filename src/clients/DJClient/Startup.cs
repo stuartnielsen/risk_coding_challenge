@@ -45,7 +45,6 @@ namespace DJClient
                 app.UseDeveloperExceptionPage();
             }
 
-
             app.UseRouting();
 
             app.UseAuthorization();
@@ -55,46 +54,18 @@ namespace DJClient
                 endpoints.MapControllers();
             });
 
-
             var server = Configuration["ServerName"];
             var httpClient = httpClientFactory.CreateClient();
-            //var clientBaseAddress = app.ServerFeatures.Get<IServerAddressesFeature>().Addresses.First();
             var clientBaseAddress = Configuration["ClientCallbackAddress"];
-
-
             var playerName = Configuration["PlayerName"];
-
             var joinResponse = JoinServer(httpClient, server, clientBaseAddress, playerName);
-            //ToDo: Make this somehow accessible as a singelton
-            //var player = new ClientPlayer { Name = playerName, Token = joinResponse.Token };
-
-            
-
-        }
-
-        private string getLocalIPAddress()
-        {
-            var host = Dns.GetHostEntry(Dns.GetHostName());
-
-
-            foreach (var ip in host.AddressList)
-            {
-                if (ip.AddressFamily == AddressFamily.InterNetwork)
-                {
-                    return ip.ToString();
-                }
-            }
-            throw new Exception("No network adapters with an IPv4 address in the system!");
         }
 
         private async Task JoinServer(HttpClient httpClient, string serverName, string clientBaseAddress, string playerName)
         {
+            await Task.Delay(TimeSpan.FromSeconds(5));
             var joinRequest = new JoinRequest { CallbackBaseAddress = clientBaseAddress,  Name = playerName};
-
             var response = await httpClient.PostAsJsonAsync($"{serverName}/join", joinRequest);
-
-             //await response.Content.ReadFromJsonAsync<JoinResponse>();
-           
         }
     }
 }

@@ -8,54 +8,43 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Risk.SampleClient.Controllers;
 using System.Net.Http.Json;
 using Risk.Shared;
+using Microsoft.Extensions.Configuration;
 
 namespace Risk.SampleClient.Pages
 {
     public class IndexModel : PageModel
     {
         private readonly IHttpClientFactory httpClientFactory;
+        private readonly IConfiguration configuration;
 
-        public IndexModel(IHttpClientFactory httpClientFactory)
+        public IndexModel(IHttpClientFactory httpClientFactory, IConfiguration configuration, ColorGenerator colorGenerator)
         {
             this.httpClientFactory = httpClientFactory;
+            this.configuration = configuration;
+            ColorGenerator = colorGenerator;
         }
 
-        //[HttpGet("/")]
-        //public string Info()
-        //{
-        //    return "Submit a get request to /joinServer/{serverAddress} to join a game.";
-        //}
+        public GameStatus Status { get; set; }
+        public int MaxRow { get; private set; }
+        public int MaxCol { get; private set; }
+        public ColorGenerator ColorGenerator { get; }
 
-        [HttpGet("joinServer/{*server}")]
-        public async Task<IActionResult> JoinAsync(string server)
+        public async Task OnGetAsync()
+        {
+            Status = await httpClientFactory
+                .CreateClient()
+                .GetFromJsonAsync<GameStatus>($"{configuration["GameServer"]}/status");
+            MaxRow = Status.Board.Max(t => t.Location.Row);
+            MaxCol = Status.Board.Max(t => t.Location.Column);
+        }
+
+        public async Task<IActionResult> OnPostStartGameAsync()
         {
             var client = httpClientFactory.CreateClient();
-            string baseUrl = string.Format("{0}://{1}{2}", Request.Scheme, Request.Host, Request.PathBase);
-            var joinRequest = new JoinRequest {
-                CallbackBaseAddress = baseUrl,
-                Name = "braindead client"
-            };
-            try
-            {
-                var joinResponse = await client.PostAsJsonAsync($"{server}/join", joinRequest);
-                var content = await joinResponse.Content.ReadAsStringAsync();
-                return new OkResult();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex);
-            }
-        }
-
-        [HttpPost("joinServer")]
-        public async Task<IActionResult> JoinAsync_Post(string server)
-        {
-            await JoinAsync(server);
-            return RedirectToPage("/GameStatus", new { servername = server });
-        }
-
-        public void OnGet()
-        {
+            Task.Run(()=>
+                client.PostAsJsonAsync($"{configuration["GameServer"]}/startgame", new StartGameRequest { SecretCode = configuration["secretCode"] })
+            );            
+            return new RedirectToPageResult("Index");
         }
     }
 }

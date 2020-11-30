@@ -14,6 +14,8 @@ using Microsoft.Extensions.Logging;
 using Westwind.AspNetCore.LiveReload;
 using Risk.Shared;
 using Risk.Justin_Client;
+using System.Net.Http.Json;
+using System.Net.Http;
 
 namespace Risk.Justin_Client
 {
@@ -36,7 +38,7 @@ namespace Risk.Justin_Client
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHttpClientFactory clientFactory)
         {
             if (env.IsDevelopment())
             {
@@ -55,6 +57,18 @@ namespace Risk.Justin_Client
                 endpoints.MapControllers();
                 endpoints.MapRazorPages();
             });
+
+            JoinServer(clientFactory.CreateClient(),
+                Configuration["GameServer"],
+                Configuration["ClientCallbackAddress"],
+                Configuration["PlayerName"]
+                );
+        }
+        private async void JoinServer(HttpClient httpClient, string serverName, string clientBaseAddress, string playerName)
+        {
+            await Task.Delay(TimeSpan.FromSeconds(5));
+            var joinRequest = new JoinRequest { CallbackBaseAddress = clientBaseAddress, Name = playerName };
+            var respons = await httpClient.PostAsJsonAsync($"{serverName}/join", joinRequest);
         }
     }
 }

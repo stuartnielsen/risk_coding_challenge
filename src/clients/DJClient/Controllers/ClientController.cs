@@ -9,11 +9,13 @@ using Risk.Shared;
 
 namespace DJClient.Controllers
 {
-    
+
     public class ClientController : Controller
     {
         private readonly IHttpClientFactory clientFactory;
         private GamePlayer gamePlayer;
+
+        private GameOverRequest gameOver;
 
         public ClientController(IHttpClientFactory clientFactory, IPlayer player)
         {
@@ -23,7 +25,7 @@ namespace DJClient.Controllers
 
         }
 
-        [HttpGet("AreYouThere")] 
+        [HttpGet("AreYouThere")]
         public string AreYouThere( )
         {
             return "yes";
@@ -41,7 +43,7 @@ namespace DJClient.Controllers
             return gamePlayer.DecideBeginAttack(beginAttackRequest);
         }
 
-        [HttpPost("continueAttack")]
+        [HttpPost("continueAttacking")]
         public ContinueAttackResponse ContinueAttack([FromBody] ContinueAttackRequest continueAttackRequest)
         {
             return gamePlayer.DecideContinueAttackResponse(continueAttackRequest);
@@ -50,7 +52,14 @@ namespace DJClient.Controllers
         [HttpPost("gameOver")]
         public IActionResult GameOver([FromBody] GameOverRequest gameOverRequest)
         {
+            gameOver = gameOverRequest;
             return Ok(gameOverRequest);
+        }
+
+        [HttpGet("winner")]
+        public GameOverRequest Winner()
+        {
+            return gameOver;
         }
     }
 }
