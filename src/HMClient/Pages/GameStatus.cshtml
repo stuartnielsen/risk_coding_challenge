@@ -5,6 +5,10 @@
     int playerCount = 1;
 }
 
+<head>
+    <meta http-equiv="refresh" content="5">
+</head>
+
 <h3>Game State: @Model.Status.GameState</h3>
 
 @if (@Model.Status.GameState == Risk.Shared.GameState.Joining)
@@ -18,16 +22,18 @@
 
 <table cellpadding="5px">
     <tr>
-        <th>Location</th>
-        <th># Armies</th>
-        <th>Player Name</th>
+        <th>Player</th>
+        <th>Territories</th>
+        <th>Armies</th>
+        <th>Score</th>
     </tr>
-    @foreach (var territory in Model.Status.Board)
+    @foreach (var player in Model.Status.PlayerStats)
     {
         <tr>
-            <td>@territory.Location</td>
-            <td align="right">@territory.Armies.ToString("n0")</td>
-            <td align="right">@territory.OwnerName</td>
+            <td>@player.Name</td>
+            <td align="right">@player.Territories</td>
+            <td align="right">@player.Armies</td>
+            <td align="right">@player.Score</td>
         </tr>
     }
 </table>

@@ -11,44 +11,17 @@ namespace Risk.HMClient.Controllers
 {
     public class ClientController : Controller
     {
-        private readonly IHttpClientFactory httpClientFactory;
-        private static string serverAdress;
+        private readonly IHttpClientFactory clientFactory;
+        //private static string serverName = "http://localhost:5000";
 
-        public ClientController(IHttpClientFactory httpClientFactory)
+        public ClientController(IHttpClientFactory clientFactory)
         {
-            this.httpClientFactory = httpClientFactory;
+            this.clientFactory = clientFactory;
+
         }
 
-        [HttpGet("joinServer/{*server}")]
-        public async Task<IActionResult> JoinAsync(string server)
-        {
-            serverAdress = server;
-            var client = httpClientFactory.CreateClient();
-            string baseUrl = string.Format("{0}://{1}{2}", Request.Scheme, Request.Host, Request.PathBase);
-            var joinRequest = new JoinRequest {
-                CallbackBaseAddress = baseUrl,
-                Name = "HectoritoBonito"
-            };
-            try
-            {
-                var joinResponse = await client.PostAsJsonAsync($"{serverAdress}/join", joinRequest);
-                var content = await joinResponse.Content.ReadAsStringAsync();
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex);
-            }
-        }
 
-        [HttpPost("joinServer")]
-        public async Task<IActionResult> JoinAsync_Post(string server)
-        {
-            await JoinAsync(server);
-            return RedirectToPage("/GameStatus", new { servername = server });
-        }
-
-        [HttpGet("[action]")]
+        [HttpGet("AreYouThere")]
         public string AreYouThere()
         {
             return "yes";
@@ -57,25 +30,83 @@ namespace Risk.HMClient.Controllers
         [HttpPost("deployArmy")]
         public DeployArmyResponse DeployArmy([FromBody] DeployArmyRequest deployArmyRequest)
         {
-            DeployArmyResponse response = new DeployArmyResponse();
-            response.DesiredLocation = new Location(1, 1);
-            return response;
+            return createDeployResponse(deployArmyRequest);
+        }
+
+        private DeployArmyResponse createDeployResponse(DeployArmyRequest deployArmyRequest)
+        {
+
+            Location attacklocation = new Location();
+
+            //DeployArmyResponse response = new DeployArmyResponse();
+
+            foreach (BoardTerritory space in deployArmyRequest.Board)
+            {
+                if ((space.OwnerName == null || space.OwnerName == "HectoritoBonito") && space.Armies < 2)
+                {
+                    attacklocation = space.Location;
+                    break;
+                }
+                else
+                {
+                    continue;
+                }
+
+            }
+
+            return new DeployArmyResponse { DesiredLocation = attacklocation };
+
         }
 
         [HttpPost("beginAttack")]
         public BeginAttackResponse BeginAttack([FromBody] BeginAttackRequest beginAttackRequest)
         {
+            return createAttackResponse(beginAttackRequest);
+        }
+        private BeginAttackResponse createAttackResponse(BeginAttackRequest beginAttackRequest)
+        {
             BeginAttackResponse response = new BeginAttackResponse();
-            response.From = new Location(1, 1);
-            response.To = new Location(1, 2);
-            return response;
+            var attackerLocation = new Location();
+            var neighbour = new BoardTerritory();
+            //from is the attacker to is the defender
+            foreach (BoardTerritory space in beginAttackRequest.Board)
+            {
+                if (space.OwnerName == "HectoritoBonito")
+                {
+                    attackerLocation = new Location(space.Location.Row, space.Location.Column);
+
+
+                    for (int i = space.Location.Column - 1; i <= (space.Location.Column + 1); i++)
+                    {
+                        for (int j = space.Location.Row - 1; j <= (space.Location.Row + 1); j++)
+                        {
+                            if (j < 0)
+                            {
+                                continue;
+                            }
+
+
+                            neighbour = beginAttackRequest.Board.FirstOrDefault(t => t.Location == new Location(i, j));
+
+                            if (neighbour != null && neighbour.OwnerName != "HectoritoBonito" && neighbour.Armies >= 1)
+                            {
+                                response.From = attackerLocation;
+                                response.To = neighbour.Location;
+                                return response;
+                            }
+                        }
+                    }
+
+                }
+            }
+            return null;
         }
 
-        [HttpPost("continueAttack")]
+        [HttpPost("continueAttacking")]
         public ContinueAttackResponse ContinueAttack([FromBody] ContinueAttackRequest continueAttackRequest)
         {
             ContinueAttackResponse response = new ContinueAttackResponse();
-            response.ContinueAttacking = true;
+            response.ContinueAttacking = false;
 
             return response;
         }
@@ -85,6 +116,5 @@ namespace Risk.HMClient.Controllers
         {
             return Ok(gameOverRequest);
         }
-
     }
 }
