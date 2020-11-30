@@ -27,7 +27,7 @@
         <th>Armies</th>
         <th>Score</th>
     </tr>
-    @foreach (var player in Model.Status.PlayerStats)
+    @foreach (var player in Model.Status.PlayerStats.OrderByDescending(p => p.Score))
     {
         <tr>
             <td>@player.Name</td>
@@ -37,5 +37,6 @@
         </tr>
     }
 </table>
+
 
 
