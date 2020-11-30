@@ -103,7 +103,7 @@ namespace Emmanuel_Client.Controllers
                             to.Column = i;
                             to.Row = j;
                             tempTer = beginAttack.Board.FirstOrDefault(r => r.Location == to);
-                            if (!(tempTer is null) && tempTer.OwnerName != "Emmanuel" && tempTer.Armies > 0)
+                            if (!(tempTer is null) && tempTer.OwnerName != "Emmanuel")
                             {
                                 to = tempTer.Location;
                                 return new BeginAttackResponse { From = from, To = to };
