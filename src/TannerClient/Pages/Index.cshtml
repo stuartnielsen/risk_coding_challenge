@@ -1,4 +1,4 @@
-﻿@page
+﻿@page "/index"
 @model TannerClient.Pages.IndexModel
 @{
 }
@@ -18,6 +18,7 @@
         <th>Location</th>
         <th>Armies</th>
         <th>Player Name</th>
+        <th>Score</th>
     </tr>
     @foreach (var territory in Model.Status.Board)
     {
@@ -25,6 +26,7 @@
             <td>@territory.Location</td>
             <td>@territory.Armies</td>
             <td>@territory.OwnerName</td>
+            <td></td> @{/*Need to add score calculation here (Can't remember how the score is calculated*/ }
         </tr>
     }
 </table>
