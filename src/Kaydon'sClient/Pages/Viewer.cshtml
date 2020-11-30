@@ -1,9 +1,50 @@
 ﻿@page
 @model Kaydon_sClient.Pages.ViewerModel
 @{
+    
 }
+<meta http-equiv="refresh" content="1">
+<body>
 
-<div class="grid-container">
+    @foreach (var player in Model.GameStatus.PlayerStats)
+    {
+        <div class="Players">
+            <h1>@player.Name</h1>
+            <h2>@player.Territories</h2>
+            <h2>@player.Armies</h2>
+            <h2>@player.Score</h2>
+        </div>
+    }
+
+    <div>
+        <table >
+            @for (int row = 0; row < Model.MaxRow; ++row)
+            {
+                <tr>
+                    @for (int col = 0; col < Model.MaxCol; ++col)
+                    {
+                        var territory = Model.GameStatus.Board.FirstOrDefault(t => t.Location.Row == row && t.Location.Column == col);
+                        var owner = territory?.OwnerName ?? "Empty";
+                        <td style="min-height: 300px; min-width: 300px">
+                            <div>Owner: @owner</div>
+                            <div>Placed Armies: @territory?.Armies </div>
+                        </td>
+                    }
+                </tr>
+            }
+        </table>
+    </div>
+
+</body>
+
+<style>
+    .Players{
+        background-color:aquamarine;
+        border-radius:5px;
+    }
+</style>
+
+@*<div class="grid-container">
     <div class="grid0\\\,0"></div>
     <div class="grid00"></div>
     <div class="grid11"></div>
@@ -144,4 +185,4 @@
     }
 
 
-</style>
+</style>*@

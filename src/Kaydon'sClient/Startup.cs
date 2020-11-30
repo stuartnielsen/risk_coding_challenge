@@ -29,6 +29,8 @@ namespace Kaydon_sClient
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddRazorPages();
+            services.AddHttpClient();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -48,6 +50,7 @@ namespace Kaydon_sClient
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapRazorPages();
             });
 
             JoinServer(clientFactory.CreateClient(),
@@ -61,7 +64,10 @@ namespace Kaydon_sClient
         {
             await Task.Delay(TimeSpan.FromSeconds(5));
             var joinRequest = new JoinRequest { CallbackBaseAddress = clientBaseAddress, Name = playerName };
-            var response = await httpClient.PostAsJsonAsync($"{serverName}/join", joinRequest);
+            if (Configuration["joinGame"] == "yes")
+            {
+                var response = await httpClient.PostAsJsonAsync($"{serverName}/join", joinRequest);
+            }
         }
     }
 }
