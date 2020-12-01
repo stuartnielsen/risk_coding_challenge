@@ -1,25 +1,50 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Logging;
+using System.Net.Http.Json;
+using Risk.Shared;
+using Microsoft.Extensions.Configuration;
+using BrennanClient;
 
-namespace BrennanClient.Pages
+namespace Risk.SampleClient.Pages
 {
     public class IndexModel : PageModel
     {
-        private readonly ILogger<IndexModel> _logger;
+        private readonly IHttpClientFactory httpClientFactory;
+        private readonly IConfiguration configuration;
 
-        public IndexModel(ILogger<IndexModel> logger)
+        public IndexModel(IHttpClientFactory httpClientFactory, IConfiguration configuration, ColorGenerator colorGenerator)
         {
-            _logger = logger;
+            this.httpClientFactory = httpClientFactory;
+            this.configuration = configuration;
+            ColorGenerator = colorGenerator;
         }
 
-        public void OnGet()
-        {
+        public GameStatus Status { get; set; }
+        public int MaxRow { get; private set; }
+        public int MaxCol { get; private set; }
+        public ColorGenerator ColorGenerator { get; }
 
+        public async Task OnGetAsync()
+        {
+            Status = await httpClientFactory
+                .CreateClient()
+                .GetFromJsonAsync<GameStatus>($"{configuration["GameServer"]}/status");
+            MaxRow = Status.Board.Max(t => t.Location.Row);
+            MaxCol = Status.Board.Max(t => t.Location.Column);
+        }
+
+        public async Task<IActionResult> OnPostStartGameAsync()
+        {
+            var client = httpClientFactory.CreateClient();
+            Task.Run(()=>
+                client.PostAsJsonAsync($"{configuration["GameServer"]}/startgame", new StartGameRequest { SecretCode = configuration["secretCode"] })
+            );            
+            return new RedirectToPageResult("Index");
         }
     }
 }

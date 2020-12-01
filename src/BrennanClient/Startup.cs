@@ -12,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Risk.Shared;
+using Westwind.AspNetCore.LiveReload;
 
 namespace BrennanClient
 {
@@ -29,6 +30,9 @@ namespace BrennanClient
         {
             services.AddControllers();
             services.AddHttpClient();
+            services.AddLiveReload();
+            services.AddRazorPages().AddRazorRuntimeCompilation();
+            services.AddSingleton<ColorGenerator>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -37,17 +41,18 @@ namespace BrennanClient
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseLiveReload();
             }
 
             //app.UseHttpsRedirection();
 
+            app.UseStaticFiles();
             app.UseRouting();
-
-            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapRazorPages();
             });
 
             var httpClient = httpClientFactory.CreateClient();
