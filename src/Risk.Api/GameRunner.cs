@@ -79,6 +79,26 @@ namespace Risk.Api
             return r;
         }
 
+        private async Task newDoBattle()
+        {
+            game.StartTime = DateTime.Now;
+            while (game.Players.Count() > 1 && game.GameState == GameState.Attacking && game.Players.Any(p => game.PlayerCanAttack(p)))
+            {
+                for (int i = 0; i < game.Players.Count() && game.Players.Count() > 1; i++)
+                {
+                    var currentRemovedPlayers = removedPlayers;
+                    var currentPlayer = game.Players.Skip(i).First() as ApiPlayer;
+                    DeployPlayerArmies(currentPlayer);
+                    await DoPlayerBattle(currentPlayer);
+                    if(currentRemovedPlayers.Count > removedPlayers.Count)
+                    {
+                        i--;
+                    }
+                    PlayerReinforce(currentPlayer);
+                }
+            }
+        }
+
         private async Task doBattle()
         {
             game.StartTime = DateTime.Now;
@@ -235,6 +255,56 @@ namespace Risk.Api
         {
             RemovePlayerFromBoard(player.Token);
             RemovePlayerFromGame(player.Token);
+        }
+
+        public void DeployPlayerArmies(ApiPlayer player)
+        {
+
+        }
+
+        public async Task DoPlayerBattle(ApiPlayer player)
+        {
+            if (game.PlayerCanAttack(player))
+            {
+                var failedTries = 0;
+
+                TryAttackResult attackResult = new TryAttackResult { AttackInvalid = false };
+                Territory attackingTerritory = null;
+                Territory defendingTerritory = null;
+                do
+                {
+                    logger.LogInformation($"Asking {player.Name} where they want to attack...");
+
+                    var beginAttackResponse = await askForAttackLocationAsync(player, BeginAttackStatus.PreviousAttackRequestFailed);
+                    try
+                    {
+                        attackingTerritory = game.Board.GetTerritory(beginAttackResponse.From);
+                        defendingTerritory = game.Board.GetTerritory(beginAttackResponse.To);
+
+                        logger.LogInformation($"{player.Name} wants to attack from {attackingTerritory} to {defendingTerritory}");
+
+                        attackResult = game.TryAttack(player.Token, attackingTerritory, defendingTerritory);
+                    }
+                    catch (Exception ex)
+                    {
+                        attackResult = new TryAttackResult { AttackInvalid = true, Message = ex.Message };
+                    }
+                    if (attackResult.AttackInvalid)
+                    {
+                        logger.LogError($"Invalid attack request! {player.Name} from {attackingTerritory} to {defendingTerritory} ");
+                        failedTries++;
+                        if (failedTries == MaxFailedTries)
+                        {
+                            BootPlayerFromGame(player);
+                        }
+                    }
+                } while (attackResult.AttackInvalid);
+            }
+        }
+
+        public void PlayerReinforce(ApiPlayer player)
+        {
+
         }
     }
 }
