@@ -222,7 +222,8 @@ namespace Risk.Game
                 BattleWasWon(attackingTerritory, defendingTerritory);
                 return new TryAttackResult {
                     CanContinue = false,
-                    AttackInvalid = false
+                    AttackInvalid = false,
+                    BattleWasWon = true
                 };
             }
             return new TryAttackResult { CanContinue = attackingTerritory.Armies > 1, AttackInvalid = false };
@@ -241,7 +242,7 @@ namespace Risk.Game
         {
             defendingTerritory.Owner = attackingTerritory.Owner;
             defendingTerritory.Armies = attackingTerritory.Armies - 1;
-            attackingTerritory.Armies = attackingTerritory.Armies - defendingTerritory.Armies;
+            attackingTerritory.Armies = attackingTerritory.Armies - defendingTerritory.Armies;            
         }
     }
 }
