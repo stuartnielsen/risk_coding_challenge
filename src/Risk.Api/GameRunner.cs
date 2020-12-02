@@ -93,7 +93,7 @@ namespace Risk.Api
                     if (usedCardBonus)
                         CardBonusCount++;
                     await DoPlayerBattle(currentPlayer);
-                    if (currentRemovedPlayers.Count > removedPlayers.Count)
+                    if (currentRemovedPlayers.Count < removedPlayers.Count)
                     {
                         i--;
                     }
