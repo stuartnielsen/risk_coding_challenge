@@ -363,6 +363,10 @@ namespace Risk.Api
                         logger.LogInformation($"{player.Name} wants to attack from {attackingTerritory} to {defendingTerritory}");
 
                         attackResult = game.TryAttack(player.Token, attackingTerritory, defendingTerritory);
+                        if(attackResult.BattleWasWon)
+                        {
+                            player.PlayerCards.Add(new Card());
+                        }
                     }
                     catch (Exception ex)
                     {
