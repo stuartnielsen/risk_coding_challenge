@@ -82,15 +82,18 @@ namespace Risk.Api
         private async Task newDoBattle()
         {
             game.StartTime = DateTime.Now;
+            int CardBonusCount = 0;
             while (game.Players.Count() > 1 && game.GameState == GameState.Attacking && game.Players.Any(p => game.PlayerCanAttack(p)))
             {
                 for (int i = 0; i < game.Players.Count() && game.Players.Count() > 1; i++)
                 {
                     var currentRemovedPlayers = removedPlayers;
                     var currentPlayer = game.Players.Skip(i).First() as ApiPlayer;
-                    DeployPlayerArmies(currentPlayer);
+                    var usedCardBonus = DeployPlayerArmies(currentPlayer, CardBonusCount);
+                    if (usedCardBonus)
+                        CardBonusCount++;
                     await DoPlayerBattle(currentPlayer);
-                    if(currentRemovedPlayers.Count > removedPlayers.Count)
+                    if (currentRemovedPlayers.Count > removedPlayers.Count)
                     {
                         i--;
                     }
@@ -99,10 +102,10 @@ namespace Risk.Api
             }
         }
 
-        private async Task doBattle()
+        private async Task doBattle()//old
         {
             game.StartTime = DateTime.Now;
-            while (game.Players.Count() > 1 && game.GameState == GameState.Attacking && game.Players.Any(p=>game.PlayerCanAttack(p)))
+            while (game.Players.Count() > 1 && game.GameState == GameState.Attacking && game.Players.Any(p => game.PlayerCanAttack(p)))
             {
 
                 for (int i = 0; i < game.Players.Count() && game.Players.Count() > 1; i++)
@@ -112,7 +115,7 @@ namespace Risk.Api
                     {
                         var failedTries = 0;
 
-                        TryAttackResult attackResult = new TryAttackResult {  AttackInvalid = false} ;
+                        TryAttackResult attackResult = new TryAttackResult { AttackInvalid = false };
                         Territory attackingTerritory = null;
                         Territory defendingTerritory = null;
                         do
@@ -131,7 +134,7 @@ namespace Risk.Api
                             }
                             catch (Exception ex)
                             {
-                                attackResult = new TryAttackResult { AttackInvalid = true, Message=ex.Message };
+                                attackResult = new TryAttackResult { AttackInvalid = true, Message = ex.Message };
                             }
                             if (attackResult.AttackInvalid)
                             {
@@ -257,9 +260,85 @@ namespace Risk.Api
             RemovePlayerFromGame(player.Token);
         }
 
-        public void DeployPlayerArmies(ApiPlayer player)
+        public bool DeployPlayerArmies(ApiPlayer player, int cardBonusLevel)
         {
+            bool cardBonusUsed = HasCardBonus(player);
+            int armiesForTerritories = FindNumberBonusArmiesFromTerritories(player);
+            int totalBonusArmies = armiesForTerritories;
+            if (cardBonusUsed)
+            {
+                totalBonusArmies += (cardBonusLevel + 1) * 5;
+            }
+            DeployBonusArmies(player, totalBonusArmies);
+            return cardBonusUsed;
+        }
 
+        public async void DeployBonusArmies(ApiPlayer currentPlayer, int playerArmies)
+        {
+            await TryDeployBonusArmies(currentPlayer, playerArmies);
+        }
+
+        private async Task TryDeployBonusArmies(ApiPlayer currentPlayer, int playerArmies)
+        {
+            while (playerArmies > 0)
+            {
+                var deployArmyResponse = await askForDeployLocationAsync(currentPlayer, DeploymentStatus.YourTurn);
+                logger.LogDebug($"{currentPlayer.Name} wants to deploy to {deployArmyResponse.DesiredLocation}");
+            }
+        }
+
+        public int FindNumberBonusArmiesFromTerritories(ApiPlayer player)
+        {
+            double playerReinforcements = game.Board.Territories.Where(p => player.Name == p.Owner.Name).Count() / 3;
+            return (int)Math.Floor(playerReinforcements);
+        }
+
+        public bool HasCardBonus(ApiPlayer player)
+        {
+            int soldierCards = 0;
+            int infantryCards = 0;
+            int artilleryCards = 0;
+            bool hasBonus = false;
+            if (player.PlayerCards.Count > 2)
+            {
+                foreach (var card in player.PlayerCards)
+                {
+                    if (card.Type == "Soldier")
+                        soldierCards++;
+                    if (card.Type == "Infantry")
+                        infantryCards++;
+                    if (card.Type == "Artillery")
+                        artilleryCards++;
+                }
+
+                if (soldierCards > 2)
+                {
+                    hasBonus = true;
+                    for (int i = 0; i < 3; i++)
+                        player.PlayerCards.Remove(player.PlayerCards.Where(c => c.Type == "Soldier").First());
+                }
+                else if (infantryCards > 2)
+                {
+                    hasBonus = true;
+                    for (int i = 0; i < 3; i++)
+                        player.PlayerCards.Remove(player.PlayerCards.Where(c => c.Type == "Infantry").First());
+                }
+                else if (artilleryCards > 2)
+                {
+                    hasBonus = true;
+                    for (int i = 0; i < 3; i++)
+                        player.PlayerCards.Remove(player.PlayerCards.Where(c => c.Type == "Artillery").First());
+                }
+                else if (soldierCards > 0 && infantryCards > 0 && artilleryCards > 0)
+                {
+                    hasBonus = true;
+                    player.PlayerCards.Remove(player.PlayerCards.Where(c => c.Type == "Soldier").First());
+                    player.PlayerCards.Remove(player.PlayerCards.Where(c => c.Type == "Infantry").First());
+                    player.PlayerCards.Remove(player.PlayerCards.Where(c => c.Type == "Artillery").First());
+
+                }
+            }
+            return hasBonus;
         }
 
         public async Task DoPlayerBattle(ApiPlayer player)
