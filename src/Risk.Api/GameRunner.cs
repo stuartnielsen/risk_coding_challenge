@@ -79,22 +79,32 @@ namespace Risk.Api
             return r;
         }
 
-        private async Task newDoBattle()
+        private async Task<DeployArmyResponse> askForReinforceLocationAsync(ApiPlayer currentPlayer, DeploymentStatus deploymentStatus, int armiesRemaining)
+        {
+            var reinforceRequest = new DeployArmyRequest {
+                Board = game.Board.SerializableTerritories,
+                Status = deploymentStatus,
+                ArmiesRemaining = armiesRemaining
+            };
+            var json = System.Text.Json.JsonSerializer.Serialize(reinforceRequest);
+            var deployArmyResponse = (await currentPlayer.HttpClient.PostAsJsonAsync("/reinforce", reinforceRequest));
+            deployArmyResponse.EnsureSuccessStatusCode();
+            var r = await deployArmyResponse.Content.ReadFromJsonAsync<DeployArmyResponse>();
+            return r;
+        }
+
+        private async Task NewDoBattle()
         {
             game.StartTime = DateTime.Now;
             while (game.Players.Count() > 1 && game.GameState == GameState.Attacking && game.Players.Any(p => game.PlayerCanAttack(p)))
             {
                 for (int i = 0; i < game.Players.Count() && game.Players.Count() > 1; i++)
                 {
-                    var currentRemovedPlayers = removedPlayers;
                     var currentPlayer = game.Players.Skip(i).First() as ApiPlayer;
-                    DeployPlayerArmies(currentPlayer);
-                    await DoPlayerBattle(currentPlayer);
-                    if(currentRemovedPlayers.Count > removedPlayers.Count)
-                    {
-                        i--;
-                    }
-                    PlayerReinforce(currentPlayer);
+                    await Reinforce(currentPlayer);
+                    if(!removedPlayers.Contains(currentPlayer)) await DoPlayerBattle(currentPlayer);
+                    if (!removedPlayers.Contains(currentPlayer)) await PlayerManeuver(currentPlayer);
+                    else i--;
                 }
             }
         }
@@ -257,9 +267,31 @@ namespace Risk.Api
             RemovePlayerFromGame(player.Token);
         }
 
-        public void DeployPlayerArmies(ApiPlayer player)
+        public async Task Reinforce(ApiPlayer player)
         {
-
+            int armiesRemaining = game.CalculateReinfrocementArmies(player);
+            while (armiesRemaining > 0)
+            {
+                var reinforceResponse = await askForReinforceLocationAsync(player, DeploymentStatus.YourTurn, armiesRemaining);
+                logger.LogDebug($"{player.Name} wants to reinforce to {reinforceResponse.DesiredLocation}");
+                var failedTries = 0;
+                //check that this location exists and is available to be used (e.g. not occupied by another army)
+                while (game.TryPlaceArmy(player.Token, reinforceResponse.DesiredLocation) is false)
+                {
+                    failedTries++;
+                    logger.LogError($"Invalid Reinforce request! {player.Name} to {reinforceResponse.DesiredLocation}");
+                    if (failedTries == MaxFailedTries)
+                    {
+                        BootPlayerFromGame(player);
+                        break;
+                    }
+                    else
+                    {
+                        reinforceResponse = await askForDeployLocationAsync(player, DeploymentStatus.PreviousAttemptFailed);
+                    }
+                }
+                armiesRemaining--;
+            }
         }
 
         public async Task DoPlayerBattle(ApiPlayer player)
@@ -302,9 +334,37 @@ namespace Risk.Api
             }
         }
 
-        public void PlayerReinforce(ApiPlayer player)
+        public async Task PlayerManeuver(ApiPlayer player)
         {
-
+            var response = await askForManeuverkLocationAsync(player);
+            var fromTerritory = game.Board.GetTerritory(response.From);
+            var toTerritory = game.Board.GetTerritory(response.To);
+            Boolean result = new Boolean();
+            var failedTrys = 0;
+            do
+            {
+                logger.LogInformation($"{player.Name} wants to maneuver from {fromTerritory} to {toTerritory}");
+                result = game.TryManeuver(player, fromTerritory, toTerritory);
+                if (!result)
+                {
+                    logger.LogError($"Invalid maneuver request! {player.Name} from {fromTerritory} to {toTerritory} ");
+                    failedTrys++;
+                }
+                if(failedTrys >= 3)
+                {
+                    BootPlayerFromGame(player);
+                }
+            } while (!result);
+            
+        }
+        private async Task<ManeuverResponse> askForManeuverkLocationAsync(ApiPlayer player)
+        {
+            var maneuverRequest = new ManeuverRequest {
+                Board = game.Board.SerializableTerritories
+            };
+            return await (await player.HttpClient.PostAsJsonAsync("/maneuver", maneuverRequest))
+                .EnsureSuccessStatusCode()
+                .Content.ReadFromJsonAsync<ManeuverResponse>();
         }
     }
 }
