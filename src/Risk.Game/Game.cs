@@ -106,6 +106,40 @@ namespace Risk.Game
             return placeResult;
         }
 
+        public bool TryReinforceArmy(string playerToken, Location desiredLocation)
+        {
+            var placeResult = false;
+
+            Territory territory;
+            try
+            {
+                territory = Board.GetTerritory(desiredLocation);
+            }
+            catch { return false; }
+
+            if (territory.Owner == null || territory.Owner.Token != playerToken)
+            {
+                placeResult = false;
+            }
+            else //owner token == playerToken
+            {
+                if (GetPlayerRemainingArmies(playerToken) > 0)
+                {
+                    territory.Armies++;
+                    placeResult = true;
+                }
+                else
+                {
+                    placeResult = false;
+                }
+            }
+
+            if (placeResult && CanChangeToAttackState())
+                gameState = GameState.Attacking;
+
+            return placeResult;
+        }
+
         public int GetPlayerRemainingArmies(string playerToken)
         {
             var player = GetPlayer(playerToken);
@@ -243,6 +277,28 @@ namespace Risk.Game
             defendingTerritory.Owner = attackingTerritory.Owner;
             defendingTerritory.Armies = attackingTerritory.Armies - 1;
             attackingTerritory.Armies = attackingTerritory.Armies - defendingTerritory.Armies;            
+        }
+
+        public int CalculateReinfrocementArmies(IPlayer player)
+        {
+            return GetNumTerritories(player) / 3;
+        }
+
+        public Boolean TryManeuver(IPlayer player, Territory from, Territory to)
+        {
+            var fromNeighbors = Board.GetNeighbors(from);
+            IList < Location > fnLocations = new List<Location>();
+            foreach(Territory t in fromNeighbors)
+            {
+                fnLocations.Add(t.Location);
+            }
+            if (player.Name == from.Owner.Name && player.Name == to.Owner.Name && fnLocations.Contains(to.Location))
+            {
+                to.Armies += from.Armies - 1;
+                from.Armies = 1;
+                return true;
+            }
+            else return false;
         }
     }
 }
