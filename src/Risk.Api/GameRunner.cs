@@ -295,33 +295,33 @@ namespace Risk.Api
 
         public bool HasCardBonus(ApiPlayer player)
         {
-            int soldierCards = 0;
             int infantryCards = 0;
+            int cavalryCards = 0;
             int artilleryCards = 0;
             bool hasBonus = false;
             if (player.PlayerCards.Count > 2)
             {
                 foreach (var card in player.PlayerCards)
                 {
-                    if (card.Type == "Soldier")
-                        soldierCards++;
                     if (card.Type == "Infantry")
                         infantryCards++;
+                    if (card.Type == "Cavalry")
+                        cavalryCards++;
                     if (card.Type == "Artillery")
                         artilleryCards++;
                 }
 
-                if (soldierCards > 2)
-                {
-                    hasBonus = true;
-                    for (int i = 0; i < 3; i++)
-                        player.PlayerCards.Remove(player.PlayerCards.Where(c => c.Type == "Soldier").First());
-                }
-                else if (infantryCards > 2)
+                if (infantryCards > 2)
                 {
                     hasBonus = true;
                     for (int i = 0; i < 3; i++)
                         player.PlayerCards.Remove(player.PlayerCards.Where(c => c.Type == "Infantry").First());
+                }
+                else if (cavalryCards > 2)
+                {
+                    hasBonus = true;
+                    for (int i = 0; i < 3; i++)
+                        player.PlayerCards.Remove(player.PlayerCards.Where(c => c.Type == "Cavalry").First());
                 }
                 else if (artilleryCards > 2)
                 {
@@ -329,11 +329,11 @@ namespace Risk.Api
                     for (int i = 0; i < 3; i++)
                         player.PlayerCards.Remove(player.PlayerCards.Where(c => c.Type == "Artillery").First());
                 }
-                else if (soldierCards > 0 && infantryCards > 0 && artilleryCards > 0)
+                else if (infantryCards > 0 && cavalryCards > 0 && artilleryCards > 0)
                 {
                     hasBonus = true;
-                    player.PlayerCards.Remove(player.PlayerCards.Where(c => c.Type == "Soldier").First());
                     player.PlayerCards.Remove(player.PlayerCards.Where(c => c.Type == "Infantry").First());
+                    player.PlayerCards.Remove(player.PlayerCards.Where(c => c.Type == "Cavalry").First());
                     player.PlayerCards.Remove(player.PlayerCards.Where(c => c.Type == "Artillery").First());
 
                 }

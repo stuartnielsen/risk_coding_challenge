@@ -12,7 +12,7 @@ namespace Risk.Shared
         public Card()
         {
             var random = new Random();
-            var cardTypes = new List<string> { "Soldier", "Infantry", "Artillery"};
+            var cardTypes = new List<string> { "Infantry", "Cavalry", "Artillery"};
             Type = cardTypes[random.Next(cardTypes.Count)];
         }
     }
