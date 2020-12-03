@@ -32,7 +32,7 @@ namespace Risk.Api
         public async Task StartGameAsync()
         {
             await deployArmiesAsync();
-            await doBattle();
+            await newDoBattle();
             await reportWinner();
         }
 
@@ -93,7 +93,7 @@ namespace Risk.Api
             return r;
         }
 
-        private async Task NewDoBattle()
+        private async Task newDoBattle()
         {
             game.StartTime = DateTime.Now;
             while (game.Players.Count() > 1 && game.GameState == GameState.Attacking && game.Players.Any(p => game.PlayerCanAttack(p)))
@@ -107,6 +107,8 @@ namespace Risk.Api
                     else i--;
                 }
             }
+            logger.LogInformation("Game Over");
+            game.SetGameOver();
         }
 
         private async Task doBattle()
@@ -276,7 +278,7 @@ namespace Risk.Api
                 logger.LogDebug($"{player.Name} wants to reinforce to {reinforceResponse.DesiredLocation}");
                 var failedTries = 0;
                 //check that this location exists and is available to be used (e.g. not occupied by another army)
-                while (game.TryPlaceArmy(player.Token, reinforceResponse.DesiredLocation) is false)
+                while (game.TryReinforceArmy(player.Token, reinforceResponse.DesiredLocation) is false)
                 {
                     failedTries++;
                     logger.LogError($"Invalid Reinforce request! {player.Name} to {reinforceResponse.DesiredLocation}");
@@ -287,7 +289,7 @@ namespace Risk.Api
                     }
                     else
                     {
-                        reinforceResponse = await askForDeployLocationAsync(player, DeploymentStatus.PreviousAttemptFailed);
+                        reinforceResponse = await askForReinforceLocationAsync(player, DeploymentStatus.PreviousAttemptFailed, armiesRemaining);
                     }
                 }
                 armiesRemaining--;
@@ -303,6 +305,7 @@ namespace Risk.Api
                 TryAttackResult attackResult = new TryAttackResult { AttackInvalid = false };
                 Territory attackingTerritory = null;
                 Territory defendingTerritory = null;
+                bool hasCard = false;
                 do
                 {
                     logger.LogInformation($"Asking {player.Name} where they want to attack...");
@@ -316,6 +319,11 @@ namespace Risk.Api
                         logger.LogInformation($"{player.Name} wants to attack from {attackingTerritory} to {defendingTerritory}");
 
                         attackResult = game.TryAttack(player.Token, attackingTerritory, defendingTerritory);
+                        if (attackResult.BattleWasWon)
+                        {
+                            player.PlayerCards.Add(new Card());
+                            hasCard = true;
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -331,6 +339,29 @@ namespace Risk.Api
                         }
                     }
                 } while (attackResult.AttackInvalid);
+                while (attackResult.CanContinue)
+                {
+                    var continueResponse = await askContinueAttackingAsync(player, attackingTerritory, defendingTerritory);
+                    if (continueResponse.ContinueAttacking)
+                    {
+                        logger.LogInformation("Keep attacking!");
+                        attackResult = game.TryAttack(player.Token, attackingTerritory, defendingTerritory);
+                        if(attackResult.BattleWasWon && !hasCard)
+                        {
+                            player.PlayerCards.Add(new Card());
+                            hasCard = true;
+                        }
+                    }
+                    else
+                    {
+                        logger.LogInformation("run away!");
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                logger.LogWarning($"{player.Name} cannot attack.");
             }
         }
 
