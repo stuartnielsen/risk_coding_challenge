@@ -193,22 +193,22 @@ services:
 #    depends_on:
 #    - risk.api
 
-  rusty_client:
-    hostname: rusty_client
-    image: ${DOCKER_REGISTRY-}rustyclient
-    build:
-      context: .
-      dockerfile: Rusty_Client/Dockerfile
-    ports:
-    - "5055:80"
-    environment:
-    - GameServer=http://risk.api
-    - ClientCallbackAddress=http://rusty_client
-    - PlayerName=Rusty
-    networks:
-      risknet:
-    depends_on:
-    - risk.api
+ # rusty_client:
+ #   hostname: rusty_client
+ #   image: ${DOCKER_REGISTRY-}rustyclient
+ #   build:
+ #     context: .
+ #     dockerfile: Rusty_Client/Dockerfile
+ #   ports:
+ #   - "5055:80"
+ #   environment:
+ #   - GameServer=http://risk.api
+ #   - ClientCallbackAddress=http://rusty_client
+ #   - PlayerName=Rusty
+ #   networks:
+ #     risknet:
+ #   depends_on:
+ #   - risk.api
 
   maksad_client:
     image: ${DOCKER_REGISTRY-}maksadclient

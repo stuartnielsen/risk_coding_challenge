@@ -21,19 +21,22 @@ namespace Risk.Api.Controllers
     public class GameController : Controller
     {
         private Game.Game game;
+        private IServiceCollection diContainer;
         private IMemoryCache memoryCache;
         private readonly IHttpClientFactory clientFactory;
         private readonly IConfiguration config;
+        public IConfiguration Configuration { get; }
         private readonly ILogger<GameRunner> logger;
         private readonly List<ApiPlayer> removedPlayers = new List<ApiPlayer>();
 
-        public GameController(Game.Game game, IMemoryCache memoryCache, IHttpClientFactory client, IConfiguration config, ILogger<GameRunner> logger)
+        public GameController(Game.Game game, IMemoryCache memoryCache, IHttpClientFactory client, IConfiguration config, ILogger<GameRunner> logger, IServiceCollection diContainer)
         {
             this.game = game;
             this.clientFactory = client;
             this.config = config;
             this.logger = logger;
             this.memoryCache = memoryCache;
+            this.diContainer = diContainer;
         }
 
         private async Task<bool> ClientIsRepsonsive(string baseAddress)
@@ -95,6 +98,30 @@ namespace Risk.Api.Controllers
             {
                 return BadRequest("Unable to join game");
             }
+        }
+
+        [HttpPost("[action]")]
+        public async Task<IActionResult> RestartGame(RestartGameRequest restartGameRequest)
+        {
+            var serviceDescriptor = diContainer.First(s => s.ServiceType == typeof(IServiceCollection));
+            diContainer.Remove(serviceDescriptor);
+            diContainer.AddSingleton(InitializeGame(
+                int.Parse(Configuration["height"] ?? "5"),
+                int.Parse(Configuration["width"] ?? "5"),
+                int.Parse(Configuration["startingArmies"] ?? "5")));
+
+            if (game.GameState != GameState.Joining)
+            {
+                return BadRequest("Game not in Joining state");
+            }
+            if (config["secretCode"] != restartGameRequest.SecretCode)
+            {
+                return BadRequest("Secret code doesn't match, unable to start game.");
+            }
+            game.StartGame();
+            var gameRunner = new GameRunner(game, logger);
+            await gameRunner.StartGameAsync();
+            return Ok();
         }
 
         [HttpPost("[action]")]

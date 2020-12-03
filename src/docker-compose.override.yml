@@ -90,11 +90,11 @@ services:
 #    volumes:
 #      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
 #
-  rusty_client:
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-    ports:
-      - "80"
+  #rusty_client:
+  #  environment:
+  #    - ASPNETCORE_ENVIRONMENT=Development
+  #  ports:
+  #    - "80"
    
 
   maksad_client:
