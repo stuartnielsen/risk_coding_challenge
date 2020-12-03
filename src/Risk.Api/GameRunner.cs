@@ -374,62 +374,70 @@ namespace Risk.Api
                 var failedTries = 0;
 
                 TryAttackResult attackResult = new TryAttackResult { AttackInvalid = false };
+                ContinueAttackResponse anotherAttackResponse = new ContinueAttackResponse { ContinueAttacking = false };
                 Territory attackingTerritory = null;
                 Territory defendingTerritory = null;
                 bool hasCard = false;
                 do
                 {
-                    logger.LogInformation($"Asking {player.Name} where they want to attack...");
 
-                    var beginAttackResponse = await askForAttackLocationAsync(player, BeginAttackStatus.PreviousAttackRequestFailed);
-                    try
+                    do
                     {
-                        attackingTerritory = game.Board.GetTerritory(beginAttackResponse.From);
-                        defendingTerritory = game.Board.GetTerritory(beginAttackResponse.To);
+                        logger.LogInformation($"Asking {player.Name} where they want to attack...");
 
-                        logger.LogInformation($"{player.Name} wants to attack from {attackingTerritory} to {defendingTerritory}");
-
-                        attackResult = game.TryAttack(player.Token, attackingTerritory, defendingTerritory);
-                      
-                        if (attackResult.BattleWasWon && !hasCard)
+                        var beginAttackResponse = await askForAttackLocationAsync(player, BeginAttackStatus.PreviousAttackRequestFailed);
+                        try
                         {
-                            player.PlayerCards.Add(new Card());
-                            hasCard = true;
+                            attackingTerritory = game.Board.GetTerritory(beginAttackResponse.From);
+                            defendingTerritory = game.Board.GetTerritory(beginAttackResponse.To);
+
+                            logger.LogInformation($"{player.Name} wants to attack from {attackingTerritory} to {defendingTerritory}");
+
+                            attackResult = game.TryAttack(player.Token, attackingTerritory, defendingTerritory);
+
+                            if (attackResult.BattleWasWon && !hasCard)
+                            {
+                                player.PlayerCards.Add(new Card());
+                                hasCard = true;
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            attackResult = new TryAttackResult { AttackInvalid = true, Message = ex.Message };
+                        }
+                        if (attackResult.AttackInvalid)
+                        {
+                            logger.LogError($"Invalid attack request! {player.Name} from {attackingTerritory} to {defendingTerritory} ");
+                            failedTries++;
+                            if (failedTries == MaxFailedTries)
+                            {
+                                BootPlayerFromGame(player);
+                            }
+                        }
+                    } while (attackResult.AttackInvalid);
+                    while (attackResult.CanContinue)
+                    {
+                        var continueResponse = await askContinueAttackingAsync(player, attackingTerritory, defendingTerritory);
+                        if (continueResponse.ContinueAttacking)
+                        {
+                            logger.LogInformation("Keep attacking!");
+                            attackResult = game.TryAttack(player.Token, attackingTerritory, defendingTerritory);
+                            if (attackResult.BattleWasWon && !hasCard)
+                            {
+                                player.PlayerCards.Add(new Card());
+                                hasCard = true;
+                            }
+                        }
+                        else
+                        {
+                            logger.LogInformation("run away!");
+                            break;
                         }
                     }
-                    catch (Exception ex)
-                    {
-                        attackResult = new TryAttackResult { AttackInvalid = true, Message = ex.Message };
-                    }
-                    if (attackResult.AttackInvalid)
-                    {
-                        logger.LogError($"Invalid attack request! {player.Name} from {attackingTerritory} to {defendingTerritory} ");
-                        failedTries++;
-                        if (failedTries == MaxFailedTries)
-                        {
-                            BootPlayerFromGame(player);
-                        }
-                    }
-                } while (attackResult.AttackInvalid);
-                while (attackResult.CanContinue)
-                {
-                    var continueResponse = await askContinueAttackingAsync(player, attackingTerritory, defendingTerritory);
-                    if (continueResponse.ContinueAttacking)
-                    {
-                        logger.LogInformation("Keep attacking!");
-                        attackResult = game.TryAttack(player.Token, attackingTerritory, defendingTerritory);
-                        if(attackResult.BattleWasWon && !hasCard)
-                        {
-                            player.PlayerCards.Add(new Card());
-                            hasCard = true;
-                        }
-                    }
-                    else
-                    {
-                        logger.LogInformation("run away!");
-                        break;
-                    }
-                }
+
+
+                    anotherAttackResponse = await AskMakeAnotherAttackAsync(player, attackingTerritory, defendingTerritory);
+                } while (anotherAttackResponse.ContinueAttacking);
             }
             else
             {
@@ -468,6 +476,18 @@ namespace Risk.Api
             return await (await player.HttpClient.PostAsJsonAsync("/maneuver", maneuverRequest))
                 .EnsureSuccessStatusCode()
                 .Content.ReadFromJsonAsync<ManeuverResponse>();
+        }
+
+        private async Task<ContinueAttackResponse> AskMakeAnotherAttackAsync(ApiPlayer player, Territory attackingTerritory, Territory defendingTerritory)
+        {
+            var newAttackRequest = new ContinueAttackRequest {
+                Board = game.Board.SerializableTerritories,
+                AttackingTerritorry = attackingTerritory,
+                DefendingTerritorry = defendingTerritory
+            };
+            return await (await player.HttpClient.PostAsJsonAsync("/makeNewAttack", newAttackRequest))
+                .EnsureSuccessStatusCode()
+                .Content.ReadFromJsonAsync<ContinueAttackResponse>();
         }
     }
 }
