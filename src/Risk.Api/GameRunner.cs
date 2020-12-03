@@ -102,8 +102,10 @@ namespace Risk.Api
                 {
                     var currentPlayer = game.Players.Skip(i).First() as ApiPlayer;
                     await Reinforce(currentPlayer);
-                    if(!removedPlayers.Contains(currentPlayer)) await DoPlayerBattle(currentPlayer);
-                    if (!removedPlayers.Contains(currentPlayer)) await PlayerManeuver(currentPlayer);
+                    if(!removedPlayers.Contains(currentPlayer)) 
+                        await DoPlayerBattle(currentPlayer);
+                    if (!removedPlayers.Contains(currentPlayer)) 
+                        await PlayerManeuver(currentPlayer);
                     else i--;
                 }
             }
