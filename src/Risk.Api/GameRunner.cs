@@ -102,7 +102,7 @@ namespace Risk.Api
                 for (int i = 0; i < game.Players.Count() && game.Players.Count() > 1; i++)
                 {
                     var currentPlayer = game.Players.Skip(i).First() as ApiPlayer;
-                    var usedCardBonus = DeployPlayerArmies(currentPlayer, CardBonusCount);
+                    var usedCardBonus = await DeployPlayerArmies(currentPlayer, CardBonusCount);
                     if (usedCardBonus)
                         CardBonusCount++;
 
@@ -275,7 +275,7 @@ namespace Risk.Api
             RemovePlayerFromGame(player.Token);
         }
 
-        public bool DeployPlayerArmies(ApiPlayer player, int cardBonusLevel)
+        public async Task<bool> DeployPlayerArmies(ApiPlayer player, int cardBonusLevel)
         {
             bool cardBonusUsed = HasCardBonus(player);
             int armiesForTerritories = FindNumberBonusArmiesFromTerritories(player);
@@ -284,7 +284,7 @@ namespace Risk.Api
             {
                 totalBonusArmies += (cardBonusLevel + 1) * 5;
             }
-            Reinforce(player, totalBonusArmies);
+            await Reinforce(player, totalBonusArmies);
             return cardBonusUsed;
         }
 

@@ -15,6 +15,7 @@ namespace Risk.SampleClient.Controllers
         private readonly IHttpClientFactory httpClientFactory;
         private readonly IConfiguration config;
         private static string serverAdress;
+        private GameStrat strat = new GameStrat();
 
         public RiskClientController(IHttpClientFactory httpClientFactory, IConfiguration config)
         {
@@ -79,6 +80,24 @@ namespace Risk.SampleClient.Controllers
             response.ContinueAttacking = true;
 
             return response;
+        }
+
+        [HttpPost("reinforce")]
+        public DeployArmyResponse Reinforce([FromBody] DeployArmyRequest deployArmyRequest)
+        {
+            return strat.DecideWhereToReinforce(deployArmyRequest);
+        }
+
+        [HttpPost("manuever")]
+        public ManeuverResponse Maneuver([FromBody] ManeuverRequest maneuverRequest)
+        {
+            return strat.DecideWhereToManeuver(maneuverRequest);
+        }
+
+        [HttpPost("makeNewAttack")]
+        public ContinueAttackResponse makeNewAttack([FromBody] ContinueAttackRequest continueAttackRequest)
+        {
+            return strat.DecideToMakeNewAttack(continueAttackRequest);
         }
 
         [HttpPost("gameOver")]

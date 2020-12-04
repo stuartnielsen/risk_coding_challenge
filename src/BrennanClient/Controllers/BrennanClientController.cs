@@ -75,6 +75,24 @@ namespace BrennanClient.Controllers
             return strat.DecideToContinueAttack(continueAttackRequest);
         }
 
+        [HttpPost("reinforce")]
+        public DeployArmyResponse Reinforce([FromBody] DeployArmyRequest deployArmyRequest)
+        {
+            return strat.DecideWhereToReinforce(deployArmyRequest);
+        }
+
+        [HttpPost("manuever")]
+        public ManeuverResponse Maneuver([FromBody] ManeuverRequest maneuverRequest)
+        {
+            return strat.DecideWhereToManeuver(maneuverRequest);
+        }
+
+        [HttpPost("makeNewAttack")]
+        public ContinueAttackResponse makeNewAttack([FromBody] ContinueAttackRequest continueAttackRequest)
+        {
+            return strat.DecideToMakeNewAttack(continueAttackRequest);
+        }
+
         [HttpPost("gameOver")]
         public IActionResult GameOver([FromBody] GameOverRequest gameOverRequest)
         {
