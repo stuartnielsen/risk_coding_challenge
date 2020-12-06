@@ -135,31 +135,19 @@ namespace StuartClient
         public DeployArmyResponse DecideWhereToReinforce(DeployArmyRequest deployArmyRequest)
         {
             DeployArmyResponse response = new DeployArmyResponse();
-            var myTerritories = GetMyTerritories(deployArmyRequest.Board);
-            BoardTerritory smallPup = new BoardTerritory();
-            smallPup.Armies = 99999;
-            foreach (BoardTerritory territory in myTerritories)
-            {
-                if (territory.Armies < smallPup.Armies)
-                {
-                    smallPup = territory;
-                }
-            }
-            response.DesiredLocation = smallPup.Location;
-            return response;
-        }
-
-        private IEnumerable<BoardTerritory> GetMyTerritories(IEnumerable<BoardTerritory> territories)
-        {
             List<BoardTerritory> myTerritories = new List<BoardTerritory>();
-            foreach (BoardTerritory t in territories)
+            foreach(BoardTerritory territory in deployArmyRequest.Board)
             {
-                if (t.OwnerName != null && t.OwnerName == "Stuart")
+                if (!(territory.OwnerName == null))
                 {
-                    myTerritories.Add(t);
+                    if (territory.OwnerName == "Stuart")
+                    {
+                        myTerritories.Add(territory);
+                    }
                 }
             }
-            return myTerritories;
+            response.DesiredLocation = myTerritories.First().Location;
+            return response;
         }
     }
 }

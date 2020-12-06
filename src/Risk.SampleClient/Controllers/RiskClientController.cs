@@ -88,7 +88,7 @@ namespace Risk.SampleClient.Controllers
             return strat.DecideWhereToReinforce(deployArmyRequest);
         }
 
-        [HttpPost("manuever")]
+        [HttpPost("maneuver")]
         public ManeuverResponse Maneuver([FromBody] ManeuverRequest maneuverRequest)
         {
             return strat.DecideWhereToManeuver(maneuverRequest);

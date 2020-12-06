@@ -95,7 +95,7 @@ namespace WyattClient.Controllers
             return gameStrategy.DecideWhereToReinforce(deployArmyRequest);
         }
 
-        [HttpPost("manuever")]
+        [HttpPost("maneuver")]
         public ManeuverResponse Maneuver([FromBody] ManeuverRequest maneuverRequest)
         {
             return gameStrategy.DecideWhereToManeuver(maneuverRequest);

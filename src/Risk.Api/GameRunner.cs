@@ -448,6 +448,10 @@ namespace Risk.Api
         public async Task PlayerManeuver(ApiPlayer player)
         {
             var response = await askForManeuverkLocationAsync(player);
+            if(response.Decide is false)
+            {
+                return;
+            }
             var fromTerritory = game.Board.GetTerritory(response.From);
             var toTerritory = game.Board.GetTerritory(response.To);
             Boolean result = new Boolean();

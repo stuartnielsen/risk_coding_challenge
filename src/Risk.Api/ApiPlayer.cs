@@ -16,6 +16,7 @@ namespace Risk.Api
             Name = name;
             Token = token;
             HttpClient = httpClient;
+            PlayerCards = new List<Card>();
         }
 
         public string Name { get; private set; }

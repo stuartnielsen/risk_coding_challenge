@@ -10,7 +10,7 @@ services:
     environment:
     - height=12
     - width=8
-    - startingArmies=200
+    - startingArmies=80
     - secretCode=banana
     ports:
     - "5000:80"
