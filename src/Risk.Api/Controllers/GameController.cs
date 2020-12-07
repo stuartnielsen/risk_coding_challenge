@@ -55,7 +55,10 @@ namespace Risk.Api.Controllers
             if (!memoryCache.TryGetValue("Status", out gameStatus))
             {
                 gameStatus = game.GetGameStatus();
-
+                if(gameStatus.GameState == GameState.Restarting)
+                {
+                    game.StartJoining();
+                }
                 MemoryCacheEntryOptions cacheEntryOptions = new MemoryCacheEntryOptions();
                 cacheEntryOptions.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(1);
                 memoryCache.Set("Status", gameStatus, cacheEntryOptions);
@@ -101,30 +104,22 @@ namespace Risk.Api.Controllers
             }
         }
 
-        //[HttpPost("[action]")]
-        //public async Task<IActionResult> RestartGame(RestartGameRequest restartGameRequest)
-        //{
-        //    //var serviceDescriptor = diContainer.First(s => s.ServiceType == typeof(Game.Game));
-        //    //diContainer.Remove(serviceDescriptor);
-        //    //diContainer.AddSingleton(InitializeGame(
-        //    //    int.Parse(Configuration["height"] ?? "5"),
-        //    //    int.Parse(Configuration["width"] ?? "5"),
-        //    //    int.Parse(Configuration["startingArmies"] ?? "5")));
+        [HttpPost("[action]")]
+        public async Task<IActionResult> RestartGame(RestartGameRequest restartGameRequest)
+        {
 
-        //    //if (game.GameState != GameState.Joining)
-        //    //{
-        //    //    return BadRequest("Game not in Joining state");
-        //    //}
-        //    //if (config["secretCode"] != restartGameRequest.SecretCode)
-        //    //{
-        //    //    return BadRequest("Secret code doesn't match, unable to restart game.");
-        //    //}
-        //    //game.StartGame();
-        //    //var gameRunner = new GameRunner(game, logger);
-        //    //await gameRunner.StartGameAsync();
-        //    //return Ok();
-        //    gameInstance.ReplaceGame(game);
-        //}
+            //if (game.GameState != GameState.Restarting)
+            //{
+            //    return BadRequest("Game not in restarting state");
+            //}
+            if (config["secretCode"] != restartGameRequest.SecretCode)
+            {
+                return BadRequest("Secret code doesn't match, unable to start game.");
+            }
+            game.Restarting();
+
+            return Ok();
+        }
 
         [HttpPost("[action]")]
         public async Task<IActionResult> StartGame(StartGameRequest startGameRequest)

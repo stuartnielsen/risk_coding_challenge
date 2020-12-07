@@ -51,7 +51,7 @@ namespace Risk.SampleClient.Pages
         {
             var client = httpClientFactory.CreateClient();
             Task.Run(() =>
-                client.PostAsJsonAsync($"{configuration["GameServer"]}/restartgame", new StartGameRequest { SecretCode = configuration["secretCode"] })
+                client.PostAsJsonAsync($"{configuration["GameServer"]}/restartgame", new RestartGameRequest { SecretCode = configuration["secretCode"] })
             );
             return new RedirectToPageResult("Index");
         }
