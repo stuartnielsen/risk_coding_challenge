@@ -21,15 +21,16 @@ namespace Risk.Api.Controllers
     public class GameController : Controller
     {
         private Game.Game game;
-        private IServiceCollection diContainer;
+        private IServiceProvider diContainer;
         private IMemoryCache memoryCache;
         private readonly IHttpClientFactory clientFactory;
         private readonly IConfiguration config;
         public IConfiguration Configuration { get; }
         private readonly ILogger<GameRunner> logger;
         private readonly List<ApiPlayer> removedPlayers = new List<ApiPlayer>();
+        private GameInstance gameInstance;
 
-        public GameController(Game.Game game, IMemoryCache memoryCache, IHttpClientFactory client, IConfiguration config, ILogger<GameRunner> logger, IServiceCollection diContainer)
+        public GameController(Game.Game game, IMemoryCache memoryCache, IHttpClientFactory client, IConfiguration config, ILogger<GameRunner> logger, IServiceProvider diContainer)
         {
             this.game = game;
             this.clientFactory = client;
@@ -100,29 +101,30 @@ namespace Risk.Api.Controllers
             }
         }
 
-        [HttpPost("[action]")]
-        public async Task<IActionResult> RestartGame(RestartGameRequest restartGameRequest)
-        {
-            var serviceDescriptor = diContainer.First(s => s.ServiceType == typeof(IServiceCollection));
-            diContainer.Remove(serviceDescriptor);
-            diContainer.AddSingleton(InitializeGame(
-                int.Parse(Configuration["height"] ?? "5"),
-                int.Parse(Configuration["width"] ?? "5"),
-                int.Parse(Configuration["startingArmies"] ?? "5")));
+        //[HttpPost("[action]")]
+        //public async Task<IActionResult> RestartGame(RestartGameRequest restartGameRequest)
+        //{
+        //    //var serviceDescriptor = diContainer.First(s => s.ServiceType == typeof(Game.Game));
+        //    //diContainer.Remove(serviceDescriptor);
+        //    //diContainer.AddSingleton(InitializeGame(
+        //    //    int.Parse(Configuration["height"] ?? "5"),
+        //    //    int.Parse(Configuration["width"] ?? "5"),
+        //    //    int.Parse(Configuration["startingArmies"] ?? "5")));
 
-            if (game.GameState != GameState.Joining)
-            {
-                return BadRequest("Game not in Joining state");
-            }
-            if (config["secretCode"] != restartGameRequest.SecretCode)
-            {
-                return BadRequest("Secret code doesn't match, unable to start game.");
-            }
-            game.StartGame();
-            var gameRunner = new GameRunner(game, logger);
-            await gameRunner.StartGameAsync();
-            return Ok();
-        }
+        //    //if (game.GameState != GameState.Joining)
+        //    //{
+        //    //    return BadRequest("Game not in Joining state");
+        //    //}
+        //    //if (config["secretCode"] != restartGameRequest.SecretCode)
+        //    //{
+        //    //    return BadRequest("Secret code doesn't match, unable to restart game.");
+        //    //}
+        //    //game.StartGame();
+        //    //var gameRunner = new GameRunner(game, logger);
+        //    //await gameRunner.StartGameAsync();
+        //    //return Ok();
+        //    gameInstance.ReplaceGame(game);
+        //}
 
         [HttpPost("[action]")]
         public async Task<IActionResult> StartGame(StartGameRequest startGameRequest)
