@@ -290,8 +290,8 @@ namespace Risk.Api
 
         public int FindNumberBonusArmiesFromTerritories(ApiPlayer player)
         {
-            double playerReinforcements = game.Board.Territories.Where(p => player.Name == p.Owner.Name).Count() / 3;
-            return (int)Math.Floor(playerReinforcements);
+            return game.GetNumTerritories(player) / 3;
+            //return game.Board.Territories.Where(p => player.Name == p.Owner.Name).Count() / 3;
         }
 
         public bool HasCardBonus(ApiPlayer player)
@@ -356,7 +356,7 @@ namespace Risk.Api
                     if (failedTries == MaxFailedTries)
                     {
                         BootPlayerFromGame(player);
-                        break;
+                        return;
                     }
                     else
                     {
