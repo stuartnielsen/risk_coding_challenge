@@ -356,6 +356,7 @@ namespace Risk.Api
                     if (failedTries == MaxFailedTries)
                     {
                         BootPlayerFromGame(player);
+                        logger.LogError($"Player {player.Name} Booted! Due to reinforce error");
                         return;
                     }
                     else
@@ -412,6 +413,8 @@ namespace Risk.Api
                             if (failedTries == MaxFailedTries)
                             {
                                 BootPlayerFromGame(player);
+                                logger.LogError($"Player {player.Name} Booted! Due to attack error");
+                                return;
                             }
                         }
                     } while (attackResult.AttackInvalid);
@@ -468,6 +471,8 @@ namespace Risk.Api
                 if(failedTrys >= 3)
                 {
                     BootPlayerFromGame(player);
+                    logger.LogError($"Player {player.Name} Booted! Due to maneuver error.");
+                    return;
                 }
             } while (!result);
             
