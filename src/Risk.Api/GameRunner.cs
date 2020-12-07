@@ -117,7 +117,7 @@ namespace Risk.Api
             game.SetGameOver();
         }
 
-        private async Task doBattle()//old
+        /*private async Task doBattle()//old
         {
             game.StartTime = DateTime.Now;
             while (game.Players.Count() > 1 && game.GameState == GameState.Attacking && game.Players.Any(p => game.PlayerCanAttack(p)))
@@ -189,7 +189,7 @@ namespace Risk.Api
             }
             logger.LogInformation("Game Over");
             game.SetGameOver();
-        }
+        }*/
 
         private void RemovePlayerFromGame(string token)
         {

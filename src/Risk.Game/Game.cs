@@ -123,15 +123,8 @@ namespace Risk.Game
             }
             else //owner token == playerToken
             {
-                if (GetPlayerRemainingArmies(playerToken) > 0)
-                {
-                    territory.Armies++;
-                    placeResult = true;
-                }
-                else
-                {
-                    placeResult = false;
-                }
+                territory.Armies++;
+                placeResult = true;
             }
 
             if (placeResult && CanChangeToAttackState())
