@@ -166,7 +166,9 @@ namespace Risk.Game
             foreach (var territory in Board.Territories.Where(t => t.Owner == player && EnoughArmiesToAttack(t)))
             {
                 var neighbors = Board.GetNeighbors(territory);
-                return neighbors.Any(n => n.Owner != player);
+                if (neighbors.Where(p => p.Owner != player).Count() != 0)
+                    return true;
+                //return neighbors.Any(n => n.Owner != player);
             }
             return false;
         }

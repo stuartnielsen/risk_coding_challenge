@@ -107,9 +107,9 @@ namespace Risk.Api
                     if (usedCardBonus)
                         CardBonusCount++;
 
-                    if(!removedPlayers.Contains(currentPlayer)) 
+                    if (!removedPlayers.Contains(currentPlayer))
                         await DoPlayerBattle(currentPlayer);
-                    if (!removedPlayers.Contains(currentPlayer)) 
+                    if (!removedPlayers.Contains(currentPlayer))
                         await PlayerManeuver(currentPlayer);
                     else i--;
                 }
@@ -283,7 +283,8 @@ namespace Risk.Api
             int totalBonusArmies = armiesForTerritories;
             if (cardBonusUsed)
             {
-                totalBonusArmies += (cardBonusLevel + 1) * 5;
+                totalBonusArmies += (((cardBonusLevel + 1) % 19) + 1) * 5;
+                logger.LogInformation($"Card Bonus of level: {cardBonusLevel} for {totalBonusArmies} armies total");
             }
             await Reinforce(player, totalBonusArmies);
             return cardBonusUsed;
@@ -374,14 +375,14 @@ namespace Risk.Api
             if (game.PlayerCanAttack(player))
             {
                 var failedTries = 0;
-
-                TryAttackResult attackResult = new TryAttackResult { AttackInvalid = false };
-                ContinueAttackResponse anotherAttackResponse = new ContinueAttackResponse { ContinueAttacking = false };
-                Territory attackingTerritory = null;
-                Territory defendingTerritory = null;
                 bool hasCard = false;
+                ContinueAttackResponse anotherAttackResponse = new ContinueAttackResponse { ContinueAttacking = false };
                 do
                 {
+                    TryAttackResult attackResult = new TryAttackResult { AttackInvalid = false };
+                    Territory attackingTerritory = null;
+                    Territory defendingTerritory = null;
+
 
                     do
                     {
@@ -439,8 +440,10 @@ namespace Risk.Api
                         }
                     }
 
-
-                    anotherAttackResponse = await AskMakeAnotherAttackAsync(player, attackingTerritory, defendingTerritory);
+                    if (game.PlayerCanAttack(player))
+                        anotherAttackResponse = await AskMakeAnotherAttackAsync(player, attackingTerritory, defendingTerritory);
+                    else
+                        anotherAttackResponse.ContinueAttacking = false;
                 } while (anotherAttackResponse.ContinueAttacking);
             }
             else
@@ -452,7 +455,7 @@ namespace Risk.Api
         public async Task PlayerManeuver(ApiPlayer player)
         {
             var response = await askForManeuverkLocationAsync(player);
-            if(response.Decide is false)
+            if (response.Decide is false)
             {
                 return;
             }
@@ -469,14 +472,14 @@ namespace Risk.Api
                     logger.LogError($"Invalid maneuver request! {player.Name} from {fromTerritory} to {toTerritory} ");
                     failedTrys++;
                 }
-                if(failedTrys >= 3)
+                if (failedTrys >= 3)
                 {
                     BootPlayerFromGame(player);
                     logger.LogError($"Player {player.Name} Booted! Due to maneuver error.");
                     return;
                 }
             } while (!result);
-            
+
         }
         private async Task<ManeuverResponse> askForManeuverkLocationAsync(ApiPlayer player)
         {
