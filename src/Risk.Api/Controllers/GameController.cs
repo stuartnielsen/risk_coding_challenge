@@ -110,11 +110,11 @@ namespace Risk.Api.Controllers
 
             if (game.GameState != GameState.GameOver)
             {
-                return BadRequest("Game not in restarting state");
+                return BadRequest("Game not in gameover state");
             }
             if (config["secretCode"] != restartGameRequest.SecretCode)
             {
-                return BadRequest("Secret code doesn't match, unable to start game.");
+                return BadRequest("Secret code doesn't match, unable to restart game.");
             }
             game.Restarting();
 
