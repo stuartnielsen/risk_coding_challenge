@@ -47,6 +47,7 @@
             <td>Territories</td>
             <td>Armies</td>
             <td>Score</td>
+            <td>Army Bonus</td>
             </tr>
             @foreach (var p in Model.Status.PlayerStats.OrderByDescending(p => p.Score))
             {
@@ -55,6 +56,7 @@
                     <td>@p.Territories</td>
                     <td>@p.Armies</td>
                     <td>@p.Score</td>
+                    <td>@(p.Territories / 3)</td>
                 </tr>
             }
         </table>

@@ -76,6 +76,24 @@ namespace StuartClient.Controllers
             return gameStrategy.DecideToContinueAttack(continueAttackRequest);
         }
 
+        [HttpPost("reinforce")]
+        public DeployArmyResponse Reinforce([FromBody] DeployArmyRequest deployArmyRequest)
+        {
+            return gameStrategy.DecideWhereToReinforce(deployArmyRequest);
+        }
+
+        [HttpPost("maneuver")]
+        public ManeuverResponse Maneuver([FromBody] ManeuverRequest maneuverRequest)
+        {
+            return gameStrategy.DecideWhereToManeuver(maneuverRequest);
+        }
+
+        [HttpPost("makeNewAttack")]
+        public ContinueAttackResponse makeNewAttack([FromBody] ContinueAttackRequest continueAttackRequest)
+        {
+            return gameStrategy.DecideToMakeNewAttack(continueAttackRequest);
+        }
+
         [HttpPost("gameOver")]
         public IActionResult GameOver([FromBody] GameOverRequest gameOverRequest)
         {

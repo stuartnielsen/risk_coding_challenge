@@ -111,6 +111,33 @@ namespace Risk.Game
             return placeResult;
         }
 
+        public bool TryReinforceArmy(string playerToken, Location desiredLocation)
+        {
+            var placeResult = false;
+
+            Territory territory;
+            try
+            {
+                territory = Board.GetTerritory(desiredLocation);
+            }
+            catch { return false; }
+
+            if (territory.Owner == null || territory.Owner.Token != playerToken)
+            {
+                placeResult = false;
+            }
+            else //owner token == playerToken
+            {
+                territory.Armies++;
+                placeResult = true;
+            }
+
+            if (placeResult && CanChangeToAttackState())
+                gameState = GameState.Attacking;
+
+            return placeResult;
+        }
+
         public int GetPlayerRemainingArmies(string playerToken)
         {
             var player = GetPlayer(playerToken);
@@ -144,7 +171,9 @@ namespace Risk.Game
             foreach (var territory in Board.Territories.Where(t => t.Owner == player && EnoughArmiesToAttack(t)))
             {
                 var neighbors = Board.GetNeighbors(territory);
-                return neighbors.Any(n => n.Owner != player);
+                if (neighbors.Where(p => p.Owner != player).Count() != 0)
+                    return true;
+                //return neighbors.Any(n => n.Owner != player);
             }
             return false;
         }
@@ -238,7 +267,8 @@ namespace Risk.Game
                 BattleWasWon(attackingTerritory, defendingTerritory);
                 return new TryAttackResult {
                     CanContinue = false,
-                    AttackInvalid = false
+                    AttackInvalid = false,
+                    BattleWasWon = true
                 };
             }
             return new TryAttackResult { CanContinue = attackingTerritory.Armies > 1, AttackInvalid = false };
@@ -257,7 +287,29 @@ namespace Risk.Game
         {
             defendingTerritory.Owner = attackingTerritory.Owner;
             defendingTerritory.Armies = attackingTerritory.Armies - 1;
-            attackingTerritory.Armies = attackingTerritory.Armies - defendingTerritory.Armies;
+            attackingTerritory.Armies = attackingTerritory.Armies - defendingTerritory.Armies;            
+        }
+
+        public int CalculateReinfrocementArmies(IPlayer player)
+        {
+            return GetNumTerritories(player) / 3;
+        }
+
+        public Boolean TryManeuver(IPlayer player, Territory from, Territory to)
+        {
+            var fromNeighbors = Board.GetNeighbors(from);
+            IList < Location > fnLocations = new List<Location>();
+            foreach(Territory t in fromNeighbors)
+            {
+                fnLocations.Add(t.Location);
+            }
+            if (player.Name == from.Owner.Name && player.Name == to.Owner.Name && fnLocations.Contains(to.Location))
+            {
+                to.Armies += from.Armies - 1;
+                from.Armies = 1;
+                return true;
+            }
+            else return false;
         }
     }
 }
