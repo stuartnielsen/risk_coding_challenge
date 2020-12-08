@@ -52,6 +52,7 @@ namespace Risk.Api
                         if (failedTries == MaxFailedTries)
                         {
                             BootPlayerFromGame(currentPlayer);
+                            logger.LogError($"Player {currentPlayer.Name} was booted from game due to deploy error");
                             playerIndex--;
                             break;
                         }
