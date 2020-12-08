@@ -108,10 +108,10 @@ namespace Risk.Api.Controllers
         public async Task<IActionResult> RestartGame(RestartGameRequest restartGameRequest)
         {
 
-            //if (game.GameState != GameState.Restarting)
-            //{
-            //    return BadRequest("Game not in restarting state");
-            //}
+            if (game.GameState != GameState.GameOver)
+            {
+                return BadRequest("Game not in restarting state");
+            }
             if (config["secretCode"] != restartGameRequest.SecretCode)
             {
                 return BadRequest("Secret code doesn't match, unable to start game.");
