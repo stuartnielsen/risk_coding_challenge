@@ -26,10 +26,10 @@ namespace BrennanClient
                 }
             }
             List<Location> cornerLocations = new List<Location>();
-            cornerLocations.Add(new Location(maxCollumn, maxRow));
-            cornerLocations.Add(new Location(0, maxRow));
-            cornerLocations.Add(new Location(maxCollumn, 0));
             cornerLocations.Add(new Location(0, 0));
+            cornerLocations.Add(new Location(0, maxCollumn));
+            cornerLocations.Add(new Location(maxRow, 0));
+            cornerLocations.Add(new Location(maxRow, maxCollumn));
 
             IEnumerable<BoardTerritory> corners = deployRequest.Board.Where(t => cornerLocations.Contains(t.Location));
             foreach(BoardTerritory t in corners)
