@@ -32,32 +32,61 @@ namespace BrennanClient
             cornerLocations.Add(new Location(maxRow, maxCollumn));
 
             IEnumerable<BoardTerritory> corners = deployRequest.Board.Where(t => cornerLocations.Contains(t.Location));
-            foreach(BoardTerritory t in corners)
+            corners = corners.Reverse();
+
+            if(myTerritories.Count() == 0)
             {
-                if (myTerritories.Contains(t))
+                foreach(BoardTerritory t in corners)
                 {
-                    deployResponse.DesiredLocation = t.Location;
-                    return deployResponse;
-                } 
-                else if(t.OwnerName == null)
+                    if(t.OwnerName == null)
+                    {
+                        deployResponse.DesiredLocation = t.Location;
+                        return deployResponse;
+                    }
+                }
+                foreach(BoardTerritory t in deployRequest.Board.Reverse())
                 {
-                    deployResponse.DesiredLocation = t.Location;
-                    return deployResponse;
+                    if (t.OwnerName == null)
+                    {
+                        deployResponse.DesiredLocation = t.Location;
+                        return deployResponse;
+                    }
                 }
             }
-            foreach(BoardTerritory t in deployRequest.Board)
+            else
             {
-                if (myTerritories.Contains(t))
+                BoardTerritory startTerritory = myTerritories.Last();
+                IEnumerable<BoardTerritory> neighborsOfCorner = GetNeighbors(startTerritory, deployRequest.Board);
+                foreach (BoardTerritory t in neighborsOfCorner)
                 {
-                    deployResponse.DesiredLocation = t.Location;
-                    return deployResponse;
+                    if(t.OwnerName != null && !myTerritories.Contains(t))
+                    {
+                        deployResponse.DesiredLocation = startTerritory.Location;
+                    }
+                    if(t.OwnerName == null)
+                    {
+                        deployResponse.DesiredLocation = t.Location;
+                        return deployResponse;
+                    }
                 }
-                else if (t.OwnerName == null)
+                foreach (BoardTerritory t in neighborsOfCorner)
                 {
-                    deployResponse.DesiredLocation = t.Location;
+                    IEnumerable<BoardTerritory> friendlyNeighborsOfCorner = neighborsOfCorner.Where(ter => myTerritories.Contains(ter));
+                    BoardTerritory smallPup = new BoardTerritory();
+                    smallPup.Armies = 9999;
+                    foreach (BoardTerritory bt in friendlyNeighborsOfCorner)
+                    {
+                        if (bt.Armies < smallPup.Armies)
+                        {
+                            smallPup = bt;
+                        }
+                    }
+                    deployResponse.DesiredLocation = smallPup.Location;
                     return deployResponse;
+                    
                 }
             }
+            
             return deployResponse;
         }
 
@@ -65,13 +94,17 @@ namespace BrennanClient
         {
             BeginAttackResponse beginAttack = new BeginAttackResponse();
             IEnumerable<BoardTerritory> myTerritories = GetMyTerritories(attackRequest.Board);
-            BoardTerritory topDog = myTerritories.First();
+            BoardTerritory topDog = new BoardTerritory();
+            topDog.Armies = 0;
             
             foreach(BoardTerritory t in myTerritories)
             {
                 if(t.Armies > topDog.Armies)
                 {
-                    topDog = t;
+                    if (GetNumBadTerritories(t, attackRequest.Board) > 0)
+                    {
+                        topDog = t;
+                    }
                 }
             }
             beginAttack.From = topDog.Location;
