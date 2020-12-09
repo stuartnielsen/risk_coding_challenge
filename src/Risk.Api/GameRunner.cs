@@ -102,16 +102,21 @@ namespace Risk.Api
             {
                 for (int i = 0; i < game.Players.Count() && game.Players.Count() > 1; i++)
                 {
-                    var currentPlayer = game.Players.Skip(i).First() as ApiPlayer;
-                    var usedCardBonus = await DeployPlayerArmies(currentPlayer, CardBonusCount);
-                    if (usedCardBonus)
-                        CardBonusCount++;
 
-                    if (!removedPlayers.Contains(currentPlayer))
-                        await DoPlayerBattle(currentPlayer);
-                    if (!removedPlayers.Contains(currentPlayer))
-                        await PlayerManeuver(currentPlayer);
-                    else i--;
+                    var currentPlayer = game.Players.Skip(i).First() as ApiPlayer;
+                    if (game.GetNumTerritories(currentPlayer) > 0)
+                    {
+                        var usedCardBonus = await DeployPlayerArmies(currentPlayer, CardBonusCount);
+                        if (usedCardBonus)
+                            CardBonusCount++;
+
+                        if (!removedPlayers.Contains(currentPlayer))
+                            await DoPlayerBattle(currentPlayer);
+                        if (!removedPlayers.Contains(currentPlayer))
+                            await PlayerManeuver(currentPlayer);
+                        else i--;
+                    }
+
                 }
             }
             logger.LogInformation("Game Over");
