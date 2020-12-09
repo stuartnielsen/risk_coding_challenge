@@ -69,7 +69,7 @@ namespace BrennanClient
             
             foreach(BoardTerritory t in myTerritories)
             {
-                if(t.Armies >= topDog.Armies)
+                if(t.Armies > topDog.Armies)
                 {
                     topDog = t;
                 }
@@ -94,7 +94,32 @@ namespace BrennanClient
         internal ContinueAttackResponse DecideToMakeNewAttack(ContinueAttackRequest continueAttackRequest)
         {
             ContinueAttackResponse response = new ContinueAttackResponse();
-            response.ContinueAttacking = false;
+            IEnumerable<BoardTerritory> myTerritories = GetMyTerritories(continueAttackRequest.Board);
+            BoardTerritory topDog = new BoardTerritory();
+            topDog.Armies = 0;
+            foreach(BoardTerritory territory in myTerritories)
+            {
+                if(territory.Armies > topDog.Armies)
+                {
+                    if(GetNumBadTerritories(territory, continueAttackRequest.Board) > 0)
+                    {
+                        topDog = territory;
+                    }
+                }
+            }
+            IEnumerable<BoardTerritory> tDogNeighbors = GetNeighbors(topDog, continueAttackRequest.Board);
+            BoardTerritory smallPup = new BoardTerritory();
+            smallPup.Armies = 99999;
+            foreach (BoardTerritory t in tDogNeighbors)
+            {
+                if (!myTerritories.Contains(t) && t.Armies < smallPup.Armies)
+                {
+                    smallPup = t;
+                }
+            }
+
+            if (topDog.Armies > smallPup.Armies) response.ContinueAttacking = true;
+            else response.ContinueAttacking = false;
             return response;
         }
 
@@ -126,7 +151,7 @@ namespace BrennanClient
         private IEnumerable<BoardTerritory> GetNeighbors(BoardTerritory territory, IEnumerable<BoardTerritory> territories)
         {
             var l = territory.Location;
-            var neighborLocations = new[] {
+            Location[] neighborLocations = new[] {
                 new Location(l.Row+1, l.Column-1),
                 new Location(l.Row+1, l.Column),
                 new Location(l.Row+1, l.Column+1),
@@ -158,6 +183,20 @@ namespace BrennanClient
             attackResponse.ContinueAttacking = (continueAttack.AttackingTerritorry.Armies > continueAttack.DefendingTerritorry.Armies);
             return attackResponse;
 
+        }
+
+        public int GetNumBadTerritories(BoardTerritory territory, IEnumerable<BoardTerritory> board)
+        {
+            int numBadTerritories = 0;
+            IEnumerable<BoardTerritory> neigbors = GetNeighbors(territory, board);
+            foreach(BoardTerritory possibleBadGuy in neigbors)
+            {
+                if(possibleBadGuy.OwnerName != "Brennan")
+                {
+                    numBadTerritories++;
+                }
+            }
+            return numBadTerritories;
         }
     }
 }
