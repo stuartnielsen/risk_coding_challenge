@@ -92,18 +92,21 @@ namespace BrennanClient
 
         public BeginAttackResponse DecideWhereToAttack(BeginAttackRequest attackRequest)
         {
+            IEnumerable <BoardTerritory> board = attackRequest.Board.Reverse();
             BeginAttackResponse beginAttack = new BeginAttackResponse();
-            IEnumerable<BoardTerritory> myTerritories = GetMyTerritories(attackRequest.Board);
+            IEnumerable<BoardTerritory> myTerritories = GetMyTerritories(attackRequest.Board).Reverse();
             BoardTerritory topDog = new BoardTerritory();
             topDog.Armies = 0;
+            //int maxNumBadTerritories = 8;
             
             foreach(BoardTerritory t in myTerritories)
             {
                 if(t.Armies > topDog.Armies)
                 {
-                    if (GetNumBadTerritories(t, attackRequest.Board) > 0)
+                    if (GetNumBadTerritories(t, board) > 0 )
                     {
                         topDog = t;
+                        //maxNumBadTerritories = GetNumBadTerritories(t, board);
                     }
                 }
             }
@@ -151,7 +154,7 @@ namespace BrennanClient
                 }
             }
 
-            if (topDog.Armies > smallPup.Armies) response.ContinueAttacking = true;
+            if (topDog.Armies > (2 * smallPup.Armies)) response.ContinueAttacking = true;
             else response.ContinueAttacking = false;
             return response;
         }
@@ -172,7 +175,7 @@ namespace BrennanClient
             smallPup.Armies = 99999;
             foreach (BoardTerritory territory in myTerritories)
             {
-                if(territory.Armies < smallPup.Armies)
+                if(territory.Armies < smallPup.Armies && GetNumBadTerritories(territory, deployArmyRequest.Board) > 0)
                 {
                     smallPup = territory;
                 }
