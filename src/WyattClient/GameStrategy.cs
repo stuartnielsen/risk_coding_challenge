@@ -95,47 +95,41 @@ namespace WyattClient
         public BeginAttackResponse WhenToAttack(BeginAttackRequest beginAttackRequest)
         {
             BeginAttackResponse beginAttack = new BeginAttackResponse();
-            int myArmy = 0;
             IEnumerable<BoardTerritory> neighbors = new List<BoardTerritory>();
-            foreach (var territory in beginAttackRequest.Board)
-            {
-                if (!(territory.OwnerName == null))
-                {
-                    if (territory.OwnerName == "Wyatt")
-                    {
-                        if (territory.Armies > myArmy)
-                            myArmy = territory.Armies;
-                    }
+            IEnumerable<BoardTerritory> myTerritories = GetMyTerritories(beginAttackRequest.Board);
 
-                }
-            }
-            foreach (var territory in beginAttackRequest.Board)
+            do
             {
-                if (!(territory.OwnerName == null))
-                {
-                    if (territory.OwnerName == "Wyatt" && territory.Armies == myArmy)
-                    {
-                        beginAttack.From = territory.Location;
-                        neighbors = GetNeighbors(territory, beginAttackRequest.Board);
-                    }
-                }
-            }
 
-            foreach (var neighbor in neighbors)
-            {
-                if (!(neighbor.OwnerName == null))
+
+                foreach (var territory in myTerritories)
                 {
-                    if (neighbor.OwnerName != "Wyatt")
-                        beginAttack.To = neighbor.Location;
-                    if (neighbor.OwnerName != "Wyatt" && neighbor.Armies == 0)
+                    var myNeighbors = GetNeighbors(territory, beginAttackRequest.Board);
+
+                    foreach (var neighbor in myNeighbors)
                     {
-                        beginAttack.To = neighbor.Location;
-                        return beginAttack;
+
+                        if ((territory.Armies > 1000 || territory.Armies > neighbor.Armies * 2) && neighbor.OwnerName != "Wyatt" && territory.Armies > 1)
+                        {
+                            beginAttack.From = territory.Location;
+                            beginAttack.To = neighbor.Location;
+                            return beginAttack;
+                        }
+                        if (neighbor.Armies < 2 && territory.Armies > 3 && neighbor.OwnerName != "Wyatt")
+                        {
+                            beginAttack.To = neighbor.Location;
+                            beginAttack.From = territory.Location;
+                            return beginAttack;
+                        }
+                        if (neighbor.OwnerName != "Wyatt" && territory.Armies > 1)
+                        {
+                            beginAttack.To = neighbor.Location;
+                            beginAttack.From = territory.Location;
+                        }
                     }
-                    else if (neighbor.OwnerName != "Wyatt" && neighbor.Armies < myArmy)
-                        beginAttack.To = neighbor.Location;
                 }
-            }
+            } while (beginAttack.To == null || beginAttack.From == null);
+
             return beginAttack;
         }
 
@@ -143,14 +137,9 @@ namespace WyattClient
 
         public ContinueAttackResponse WhenToContinueAttack(ContinueAttackRequest continueAttackRequest)
         {
-            ContinueAttackResponse continueAttackResponse = new ContinueAttackResponse();
-            if (continueAttackRequest.AttackingTerritorry.Armies > continueAttackRequest.DefendingTerritorry.Armies + 1)
-            {
-                continueAttackResponse.ContinueAttacking = true;
-                return continueAttackResponse;
-            }
-            continueAttackResponse.ContinueAttacking = false;
-            return continueAttackResponse;
+            ContinueAttackResponse attackResponse = new ContinueAttackResponse();
+            attackResponse.ContinueAttacking = (continueAttackRequest.AttackingTerritorry.Armies > continueAttackRequest.DefendingTerritorry.Armies);
+            return attackResponse;
         }
 
 
