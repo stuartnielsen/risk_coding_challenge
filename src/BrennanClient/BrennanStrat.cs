@@ -26,52 +26,88 @@ namespace BrennanClient
                 }
             }
             List<Location> cornerLocations = new List<Location>();
-            cornerLocations.Add(new Location(maxCollumn, maxRow));
-            cornerLocations.Add(new Location(0, maxRow));
-            cornerLocations.Add(new Location(maxCollumn, 0));
             cornerLocations.Add(new Location(0, 0));
+            cornerLocations.Add(new Location(0, maxCollumn));
+            cornerLocations.Add(new Location(maxRow, 0));
+            cornerLocations.Add(new Location(maxRow, maxCollumn));
 
             IEnumerable<BoardTerritory> corners = deployRequest.Board.Where(t => cornerLocations.Contains(t.Location));
-            foreach(BoardTerritory t in corners)
+            corners = corners.Reverse();
+
+            if(myTerritories.Count() == 0)
             {
-                if (myTerritories.Contains(t))
+                foreach(BoardTerritory t in corners)
                 {
-                    deployResponse.DesiredLocation = t.Location;
-                    return deployResponse;
-                } 
-                else if(t.OwnerName == null)
+                    if(t.OwnerName == null)
+                    {
+                        deployResponse.DesiredLocation = t.Location;
+                        return deployResponse;
+                    }
+                }
+                foreach(BoardTerritory t in deployRequest.Board.Reverse())
                 {
-                    deployResponse.DesiredLocation = t.Location;
-                    return deployResponse;
+                    if (t.OwnerName == null)
+                    {
+                        deployResponse.DesiredLocation = t.Location;
+                        return deployResponse;
+                    }
                 }
             }
-            foreach(BoardTerritory t in deployRequest.Board)
+            else
             {
-                if (myTerritories.Contains(t))
+                BoardTerritory startTerritory = myTerritories.Last();
+                IEnumerable<BoardTerritory> neighborsOfCorner = GetNeighbors(startTerritory, deployRequest.Board);
+                foreach (BoardTerritory t in neighborsOfCorner)
                 {
-                    deployResponse.DesiredLocation = t.Location;
-                    return deployResponse;
+                    if(t.OwnerName != null && !myTerritories.Contains(t))
+                    {
+                        deployResponse.DesiredLocation = startTerritory.Location;
+                    }
+                    if(t.OwnerName == null)
+                    {
+                        deployResponse.DesiredLocation = t.Location;
+                        return deployResponse;
+                    }
                 }
-                else if (t.OwnerName == null)
+                foreach (BoardTerritory t in neighborsOfCorner)
                 {
-                    deployResponse.DesiredLocation = t.Location;
+                    IEnumerable<BoardTerritory> friendlyNeighborsOfCorner = neighborsOfCorner.Where(ter => myTerritories.Contains(ter));
+                    BoardTerritory smallPup = new BoardTerritory();
+                    smallPup.Armies = 9999;
+                    foreach (BoardTerritory bt in friendlyNeighborsOfCorner)
+                    {
+                        if (bt.Armies < smallPup.Armies)
+                        {
+                            smallPup = bt;
+                        }
+                    }
+                    deployResponse.DesiredLocation = smallPup.Location;
                     return deployResponse;
+                    
                 }
             }
+            
             return deployResponse;
         }
 
         public BeginAttackResponse DecideWhereToAttack(BeginAttackRequest attackRequest)
         {
+            IEnumerable <BoardTerritory> board = attackRequest.Board.Reverse();
             BeginAttackResponse beginAttack = new BeginAttackResponse();
-            IEnumerable<BoardTerritory> myTerritories = GetMyTerritories(attackRequest.Board);
-            BoardTerritory topDog = myTerritories.First();
+            IEnumerable<BoardTerritory> myTerritories = GetMyTerritories(attackRequest.Board).Reverse();
+            BoardTerritory topDog = new BoardTerritory();
+            topDog.Armies = 0;
+            //int maxNumBadTerritories = 8;
             
             foreach(BoardTerritory t in myTerritories)
             {
-                if(t.Armies >= topDog.Armies)
+                if(t.Armies > topDog.Armies)
                 {
-                    topDog = t;
+                    if (GetNumBadTerritories(t, board) > 0 )
+                    {
+                        topDog = t;
+                        //maxNumBadTerritories = GetNumBadTerritories(t, board);
+                    }
                 }
             }
             beginAttack.From = topDog.Location;
@@ -94,7 +130,32 @@ namespace BrennanClient
         internal ContinueAttackResponse DecideToMakeNewAttack(ContinueAttackRequest continueAttackRequest)
         {
             ContinueAttackResponse response = new ContinueAttackResponse();
-            response.ContinueAttacking = false;
+            IEnumerable<BoardTerritory> myTerritories = GetMyTerritories(continueAttackRequest.Board);
+            BoardTerritory topDog = new BoardTerritory();
+            topDog.Armies = 0;
+            foreach(BoardTerritory territory in myTerritories)
+            {
+                if(territory.Armies > topDog.Armies)
+                {
+                    if(GetNumBadTerritories(territory, continueAttackRequest.Board) > 0)
+                    {
+                        topDog = territory;
+                    }
+                }
+            }
+            IEnumerable<BoardTerritory> tDogNeighbors = GetNeighbors(topDog, continueAttackRequest.Board);
+            BoardTerritory smallPup = new BoardTerritory();
+            smallPup.Armies = 99999;
+            foreach (BoardTerritory t in tDogNeighbors)
+            {
+                if (!myTerritories.Contains(t) && t.Armies < smallPup.Armies)
+                {
+                    smallPup = t;
+                }
+            }
+
+            if (topDog.Armies > (2 * smallPup.Armies)) response.ContinueAttacking = true;
+            else response.ContinueAttacking = false;
             return response;
         }
 
@@ -114,7 +175,7 @@ namespace BrennanClient
             smallPup.Armies = 99999;
             foreach (BoardTerritory territory in myTerritories)
             {
-                if(territory.Armies < smallPup.Armies)
+                if(territory.Armies < smallPup.Armies && GetNumBadTerritories(territory, deployArmyRequest.Board) > 0)
                 {
                     smallPup = territory;
                 }
@@ -126,7 +187,7 @@ namespace BrennanClient
         private IEnumerable<BoardTerritory> GetNeighbors(BoardTerritory territory, IEnumerable<BoardTerritory> territories)
         {
             var l = territory.Location;
-            var neighborLocations = new[] {
+            Location[] neighborLocations = new[] {
                 new Location(l.Row+1, l.Column-1),
                 new Location(l.Row+1, l.Column),
                 new Location(l.Row+1, l.Column+1),
@@ -158,6 +219,20 @@ namespace BrennanClient
             attackResponse.ContinueAttacking = (continueAttack.AttackingTerritorry.Armies > continueAttack.DefendingTerritorry.Armies);
             return attackResponse;
 
+        }
+
+        public int GetNumBadTerritories(BoardTerritory territory, IEnumerable<BoardTerritory> board)
+        {
+            int numBadTerritories = 0;
+            IEnumerable<BoardTerritory> neigbors = GetNeighbors(territory, board);
+            foreach(BoardTerritory possibleBadGuy in neigbors)
+            {
+                if(possibleBadGuy.OwnerName != "Brennan")
+                {
+                    numBadTerritories++;
+                }
+            }
+            return numBadTerritories;
         }
     }
 }
