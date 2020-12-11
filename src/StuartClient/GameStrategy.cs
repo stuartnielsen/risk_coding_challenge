@@ -193,8 +193,7 @@ namespace StuartClient
                 var neighbors = GetNeighbors(territory, deployArmyRequest.Board);
                 foreach (var neighbor in neighbors)
                 {
-
-                    if (neighbor.OwnerName != "Stuart" && territory.Armies < neighbor.Armies)
+                    if (neighbor.OwnerName != "Stuart" && territory.Armies < neighbor.Armies * 2.01)
                     {
                         response.DesiredLocation = territory.Location;
                         return response;
