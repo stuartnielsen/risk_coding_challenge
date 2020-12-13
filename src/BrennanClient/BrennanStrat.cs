@@ -8,6 +8,7 @@ namespace BrennanClient
 {
     public class BrennanStrat
     {
+        private static BoardTerritory startTerritory { get; set; }
         public DeployArmyResponse DecideArmyWhereToPlacement(DeployArmyRequest deployRequest)
         {
             DeployArmyResponse deployResponse = new DeployArmyResponse();
@@ -41,6 +42,7 @@ namespace BrennanClient
                     if(t.OwnerName == null)
                     {
                         deployResponse.DesiredLocation = t.Location;
+                        startTerritory = t;
                         return deployResponse;
                     }
                 }
@@ -49,13 +51,14 @@ namespace BrennanClient
                     if (t.OwnerName == null)
                     {
                         deployResponse.DesiredLocation = t.Location;
+                        startTerritory = t;
                         return deployResponse;
                     }
                 }
+                
             }
             else
             {
-                BoardTerritory startTerritory = myTerritories.Last();
                 IEnumerable<BoardTerritory> neighborsOfCorner = GetNeighbors(startTerritory, deployRequest.Board);
                 foreach (BoardTerritory t in neighborsOfCorner)
                 {
@@ -162,7 +165,36 @@ namespace BrennanClient
         internal ManeuverResponse DecideWhereToManeuver(ManeuverRequest maneuverRequest)
         {
             ManeuverResponse response = new ManeuverResponse();
-            response.Decide = false;
+            IEnumerable<BoardTerritory> myTerritories = GetMyTerritories(maneuverRequest.Board);
+            BoardTerritory fromTerritory = new BoardTerritory();
+            fromTerritory.Armies = 0;
+            foreach(BoardTerritory territory in myTerritories)
+            {
+                if(GetNumBadTerritories(territory, maneuverRequest.Board) == 0 && territory.Armies > fromTerritory.Armies)
+                {
+                    fromTerritory = territory;
+                }
+            }
+            if (fromTerritory.Armies == 0)
+            {
+                response.Decide = false;
+            }
+            else
+            {
+                response.Decide = true;
+                response.From = fromTerritory.Location;
+                BoardTerritory toTerritory = new BoardTerritory();
+                int toScore = 999999;
+                foreach (BoardTerritory territory in GetNeighbors(fromTerritory, maneuverRequest.Board))
+                {
+                    if (territory.Location.Column + territory.Location.Row < toScore)
+                    {
+                        toScore = territory.Location.Column + territory.Location.Row;
+                        toTerritory = territory;
+                    }
+                }
+                response.To = toTerritory.Location;
+            }
 
             return response;
         }
