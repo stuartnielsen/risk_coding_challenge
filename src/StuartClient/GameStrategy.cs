@@ -14,6 +14,11 @@ namespace StuartClient
             List<BoardTerritory> myTerritories = new List<BoardTerritory>();
             foreach (var territory in deployRequest.Board)
             {
+                if (territory.Armies == 0 && GetNumBadTerritories(territory, deployRequest.Board) == 0)
+                {
+                    deployResponse.DesiredLocation = territory.Location;
+                    return deployResponse;
+                }
                 if (territory.Armies == 0)
                 {
                     deployResponse.DesiredLocation = territory.Location;
@@ -142,7 +147,36 @@ namespace StuartClient
         public ManeuverResponse DecideWhereToManeuver(ManeuverRequest maneuverRequest)
         {
             ManeuverResponse response = new ManeuverResponse();
-            response.Decide = false;
+            IEnumerable<BoardTerritory> myTerritories = GetMyTerritories(maneuverRequest.Board);
+            BoardTerritory fromTerritory = new BoardTerritory();
+            fromTerritory.Armies = 0;
+            foreach (BoardTerritory territory in myTerritories)
+            {
+                if (GetNumBadTerritories(territory, maneuverRequest.Board) == 0 && territory.Armies > fromTerritory.Armies)
+                {
+                    fromTerritory = territory;
+                }
+            }
+            if (fromTerritory.Armies == 0)
+            {
+                response.Decide = false;
+            }
+            else
+            {
+                response.Decide = true;
+                response.From = fromTerritory.Location;
+                BoardTerritory toTerritory = new BoardTerritory();
+                int toScore = 999999;
+                foreach (BoardTerritory territory in GetNeighbors(fromTerritory, maneuverRequest.Board))
+                {
+                    if (territory.Location.Column + territory.Location.Row < toScore)
+                    {
+                        toScore = territory.Location.Column + territory.Location.Row;
+                        toTerritory = territory;
+                    }
+                }
+                response.To = toTerritory.Location;
+            }
 
             return response;
         }
@@ -182,7 +216,7 @@ namespace StuartClient
             IEnumerable<BoardTerritory> myTerritories = GetMyTerritories(deployArmyRequest.Board);
             foreach (var territory in myTerritories)
             {
-                if (territory.Armies < 10)
+                if (territory.Armies < 10 && GetNumBadTerritories(territory, deployArmyRequest.Board) > 0)
                 {
                     response.DesiredLocation = territory.Location;
                     return response;
@@ -201,21 +235,35 @@ namespace StuartClient
                 }
             }
 
-        
-        response.DesiredLocation = myTerritories.First().Location;
+
+            response.DesiredLocation = myTerritories.First().Location;
             return response;
         }
-    private IEnumerable<BoardTerritory> GetMyTerritories(IEnumerable<BoardTerritory> territories)
-    {
-        List<BoardTerritory> myTerritories = new List<BoardTerritory>();
-        foreach (BoardTerritory t in territories)
+        private IEnumerable<BoardTerritory> GetMyTerritories(IEnumerable<BoardTerritory> territories)
         {
-            if (t.OwnerName != null && t.OwnerName == "Stuart")
+            List<BoardTerritory> myTerritories = new List<BoardTerritory>();
+            foreach (BoardTerritory t in territories)
             {
-                myTerritories.Add(t);
+                if (t.OwnerName != null && t.OwnerName == "Stuart")
+                {
+                    myTerritories.Add(t);
+                }
             }
+            return myTerritories;
         }
-        return myTerritories;
+
+        public int GetNumBadTerritories(BoardTerritory territory, IEnumerable<BoardTerritory> board)
+        {
+            int numBadTerritories = 0;
+            IEnumerable<BoardTerritory> neigbors = GetNeighbors(territory, board);
+            foreach (BoardTerritory possibleBadGuy in neigbors)
+            {
+                if (possibleBadGuy.OwnerName != "Stuart" || possibleBadGuy.OwnerName != "(Unoccupied)")
+                {
+                    numBadTerritories++;
+                }
+            }
+            return numBadTerritories;
+        }
     }
-}
 }
